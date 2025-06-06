@@ -9,11 +9,14 @@ function Login() {
          <div className="login-bg">
         <form className="login-form">
             <h3>Login Here</h3>
-            <label htmlFor="username">Username</label>
+            <label htmlFor="username">Tên đăng nhập</label>
             <input type="text" placeholder="Email or Phone" id="username" />
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password">Mật khẩu</label>
             <input type="password" placeholder="Password" id="password" />
             <button type="button">Log In</button>
+            <p className="register-link">
+                Chưa có tài khoản? <Link to="/register">Đăng ký ngay</Link>
+            </p>
         </form>
         </div>
     );

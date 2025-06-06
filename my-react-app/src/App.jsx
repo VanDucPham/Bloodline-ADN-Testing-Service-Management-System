@@ -5,6 +5,7 @@ import { faUser, faCoffee, faHome, faBars, faCheck } from '@fortawesome/free-sol
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
 import Homepage from './Homepage'; // Không cần dấu ngoặc nhọn nếu export default
 import Login from './components/login/Login';
+import Register from './components/register/Register';
 
 function App() {
   return (
@@ -12,6 +13,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Homepage />}/>
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        {/* Thêm các route khác nếu cần */}
       </Routes>
     </BrowserRouter>
   );
