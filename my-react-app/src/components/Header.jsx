@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
 import './Header.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { faGoogle } from '@fortawesome/free-brands-svg-icons';
+import { useNavigate } from 'react-router-dom';
 
 function Header() {
   const [activeMenu, setActiveMenu] = useState('');
+  const navigate = useNavigate();
 
   const handleMenuClick = (menuName) => {
     setActiveMenu(menuName);
@@ -13,7 +18,6 @@ function Header() {
       <div className="top-bar">
         <img src="/logo.png" alt="Vietcare Logo" className="logo" />
         <div className="contact-info">
-          <i class="fa-sharp fa-solid fa-house"></i>
           <div>Hỗ trợ tư vấn 24/7 <br /><strong>Hoàn toàn MIỄN PHÍ</strong></div>
           <div>0339 773 330</div>
           <div>vietcarelab@gmail.com</div>
@@ -29,7 +33,7 @@ function Header() {
               name: 'GIỚI THIỆU', submenu: ['Về chúng tôi', 'Hỏi đáp ADN huyết thống']
             },
             {
-              name: 'DỊCH VỤ' 
+              name: 'DỊCH VỤ'
             },
             {
               name: 'BẢNG GIÁ'
@@ -60,7 +64,13 @@ function Header() {
             </li>
           ))}
 
-          <li><button className="book-btn">ĐĂNG NHẬP</button></li>
+          <li>
+            <button className="login-btn" onClick={() => navigate('/login')} >
+              ĐĂNG NHẬP
+            </button>
+          </li> <FontAwesomeIcon icon={faMagnifyingGlass} /><FontAwesomeIcon icon={faGoogle} />
+
+
         </ul>
       </nav>
     </header>
