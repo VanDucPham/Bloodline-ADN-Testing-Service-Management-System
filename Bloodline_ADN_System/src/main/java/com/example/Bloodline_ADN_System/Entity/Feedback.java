@@ -21,7 +21,10 @@ public class Feedback {
         private String feedback_text; // Nội dung phản hồi
         private String feedback_date; // Ngày gửi phản hồi
 
-
+        // In 'Feedback.java'
+        @OneToOne
+        @JoinColumn(name = "appointment_id")
+        private Appointment appointment;
 
         // Các phương thức getter và setter có thể được tạo tự động hoặc bằng tay
 

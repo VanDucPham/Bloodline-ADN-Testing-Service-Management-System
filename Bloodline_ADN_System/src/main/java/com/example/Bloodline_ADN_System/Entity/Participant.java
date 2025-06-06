@@ -23,8 +23,8 @@ public class Participant {
     @JoinColumn(name = "appointment_id", nullable = false)
     private Appointment appointment;
 
-    @OneToOne
-    @JoinColumn(name="sample_id", nullable = false)
+    @OneToOne(mappedBy = "participant")
+
     private Sample sample;
 
 }

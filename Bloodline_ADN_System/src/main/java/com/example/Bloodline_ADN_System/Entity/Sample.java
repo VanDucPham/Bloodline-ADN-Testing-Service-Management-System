@@ -24,8 +24,7 @@ public class Sample {
     private String quality; // Chất lượng mẫu (tốt, trung bình, kém)
     private String status; // Trạng thái mẫu (đã thu thập, đang xử lý, đã hoàn thành)
     private String notes; // Ghi chú thêm về mẫu
-    @OneToOne(mappedBy = "sample")
-    private Result result;
+
 
 
 
