@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import './Register.css';
 
 function Register() {
+    const
     return (
         <div className="register-bg">
             <form className="register-form">

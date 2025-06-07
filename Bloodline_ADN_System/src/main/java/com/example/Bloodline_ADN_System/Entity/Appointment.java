@@ -24,14 +24,9 @@ public class Appointment {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToMany
-    @JoinTable
-            (
-                    name = "appointment_service",
-                    joinColumns = @JoinColumn(name = "appointment_id"),
-                    inverseJoinColumns = @JoinColumn(name = "service_id")
-            )
-    private List<Service> services;
+    @ManyToOne
+    @JoinColumn(name = "service_id")
+    private Service services;
     @OneToMany(mappedBy = "appointment")
     private List<Participant> participants;
 
@@ -43,4 +38,9 @@ public class Appointment {
     private Time appointment_time;
     private String appointment_status;
     private String appointment_note;
+
+    @OneToOne(mappedBy = "appointment")
+    private Result result;
+    @OneToOne(mappedBy = "appointment")
+    private Feedback feedback;
 }

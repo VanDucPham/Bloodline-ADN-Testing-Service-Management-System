@@ -21,6 +21,7 @@ public class Service {
     private double service_price;
     @OneToMany(mappedBy = "service", cascade = CascadeType.ALL)
     private List<Feedback> feedBacks; // Danh sách các dịch vụ liên quan (nếu có, ví dụ: gói dịch vụ)
-
+    @OneToMany(mappedBy = "services")
+    private List<Appointment> appointments;
 
 }
