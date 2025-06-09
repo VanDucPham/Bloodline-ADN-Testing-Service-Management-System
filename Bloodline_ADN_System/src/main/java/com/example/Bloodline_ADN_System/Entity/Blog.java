@@ -4,25 +4,54 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "blog")
+@Table(name = "blogs")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-
 public class Blog {
-    @Id
-    @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
-    private int blog_id; // Mã bài viết
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User author; // Mã người dùng liên kết với bài viết
-    private String title; // Tiêu đề bài viết
-    private String content; // Nội dung bài viết
-    private String image_url; // URL hình ảnh đại diện của bài viết
-    private String created_at; // Ngày tạo bài viết
-    private String updated_at; // Ngày cập nhật bài viết
 
-    // Các phương thức getter và setter có thể được tạo tự động hoặc bằng tay
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "blog_id")
+    private Long blogId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User author;
+
+    @Column(nullable = false)
+    private String title;
+
+    @Column(columnDefinition = "TEXT")
+    private String content;
+
+    @Column(name = "image_url")
+    private String imageUrl;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    @Enumerated(EnumType.STRING)
+    private BlogStatus status;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
+
+    public enum BlogStatus {
+        DRAFT, PUBLISHED, ARCHIVED
+    }
 }
