@@ -35,6 +35,8 @@ public class Sample {
     @Enumerated(EnumType.STRING)
     private SampleStatus status;
 
+    @Column(name = "result")
+    private String result;
     @Column(columnDefinition = "TEXT")
     private String notes;
 

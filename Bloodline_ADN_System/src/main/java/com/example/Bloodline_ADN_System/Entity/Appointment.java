@@ -51,6 +51,9 @@ public class Appointment {
     @Column(name = "appointment_status")
     private AppointmentStatus status;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name ="delivery_method ")
+    private DeliveryMethod deliverymethod;
     @Column(name = "appointment_note", columnDefinition = "TEXT")
     private String appointmentNote;
 
@@ -69,7 +72,12 @@ public class Appointment {
         ADMINISTRATIVE, // Hành chính
         CIVIL           // Dân sự
     }
+    public enum DeliveryMethod {
+        HOME_COLLECTION,    // Lấy mẫu tại nhà
 
+        SELF_DROP_OFF,      // Tự gửi đến phòng xét nghiệm
+
+    }
     public enum AppointmentStatus {
         SCHEDULED, CONFIRMED, IN_PROGRESS, COMPLETED, CANCELLED
     }
