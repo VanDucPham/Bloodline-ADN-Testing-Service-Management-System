@@ -4,9 +4,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import com.example.Bloodline_ADN_System.Entity.Feedback ;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -16,10 +15,10 @@ import java.util.List;
 @NoArgsConstructor
 public class User {
 
-
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long user_id;
+        @Column(name = "user_id")
+        private Long userId;
 
         @Column(unique = true, nullable = false)
         private String email;
@@ -32,21 +31,26 @@ public class User {
         private String phone;
         private String address;
 
-        @Temporal(TemporalType.DATE)
-        private Date birth_date;
+        @Column(name = "birth_date")
+        private LocalDate birthDate;
 
-        private String role;
+        @Enumerated(EnumType.STRING)
+        private UserRole role;
 
-        @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-        private List<Appointment> appointments ;
+        @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+        private List<Appointment> appointments = new ArrayList<>();
 
-        @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
-        private List<Blog> blogs ;
-        @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-        private List<Feedback> feedBacks = new ArrayList<>(); // Danh sách phản hồi của người dùng
+        @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+        private List<Blog> blogs = new ArrayList<>();
 
+        @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+        private List<Feedback> feedbacks = new ArrayList<>();
 
-
-
+        public enum UserRole {
+                ADMIN, CUSTOMER, STAFF, MANAGER
+        }
+        public void setRoleFromString(String roleString) {
+                this.role = UserRole.valueOf(roleString.toUpperCase());
+        }
 
 }

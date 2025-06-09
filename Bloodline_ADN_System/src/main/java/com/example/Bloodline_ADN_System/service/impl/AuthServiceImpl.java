@@ -1,23 +1,24 @@
-package com.example.Bloodline_ADN_System.service;
-
-
+package com.example.Bloodline_ADN_System.service.impl;
 
 import com.example.Bloodline_ADN_System.Entity.User;
 import com.example.Bloodline_ADN_System.config.JwtService;
 import com.example.Bloodline_ADN_System.dto.RegisterRequest;
+import com.example.Bloodline_ADN_System.dto.LoginRequest;
+import com.example.Bloodline_ADN_System.dto.LoginResponse;
+import com.example.Bloodline_ADN_System.repository.UserRepository;
+import com.example.Bloodline_ADN_System.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
-
-// service/AuthService.java
 @Service
-public class AuthService {
+public class AuthServiceImpl implements AuthService {
     @Autowired
-    private com.example.Bloodline_ADN_System.repository.UserRepository userRepo;
+    private UserRepository userRepo;
     @Autowired
     private JwtService jwtService;
-    public com.example.Bloodline_ADN_System.dto.LoginResponse login(com.example.Bloodline_ADN_System.dto.LoginRequest request) {
+
+    @Override
+    public LoginResponse login(LoginRequest request) {
         User user = userRepo.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Email không tồn tại"));
 
@@ -27,11 +28,12 @@ public class AuthService {
 
         String token = jwtService.generateToken(user);
 
-        return new com.example.Bloodline_ADN_System.dto.LoginResponse( token,"Đăng nhập thành công");
+        return new LoginResponse(token, "Đăng nhập thành công");
     }
 
+    @Override
     public String RegisterUser(RegisterRequest registerRequest) {
-        if (userRepo.existsByEmail(registerRequest.getEmail())){
+        if (userRepo.existsByEmail(registerRequest.getEmail())) {
             throw new RuntimeException("Email already exist");
         }
         User user = new User();
@@ -39,9 +41,9 @@ public class AuthService {
         user.setPassword(registerRequest.getPassword());
         user.setPhone(registerRequest.getPhone());
         user.setName(registerRequest.getFullName());
+        // Convert role string to enum
         user.setRoleFromString("CUSTOMER");
         userRepo.save(user);
-        return "Thành Công" ;
+        return "Thành Công";
     }
 }
-
