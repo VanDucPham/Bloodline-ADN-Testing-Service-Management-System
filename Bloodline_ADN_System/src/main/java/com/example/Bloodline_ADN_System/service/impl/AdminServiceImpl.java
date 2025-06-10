@@ -30,7 +30,9 @@ public class AdminServiceImpl implements AdminService {
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setName(request.getFullName());
-        user.setRole(User.UserRole.CUSTOMER); // đảm bảo enum có giá trị này
+
+        user.setRole(User.UserRole.valueOf(request.getRole()));
+
 
         userRepository.save(user);
     }

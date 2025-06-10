@@ -8,6 +8,7 @@ import com.example.Bloodline_ADN_System.dto.LoginResponse;
 import com.example.Bloodline_ADN_System.repository.UserRepository;
 import com.example.Bloodline_ADN_System.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,12 +18,13 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private JwtService jwtService;
 
+    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
     @Override
     public LoginResponse login(LoginRequest request) {
         User user = userRepo.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Email không tồn tại"));
 
-        if (!user.getPassword().equals(request.getPassword())) {
+        if (!encoder.matches(request.getPassword(),user.getPassword())) {
             throw new RuntimeException("Sai mật khẩu");
         }
 
@@ -38,7 +40,7 @@ public class AuthServiceImpl implements AuthService {
         }
         User user = new User();
         user.setEmail(registerRequest.getEmail());
-        user.setPassword(registerRequest.getPassword());
+        user.setPassword(encoder.encode((registerRequest.getPassword())));
         user.setPhone(registerRequest.getPhone());
         user.setName(registerRequest.getFullName());
         // Convert role string to enum
