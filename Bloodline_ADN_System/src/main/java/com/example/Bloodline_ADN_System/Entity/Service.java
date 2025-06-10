@@ -16,8 +16,7 @@ public class Service {
     @Id
     @GeneratedValue
     private int service_id;
-    @Column(name = "service_name")
-    private String serviceName;
+    private String service_name;
     private String service_description;
     private double service_price;
     @OneToMany(mappedBy = "service", cascade = CascadeType.ALL)
