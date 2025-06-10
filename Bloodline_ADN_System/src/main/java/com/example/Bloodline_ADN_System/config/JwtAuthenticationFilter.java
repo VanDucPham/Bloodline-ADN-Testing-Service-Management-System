@@ -61,7 +61,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // Tạo UserDetails để validate
                 UserDetails userDetails = new org.springframework.security.core.userdetails.User(
                         user.getEmail(),
-                        null,
+                        user.getPassword(),
                         List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole()))
                 );
 
@@ -76,9 +76,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             user.getEmail(),
                             null,
                             List.of(grantedAuthority)
-                );
+                    );
 
-                SecurityContextHolder.getContext().setAuthentication(auth);
+                    SecurityContextHolder.getContext().setAuthentication(auth);
                     System.out.println("Authentication set successfully");
                     System.out.println("Authorities: " + auth.getAuthorities());
                 } else {
