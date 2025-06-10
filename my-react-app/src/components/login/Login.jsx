@@ -12,8 +12,8 @@ function Login() {
             <label htmlFor="username">Tên đăng nhập</label>
             <input type="text" placeholder="Email or Phone" id="username" />
             <label htmlFor="password">Mật khẩu</label>
-            <input type="password" placeholder="Password" id="password" />
-            <button type="button">Log In</button>
+            <input type="password" placeholder="Mật khẩu" id="password" />
+            <button type="button">Đăng nhập</button>
             <p className="register-link">
                 Chưa có tài khoản? <Link to="/register">Đăng ký ngay</Link>
             </p>

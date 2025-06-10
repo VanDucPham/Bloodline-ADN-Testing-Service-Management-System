@@ -71,6 +71,12 @@ function Header() {
             <button className='login-btn' onClick={() => navigate('/register')} >Register</button>
           </li> <FontAwesomeIcon icon={faMagnifyingGlass} /><FontAwesomeIcon icon={faGoogle} />
 
+          <li>
+            <button className="admin-btn" onClick={() => navigate('/admin')}>
+              VÀO TRANG ADMIN
+            </button>
+          </li>
+
 
         </ul>
       </nav>
