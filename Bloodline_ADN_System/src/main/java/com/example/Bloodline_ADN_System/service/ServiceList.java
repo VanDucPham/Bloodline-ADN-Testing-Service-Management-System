@@ -32,8 +32,8 @@ public class ServiceList {
     public ServiceDTO updateService(Long id, ServiceDTO updateDTO) {
         Service service = serviceRepository.findById(id).orElseThrow(() -> new RuntimeException("Dịch vụ không tồn tại"));
         service.setServiceName(updateDTO.getServiceName());
-        service.setService_description(updateDTO.getServiceDescription());
-        service.setService_price(updateDTO.getServicePrice());
+        service.setServiceDescription(updateDTO.getServiceDescription());
+        service.setServicePrice(updateDTO.getServicePrice());
         return toDTO(serviceRepository.save(service));
     }
 
@@ -45,10 +45,10 @@ public class ServiceList {
     // Mapping methods
     public ServiceDTO toDTO(Service service) {
         return new ServiceDTO(
-                service.getService_id(),
+                service.getServiceId(),
                 service.getServiceName(),
-                service.getService_description(),
-                service.getService_price()
+                service.getServiceDescription(),
+                service.getServicePrice()
         );
     }
     public Service toEntity(ServiceDTO dto) {
@@ -67,8 +67,8 @@ public class ServiceList {
         }
         Service service = new Service();
         service.setServiceName(dto.getServiceName());
-        service.setService_description(dto.getServiceDescription());
-        service.setService_price(price);
+        service.setServiceDescription(dto.getServiceDescription());
+        service.setServicePrice(price);
 
         return service;
     }

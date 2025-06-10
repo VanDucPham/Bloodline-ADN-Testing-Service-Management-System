@@ -2,7 +2,7 @@ package com.example.Bloodline_ADN_System.dto;
 
 public class ServiceDTO {
 
-    private int id;
+    private Long id;
     private String serviceName;
     private String serviceDescription;
     private Double servicePrice;
@@ -10,7 +10,7 @@ public class ServiceDTO {
     // Constructors
     public ServiceDTO() {}
 
-    public ServiceDTO(int id, String serviceName, String serviceDescription, Double servicePrice) {
+    public ServiceDTO(Long id, String serviceName, String serviceDescription, Double servicePrice) {
         this.id = id;
         this.serviceName = serviceName;
         this.serviceDescription = serviceDescription;
@@ -18,11 +18,11 @@ public class ServiceDTO {
     }
 
     // Getters and Setters
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
