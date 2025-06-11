@@ -3,12 +3,13 @@ import Header from './components/Header';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faCoffee, faHome, faBars, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
-import Homepage from './Homepage'; // Không cần dấu ngoặc nhọn nếu export default
-import Homepage from './Homepage';
+import Homepage from './Homepage'; // Không cần dấu ngoặc nhọn nếu export default 
 import Login from './components/login/Login';
 import Register from './components/register/Register';
 import AdminPage from './components/role/AdminPage';
 import AdminDashboard from './components/dashboards/AdminDashboard';
+import AboutUs from './page/about';
+import DNATestingPage from './page/dnaTesting';
 
 function App() {
   return (
@@ -18,6 +19,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/admin" element={<AdminPage />} />
+        <Route path="/about" element={<AboutUs />} />
+        <Route path="/dna-testing" element={<DNATestingPage />} />
         <Route path="/admin-dashboard" element={<AdminDashboard activeSection="users" />} />
       </Routes>
     </BrowserRouter>
