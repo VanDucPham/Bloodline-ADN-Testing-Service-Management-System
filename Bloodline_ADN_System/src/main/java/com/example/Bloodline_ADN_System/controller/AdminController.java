@@ -1,16 +1,12 @@
 package com.example.Bloodline_ADN_System.controller;
 
 import com.example.Bloodline_ADN_System.dto.CreateUserRequest;
-import com.example.Bloodline_ADN_System.service.AdminService;
+import com.example.Bloodline_ADN_System.dto.accountResponse;
 import com.example.Bloodline_ADN_System.service.impl.AdminServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -22,22 +18,29 @@ public class AdminController {
         this.adminService = adminService;
     }
 
-    @PostMapping("/user")
+    @PostMapping("/create")
     public ResponseEntity<?> createUser(@RequestBody CreateUserRequest request) {
-
-        // DEBUG: Kiểm tra authentication
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println("=== ADMIN CONTROLLER DEBUG ===");
-        System.out.println("Principal: " + auth.getPrincipal());
-        System.out.println("Authorities: " + auth.getAuthorities());
-        System.out.println("Name: " + auth.getName());
-
-        // Kiểm tra có authority ROLE_ADMIN không
-        boolean hasAdminRole = auth.getAuthorities().stream()
-                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
-        System.out.println("Has ROLE_ADMIN: " + hasAdminRole);
-
         adminService.createUser(request);
-        return ResponseEntity.ok("Tạo "+ request.getRole() + " thành công");
+        return ResponseEntity.ok("Tạo " + request.getRole() + " thành công");
     }
+
+    @GetMapping("/alluser")
+    public ResponseEntity<List<accountResponse>> getAllUser() {
+        List<accountResponse> accountResponse = adminService.getAllUsers();
+        System.out.println(accountResponse.size());
+        return ResponseEntity.ok(accountResponse);
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<?> updateUser(@RequestBody accountResponse accountResponse) {
+        adminService.updateUser(accountResponse);
+        return ResponseEntity.ok("Cập nhật trạng thái thành công");
+    }
+    // Controller
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+        adminService.deleteUser(id);
+        return ResponseEntity.ok("Xóa người dùng thành công");
+    }
+
 }

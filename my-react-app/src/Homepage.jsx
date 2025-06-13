@@ -2,7 +2,7 @@ import './Homepage.css';
 import Header from './components/Header';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faCoffee, faHome, faBars, faCheck } from '@fortawesome/free-solid-svg-icons';
-import Register from './components/register/Register';
+
 import { useNavigate } from 'react-router-dom';
 
 const Homepage = () => {
