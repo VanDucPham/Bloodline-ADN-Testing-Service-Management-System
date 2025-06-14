@@ -1,0 +1,110 @@
+📂 Các Trang Dành Cho Admin trong Hệ Thống Quản Lý Xét Nghiệm ADN
+1. Trang Dashboard (Trang tổng quan)
+Hiển thị tổng số:
+
+Người dùng.
+
+Đơn xét nghiệm.
+
+Đơn đang xử lý, đã hoàn thành.
+
+Doanh thu.
+
+Biểu đồ thống kê:
+
+Số đơn theo thời gian.
+
+Tình trạng đơn hàng.
+
+Phân loại người dùng.
+
+2. Trang Quản Lý Người Dùng
+Chức năng:
+
+Thêm / sửa / xóa người dùng.
+
+Phân quyền: Admin, Quản lý, Nhân viên, Khách hàng.
+
+Khóa / mở khóa tài khoản.
+
+Lọc / tìm kiếm theo email, tên, vai trò, trạng thái.
+
+3. Trang Quản Lý Đơn Xét Nghiệm ADN
+Chức năng:
+
+Xem danh sách đơn hàng.
+
+Phê duyệt đơn hàng.
+
+Giao đơn cho nhân viên xử lý.
+
+Theo dõi tiến độ đơn hàng.
+
+Cập nhật trạng thái: Chờ mẫu, Đang xét nghiệm, Hoàn thành.
+
+Lọc / tìm kiếm theo trạng thái, khách hàng, thời gian.
+
+4. Trang Quản Lý Dịch Vụ ADN
+Chức năng:
+
+Thêm / sửa / xóa dịch vụ xét nghiệm ADN.
+
+Quản lý giá dịch vụ.
+
+Quản lý mô tả, thời gian xử lý.
+
+Ví dụ dịch vụ: Xét nghiệm huyết thống, Xét nghiệm ADN cá nhân, Xét nghiệm ADN pháp lý.
+
+5. Trang Quản Lý Quyền Truy Cập (Phân quyền hệ thống)
+Chức năng:
+
+Tạo các vai trò mới.
+
+Gán quyền cho các vai trò: Xem, Sửa, Xóa, Duyệt, Quản trị.
+
+Phân quyền chi tiết đến từng chức năng.
+
+6. Trang Quản Lý Nhân Viên Xét Nghiệm
+Chức năng:
+
+Thêm / sửa / xóa nhân viên xét nghiệm.
+
+Quản lý lịch làm việc.
+
+Giao đơn xét nghiệm.
+
+7. Trang Quản Lý Kết Quả Xét Nghiệm
+Chức năng:
+
+Kiểm duyệt kết quả trước khi gửi cho khách hàng.
+
+Theo dõi lịch sử chỉnh sửa kết quả.
+
+Xuất kết quả PDF gửi cho khách hàng.
+
+8. Trang Quản Lý Phản Hồi & Hỗ Trợ
+Chức năng:
+
+Xem các yêu cầu hỗ trợ từ khách hàng.
+
+Quản lý ticket hỗ trợ.
+
+Trả lời và đóng yêu cầu.
+
+9. Trang Thống Kê & Báo Cáo
+Chức năng:
+
+Báo cáo số lượng đơn xét nghiệm theo ngày / tháng / năm.
+
+Báo cáo doanh thu.
+
+Báo cáo hiệu suất nhân viên.
+
+10. Trang Cài Đặt Hệ Thống
+Chức năng:
+
+Cấu hình email gửi kết quả.
+
+Cài đặt phí giao hàng, phí dịch vụ.
+
+Cấu hình API với các đối tác.
