@@ -70,3 +70,16 @@ Các trang cần có:
 📬 Phản hồi / Yêu cầu hỗ trợ
 
 👤 Trang cá nhân (cập nhật thông tin)
+
+| Trang                      | Admin | Manager | Staff | Customer                 |
+| -------------------------- | ----- | ------- | ----- | ------------------------ |
+| Dashboard                  | ✅     | ✅       | ✅     | ✅                        |
+| Quản lý người dùng         | ✅     | ❌       | ❌     | ❌                        |
+| Quản lý đơn xét nghiệm     | ✅     | ✅       | ✅     | ✅ (chỉ đơn của mình)     |
+| Quản lý dịch vụ ADN        | ✅     | ✅       | ❌     | ❌                        |
+| Phân quyền hệ thống        | ✅     | ❌       | ❌     | ❌                        |
+| Quản lý nhân viên          | ✅     | ✅       | ❌     | ❌                        |
+| Quản lý kết quả xét nghiệm | ✅     | ✅       | ✅     | ✅ (chỉ kết quả của mình) |
+| Phản hồi & hỗ trợ          | ✅     | ✅       | ✅     | ✅                        |
+| Thống kê & báo cáo         | ✅     | ✅       | ❌     | ❌                        |
+| Cài đặt hệ thống           | ✅     | ❌       | ❌     | ❌                        |
