@@ -2,6 +2,8 @@ package com.example.Bloodline_ADN_System.controller;
 
 import com.example.Bloodline_ADN_System.dto.CreateUserRequest;
 import com.example.Bloodline_ADN_System.dto.accountResponse;
+import com.example.Bloodline_ADN_System.dto.updateUserRequest;
+import com.example.Bloodline_ADN_System.repository.UserRepository;
 import com.example.Bloodline_ADN_System.service.impl.AdminServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,9 +15,11 @@ import java.util.List;
 public class AdminController {
 
     private final AdminServiceImpl adminService;
+    private final UserRepository userRepository;
 
-    public AdminController(AdminServiceImpl adminService) {
+    public AdminController(AdminServiceImpl adminService, UserRepository userRepository) {
         this.adminService = adminService;
+        this.userRepository = userRepository;
     }
 
     @PostMapping("/create")
@@ -31,9 +35,10 @@ public class AdminController {
         return ResponseEntity.ok(accountResponse);
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<?> updateUser(@RequestBody accountResponse accountResponse) {
-        adminService.updateUser(accountResponse);
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable Long id,@RequestBody updateUserRequest request) {
+        adminService.updateUser(id, request);
+        System.out.println("Hello");
         return ResponseEntity.ok("Cập nhật trạng thái thành công");
     }
     // Controller
@@ -42,5 +47,12 @@ public class AdminController {
         adminService.deleteUser(id);
         return ResponseEntity.ok("Xóa người dùng thành công");
     }
+    @GetMapping("/check-email")
+    public ResponseEntity<Boolean> checkEmailExists(@RequestParam String email) {
+        boolean exists = userRepository.existsByEmail(email);
+        System.out.println("có mail rồi");
+        return ResponseEntity.ok(exists);
+    }
+
 
 }

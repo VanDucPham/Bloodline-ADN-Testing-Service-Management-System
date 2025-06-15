@@ -1,0 +1,137 @@
+📌 Danh Sách Trang Theo Từng Vai Trò
+🔒 1. Admin (Quản trị hệ thống)
+Quyền: Full quyền quản lý toàn hệ thống.
+
+Các trang cần có:
+📊 Dashboard tổng quan
+
+👥 Quản lý người dùng (CRUD + Phân quyền)
+
+📝 Quản lý đơn xét nghiệm (CRUD + Phân công)
+
+🧬 Quản lý dịch vụ xét nghiệm ADN (CRUD)
+
+🔐 Phân quyền vai trò hệ thống
+
+🧑‍🔬 Quản lý nhân viên xét nghiệm (CRUD + Giao đơn)
+
+📁 Quản lý kết quả xét nghiệm (Kiểm duyệt + Xuất PDF)
+
+📬 Quản lý phản hồi & hỗ trợ khách hàng
+
+📈 Thống kê và báo cáo hệ thống
+
+⚙️ Cài đặt hệ thống
+
+🧑‍💼 2. Manager (Quản lý)
+Quyền: Quản lý vận hành, không quản lý người dùng hệ thống.
+
+Các trang cần có:
+📊 Dashboard tổng quan
+
+📝 Quản lý đơn xét nghiệm (CRUD + Giao việc cho nhân viên)
+
+🧬 Quản lý dịch vụ xét nghiệm ADN (CRUD)
+
+🧑‍🔬 Quản lý nhân viên xét nghiệm (CRUD + Theo dõi tiến độ)
+
+📁 Quản lý kết quả xét nghiệm (Kiểm tra kết quả)
+
+📬 Quản lý phản hồi & hỗ trợ khách hàng
+
+📈 Thống kê và báo cáo hệ thống
+
+🧑‍🔬 3. Staff (Nhân viên xét nghiệm)
+Quyền: Xử lý đơn hàng, cập nhật tiến độ.
+
+Các trang cần có:
+📊 Dashboard cá nhân
+
+📝 Danh sách đơn được phân công
+
+📁 Cập nhật tiến độ xét nghiệm
+
+📥 Nộp kết quả xét nghiệm
+
+🧑‍💻 Hỗ trợ khách hàng (nếu có phân công)
+
+👤 4. Customer (Khách hàng)
+Quyền: Đăng ký đơn, xem kết quả cá nhân.
+
+Các trang cần có:
+🏠 Trang chủ (Danh sách dịch vụ ADN)
+
+➕ Đăng ký xét nghiệm ADN
+
+📝 Quản lý đơn xét nghiệm của tôi (Theo dõi tiến độ)
+
+📁 Xem kết quả xét nghiệm của tôi (PDF)
+
+📬 Phản hồi / Yêu cầu hỗ trợ
+
+👤 Trang cá nhân (cập nhật thông tin)
+
+| Trang                      | Admin | Manager | Staff | Customer                 |
+| -------------------------- | ----- | ------- | ----- | ------------------------ |
+| Dashboard                  | ✅     | ✅       | ✅     | ✅                        |
+| Quản lý người dùng         | ✅     | ❌       | ❌     | ❌                        |
+| Quản lý đơn xét nghiệm     | ✅     | ✅       | ✅     | ✅ (chỉ đơn của mình)     |
+| Quản lý dịch vụ ADN        | ✅     | ✅       | ❌     | ❌                        |
+| Phân quyền hệ thống        | ✅     | ❌       | ❌     | ❌                        |
+| Quản lý nhân viên          | ✅     | ✅       | ❌     | ❌                        |
+| Quản lý kết quả xét nghiệm | ✅     | ✅       | ✅     | ✅ (chỉ kết quả của mình) |
+| Phản hồi & hỗ trợ          | ✅     | ✅       | ✅     | ✅                        |
+| Thống kê & báo cáo         | ✅     | ✅       | ❌     | ❌                        |
+| Cài đặt hệ thống           | ✅     | ❌       | ❌     | ❌                        |
+
+
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
+
+export default function Sidebar() {
+    const { user } = useAuth();
+
+    if (!user) return null;
+
+    const menu = {
+        ADMIN: [
+            { path: '/admin/dashboard', label: '🏠 Dashboard' },
+            { path: '/admin/users', label: '👥 Quản lý người dùng' },
+            { path: '/admin/orders', label: '📝 Quản lý đơn xét nghiệm' },
+            { path: '/admin/services', label: '🧬 Quản lý dịch vụ ADN' },
+            { path: '/admin/statistics', label: '📊 Thống kê' },
+            { path: '/admin/settings', label: '⚙️ Cài đặt' },
+        ],
+        MANAGER: [
+            { path: '/manager/dashboard', label: '🏠 Dashboard' },
+            { path: '/manager/orders', label: '📝 Quản lý đơn xét nghiệm' },
+            { path: '/manager/services', label: '🧬 Quản lý dịch vụ ADN' },
+            { path: '/manager/statistics', label: '📊 Thống kê' },
+        ],
+        STAFF: [
+            { path: '/staff/dashboard', label: '🏠 Dashboard' },
+            { path: '/staff/orders', label: '📝 Đơn được giao' },
+        ],
+        CUSTOMER: [
+            { path: '/customer/dashboard', label: '🏠 Dashboard' },
+            { path: '/customer/my-orders', label: '📝 Đơn xét nghiệm của tôi' },
+            { path: '/customer/results', label: '📁 Kết quả xét nghiệm' },
+        ],
+    };
+
+    return (
+        <aside className="sidebar">
+            <h2>{user.role}</h2>
+            <ul>
+                {menu[user.role]?.map((item, index) => (
+                    <li key={index}>
+                        <Link to={item.path}>{item.label}</Link>
+                    </li>
+                ))}
+                <li><Link to="/login">🚪 Đăng xuất</Link></li>
+            </ul>
+        </aside>
+    );
+}
+

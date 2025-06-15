@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Data
 
 public class CreateUserRequest {
-    private String fullName ;
+    private String name ;
     private String email ;
     private String password ;
     private String role ;

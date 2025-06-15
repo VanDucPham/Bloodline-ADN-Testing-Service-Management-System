@@ -3,6 +3,7 @@ package com.example.Bloodline_ADN_System.service.impl;
 import com.example.Bloodline_ADN_System.Entity.User;
 import com.example.Bloodline_ADN_System.dto.CreateUserRequest;
 import com.example.Bloodline_ADN_System.dto.accountResponse;
+import com.example.Bloodline_ADN_System.dto.updateUserRequest;
 import com.example.Bloodline_ADN_System.repository.UserRepository;
 import com.example.Bloodline_ADN_System.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +11,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class AdminServiceImpl implements AdminService {
@@ -29,16 +29,19 @@ public class AdminServiceImpl implements AdminService {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new RuntimeException("Email đã tồn tại");
         }
-
+        System.out.println(request.getName());
         User user = new User();
         user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setName(request.getFullName());
+        user.setPassword(passwordEncoder.encode("123456"));
+        user.setName(request.getName());
 
         user.setRole(User.UserRole.valueOf(request.getRole()));
         user.setStatusFromString("ACTIVE");
 
         userRepository.save(user);
+        System.out.println("thêm thành cônh");
+        System.out.println(user.getName());
+
     }
 
     @Override
@@ -49,16 +52,20 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public void updateUser(accountResponse response) {
-        Optional<User> user = userRepository.findByEmail(response.getEmail());
-        if (user.isPresent()) {
-            user.get().setName(response.getName());
-            user.get().setEmail(response.getEmail());
-            user.get().setRoleFromString(response.getRole());
-            user.get().setStatusFromString(response.getStatus());
-            userRepository.save(user.get());
-        }
+    public void updateUser(Long id, updateUserRequest request) {
+        User user = userRepository.findById(id).orElseThrow();
+        user.setName(request.getName());
+        user.setEmail(request.getEmail());
+        user.setRoleFromString(request.getRole());
+        user.setStatusFromString(request.getStatus());
+        userRepository.save(user);
     }
+
+
+
+
+
+
 
     @Override
     public void deleteUser(Long id) {
