@@ -23,6 +23,7 @@ public class ParticipantServiceImpl implements ParticipantService {
         this.participantRepository = participantRepository;
     }
 
+    //Tạo danh sách người tham gia xét nghiệm
     @Override
     public List<ParticipantDTO> addParticipant(List<ParticipantDTO> participantDTOList){
         return participantDTOList.stream().map(dto ->{

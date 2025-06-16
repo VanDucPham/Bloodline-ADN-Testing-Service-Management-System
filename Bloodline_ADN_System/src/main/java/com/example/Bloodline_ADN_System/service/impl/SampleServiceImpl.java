@@ -23,6 +23,7 @@ public class SampleServiceImpl implements SampleService {
         this.participantRepository = participantRepository;
     }
 
+    //Khách hàng điền sample với dịch vụ tự lấy mẫu tại nhà
     @Override
     public List<SampleDTO> createSamplesByCustomer(List<SampleCustomerDTO> dtoList) {
         return dtoList.stream().map(dto -> {
@@ -41,6 +42,7 @@ public class SampleServiceImpl implements SampleService {
         }).collect(Collectors.toList());
     }
 
+    //Nhân viên điền sample đối với dịch vụ lấy mẫu tại cơ sở
     public List<SampleDTO> createSampleByStaff(List<SampleStaffDTO> dtoList){
         return dtoList.stream().map(dto ->{
             Participant participant = participantRepository.findById(dto.getParticipantId())
@@ -59,6 +61,7 @@ public class SampleServiceImpl implements SampleService {
         }).collect(Collectors.toList());
     }
 
+    //Nhân viên điền thêm thông tin cho sample sau khi nhận được mẫu dành cho dịch vụ tự lấy mẫu
     public SampleDTO updateSampleInfo(SampleUpdateDTO dto) {
         Sample sample = sampleRepository.findById(dto.getSampleId())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy mẫu"));

@@ -28,11 +28,11 @@ public class FeedbackServiceImpl implements FeedbackService {
     @Override
     public FeedbackResponse createFeedback(FeedbackDTO feedbackDTO) {
         User user = userRepository.findById(feedbackDTO.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
         com.example.Bloodline_ADN_System.Entity.Service service = serviceRepository.findById(feedbackDTO.getServiceId())
-                .orElseThrow(() -> new RuntimeException("Service not found"));
+                .orElseThrow(() -> new RuntimeException("Dịch vụ không tồn tại"));
         Appointment appointment = appointmentRepository.findById(feedbackDTO.getAppointmentId())
-                .orElseThrow(() -> new RuntimeException("Appointment not found"));
+                .orElseThrow(() -> new RuntimeException("Lịch hẹn không tồn tại"));
 
         Feedback feedback = new Feedback();
         feedback.setUser(user);
@@ -48,7 +48,7 @@ public class FeedbackServiceImpl implements FeedbackService {
     //Admin xem được feedback thông qua Appointment ID
     public FeedbackResponse getFeedbackByAppointmentId(Long appointmentId) {
         Feedback feedback = feedbackRepository.findByAppointment_AppointmentId(appointmentId)
-                .orElseThrow(() -> new RuntimeException("Feedback not found with appointmentId " + appointmentId));
+                .orElseThrow(() -> new RuntimeException("Feedback không tồn tại " + appointmentId));
 
         return toDTO(feedback);
     }
