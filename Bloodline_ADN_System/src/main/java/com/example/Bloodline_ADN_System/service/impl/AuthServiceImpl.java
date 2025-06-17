@@ -29,8 +29,8 @@ public class AuthServiceImpl implements AuthService {
         }
 
         String token = jwtService.generateToken(user);
-
-        return new LoginResponse(token, "Đăng nhập thành công");
+        System.out.println();
+        return new LoginResponse(token, "Đăng nhập thành công", user.getName(),  user.getRoleString(), user.getEmail());
     }
 
     @Override
@@ -45,6 +45,7 @@ public class AuthServiceImpl implements AuthService {
         user.setName(registerRequest.getFullName());
         // Convert role string to enum
         user.setRoleFromString("CUSTOMER");
+        user.setStatusFromString("ACTIVE");
         userRepo.save(user);
         return "Thành Công";
     }

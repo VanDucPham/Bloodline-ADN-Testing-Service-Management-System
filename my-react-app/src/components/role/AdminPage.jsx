@@ -1,9 +1,14 @@
 import React from 'react';
 import './AdminPage.css';
 import { useNavigate } from 'react-router-dom';
+import apiService from "../../service/api";
+
+
 
 function AdminPage() {
   const navigate = useNavigate();
+
+
   return (
     <div className="admin-page">
       <h2>👨‍💻 Quản Trị Hệ Thống</h2>
