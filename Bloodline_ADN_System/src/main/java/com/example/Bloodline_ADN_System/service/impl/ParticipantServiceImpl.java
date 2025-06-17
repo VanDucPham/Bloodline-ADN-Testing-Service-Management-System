@@ -25,26 +25,33 @@ public class ParticipantServiceImpl implements ParticipantService {
 
     //Tạo danh sách người tham gia xét nghiệm
     @Override
-    public List<ParticipantDTO> addParticipant(List<ParticipantDTO> participantDTOList){
-        return participantDTOList.stream().map(dto ->{
-            Appointment appointment = appointmentRepository.findById(dto.getAppointmentId())
-                    .orElseThrow(() -> new RuntimeException("Không tìm thấy appointment"));
+    public List<ParticipantDTO> addParticipant(List<ParticipantDTO> participantDTOList) {
+        return participantDTOList.stream()
+                .map(dto -> {
+                    Appointment appointment = appointmentRepository.findById(dto.getAppointmentId())
+                            .orElseThrow(() -> new RuntimeException("Không tìm thấy appointment"));
+                    try {
+                        Participant participant = new Participant();
+                        participant.setName(dto.getName());
+                        participant.setRelationship(dto.getRelationship());
+                        participant.setGender(dto.getGender());
+                        participant.setCitizenId(dto.getCitizenId());
+                        participant.setAddress(dto.getAddress());
+                        participant.setBirthDate(dto.getBirthDate());
+                        participant.setAppointment(appointment);
 
-            Participant participant = new Participant();
-            participant.setName(dto.getName());
-            participant.setRelationship(dto.getRelationship());
-            participant.setGender(dto.getGender());
-            participant.setCitizenId(dto.getCitizenId());
-            participant.setAddress(dto.getAddress());
-            participant.setBirthDate(dto.getBirthDate());
-            participant.setAppointment(appointment);
-
-            Participant saved = participantRepository.save(participant);
-
-            return toDTO(saved);
-        }).collect(Collectors.toList());
-
+                        Participant saved = participantRepository.save(participant);
+                        return toDTO(saved);
+                    } catch (RuntimeException e) {
+                        e.printStackTrace();
+                        return null; // or handle as needed
+                    }
+                })
+                .filter(dto -> dto != null) // remove failed items
+                .collect(Collectors.toList());
     }
+
+
 
     private ParticipantDTO toDTO(Participant participant) {
         ParticipantDTO dto = new ParticipantDTO();

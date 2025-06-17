@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/sample")
+@RequestMapping("/api/auth/sample")
 public class SampleController {
     private final SampleService sampleService;
     public SampleController(SampleServiceImpl sampleService) {
@@ -20,6 +20,7 @@ public class SampleController {
     }
     @PostMapping("/customer")
     public ResponseEntity<List<SampleDTO>> createSamplesByUser(@RequestBody List<SampleCustomerDTO> dtoList) {
+        System.out.println("hello");
         return ResponseEntity.ok(sampleService.createSamplesByCustomer(dtoList));
     }
 
