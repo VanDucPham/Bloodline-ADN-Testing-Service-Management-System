@@ -1,0 +1,120 @@
+
+
+.pricelist-section { 
+  height: 50vh;
+  min-width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  background-image:  url('/images/doctor.jpg');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+  width: 100vw;
+  max-width: 1700px;
+  margin: 0px auto;    
+  border-radius: 12px;
+  box-shadow: 0 2px 16px #0001;
+  padding: 48px 40px;
+}
+
+.pricelist-header {
+    margin-right: 1000px;
+}
+
+.pricelist-info h3 {
+  text-align: center;
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+
+.pricelist-info p {
+  text-align: center;
+  margin-bottom: 18px;
+  line-height: 1.7;
+ 
+}
+
+.pricelist-container h2 {
+  text-align: center;
+  font-size: 32px;
+  font-weight: 700;
+  color: #000000;
+  margin-bottom: 24px;
+  margin-top: 24px;
+}
+
+.pricelist-card-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  justify-content: center;
+  margin: 32px 0;
+}
+
+.pricelist-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px #0001;
+  padding: 28px 24px;
+  min-width: 260px;
+  max-width: 320px;
+  flex: 1 1 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.pricelist-card-name {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: #2d7a7a;
+  margin-bottom: 10px;
+}
+
+.pricelist-card-desc {
+  text-align: center;
+  font-size: 15px;
+  color: #444;
+  margin-bottom: 18px;
+}
+
+.pricelist-card-price {
+  text-align: center;
+  width: 100%;
+  display: block;
+  font-size: 17px;
+  font-weight: 700;
+  color: #e67e22;
+  margin-top: auto;
+  
+}
+
+.pricelist-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 16px;
+}
+.pricelist-register-btn {
+  display: block;
+  margin-top: 18px;
+  width: 60%;
+  padding: 10px 0;
+  background: #2d7a7a;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  text-align: center;
+   margin: 18px auto 0 auto;
+  }
+
+.pricelist-register-btn:hover {
+  background: #1f5a5a;
+}
