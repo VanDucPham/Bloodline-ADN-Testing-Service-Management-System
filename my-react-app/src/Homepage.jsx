@@ -2,14 +2,9 @@ import './Homepage.css';
 import Header from './components/Header';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faCoffee, faHome, faBars, faCheck } from '@fortawesome/free-solid-svg-icons';
-<<<<<<< Updated upstream
-
-import { useNavigate } from 'react-router-dom';
-=======
 import Register from './components/register/Register';
 import { useNavigate } from 'react-router-dom';
 import Footer from './components/Footer';
->>>>>>> Stashed changes
 
 const Homepage = () => {
 const navigate = useNavigate();
@@ -66,49 +61,24 @@ const navigate = useNavigate();
 
         </div>
 
-<<<<<<< Updated upstream
-        <div className="booking-section">
-          <div className="booking-form-container">
-=======
         <div className="register-section">
           <div className="register-form-container">
->>>>>>> Stashed changes
             <h2>Đăng ký ngay để nhận <strong>ưu đãi 25% giá xét nghiệm</strong></h2>
             <p>Ưu đãi chỉ áp dụng cho 100 khách hàng đầu tiên trong tháng</p>
             
               <button className="login-btn" onClick={() => navigate('/register')} >
                 ĐĂNG KÝ
               </button>
-            
+              
           </div>
         </div>
 
-<<<<<<< Updated upstream
-        <div className="footer">
-          <div className="footer-content">
-            <div className="footer-left">
-              <h2>VIETCARE</h2>
-              <h2>DỊCH VỤ</h2>
-
-              <p>Địa chỉ: 123 Đường ABC, Quận 1, TP. Hồ Chí Minh</p>
-              <p>Email: vietcarelab@gmail.com</p>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  )
-}
-
-=======
       </div>
        <Footer />
     </div>
   )
 }
 
->>>>>>> Stashed changes
 
 
 export default Homepage;

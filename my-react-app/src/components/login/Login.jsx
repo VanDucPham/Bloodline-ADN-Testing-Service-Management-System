@@ -66,7 +66,6 @@ function Login() {
     };
 
     return (
-<<<<<<< Updated upstream
         <div className="login-bg">
             <form className="login-form" onSubmit={handleSubmit}>
                 <h3>Login Here</h3>
@@ -98,20 +97,6 @@ function Login() {
                     Chưa có tài khoản? <Link to="/register">Đăng ký ngay</Link>
                 </p>
             </form>
-=======
-         <div className="custom-login-bg">
-        <form className="custom-login-form">
-            <h3>Login Here</h3>
-            <label htmlFor="username">Tên đăng nhập</label>
-            <input type="text" placeholder="Email or Phone" id="username" />
-            <label htmlFor="password">Mật khẩu</label>
-            <input type="password" placeholder="Mật khẩu" id="password" />
-            <button type="button-login">Đăng nhập</button>
-            <p className="custom-register-link">
-                Chưa có tài khoản? <Link to="/register">Đăng ký ngay</Link>
-            </p>
-        </form>
->>>>>>> Stashed changes
         </div>
     );
 }

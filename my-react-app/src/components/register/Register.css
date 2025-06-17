@@ -22,11 +22,7 @@
 }
 
 .register-form {
-<<<<<<< Updated upstream
     height: 750px;
-=======
-    height: 900px;
->>>>>>> Stashed changes
     width: 450px;
     background-color: rgba(255, 255, 255,0.13);
     position: absolute;

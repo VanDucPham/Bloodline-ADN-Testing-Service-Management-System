@@ -15,11 +15,7 @@
     "@fortawesome/free-regular-svg-icons": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
-<<<<<<< Updated upstream
-    "axios": "^1.9.0",
-=======
     "axios": "^1.10.0",
->>>>>>> Stashed changes
     "bootstrap": "^5.3.6",
     "react": "^19.1.0",
     "react-bootstrap": "^2.10.10",
