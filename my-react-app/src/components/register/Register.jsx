@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import './Register.css';
-import { apiService, useApi } from '../../service/BaseApiService';
+import apiService from "../../service/api";
 
 
 
@@ -19,7 +19,7 @@ function Register() {
         }
 
         try {
-            await apiService.post('/auth/register', {
+            await apiService.auth.register( {
                 fullName: formData.fullname,
                 email: formData.email,
                 password: formData.password,
