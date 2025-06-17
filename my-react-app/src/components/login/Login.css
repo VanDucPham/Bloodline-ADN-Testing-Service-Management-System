@@ -8,7 +8,7 @@
     box-sizing: border-box;
     font-family: inherit;
 }
-
+.body
 .custom-login-bg {
      font-family: 'Quicksand', sans-serif;
     background-image: url('/images/DNA-login.jpeg');
