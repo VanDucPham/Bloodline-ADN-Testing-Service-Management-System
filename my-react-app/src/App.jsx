@@ -13,9 +13,17 @@ import Payment from './components/payment/Payment';
 import Pricelist from './components/pricelist/Pricelist';
 import UserDashboard from './components/dashboards/UserDashboard';
 
-
 import AboutUs from './page/about';
 import DNATestingPage from './page/dnaTesting';
+import ComHeaderStaff from './components/Layout/ComHeaderStaff';
+import ComHeaderManager from './components/Layout/ComHeaderManager';
+import ComHeaderAdmin from './components/Layout/ComHeaderAdmin';
+import Cases from './page/staff/cases/Cases';
+import AddCase from './page/staff/cases/AddCase';
+import StaffManagement from './page/manager/staff/StaffManagement';
+import RevenueManagement from './page/manager/revenue/RevenueManagement';
+import SettingsManagement from './page/manager/settings/SettingsManagement';
+import FeedbackManagement from './page/admin/feedbacks/FeedbackManagement';
 
 function App() {
   return (
@@ -33,6 +41,18 @@ function App() {
         <Route path="/about" element={<AboutUs />} />
         <Route path="/dna-testing" element={<DNATestingPage />} />
         <Route path="/admin-dashboard" element={<AdminDashboard activeSection="users" />} />
+        
+        {/* Staff Routes */}
+        <Route path="/staff/cases" element={<ComHeaderStaff><Cases /></ComHeaderStaff>} />
+        <Route path="/staff/add-case" element={<ComHeaderStaff><AddCase /></ComHeaderStaff>} />
+        
+        {/* Manager Routes */}
+        <Route path="/manager/staff" element={<ComHeaderManager><StaffManagement /></ComHeaderManager>} />
+        <Route path="/manager/revenue" element={<ComHeaderManager><RevenueManagement /></ComHeaderManager>} />
+        <Route path="/manager/settings" element={<ComHeaderManager><SettingsManagement /></ComHeaderManager>} />
+        
+        {/* Admin Routes */}
+        <Route path="/admin/feedbacks" element={<ComHeaderAdmin><FeedbackManagement /></ComHeaderAdmin>} />
       </Routes>
     </BrowserRouter>
   );

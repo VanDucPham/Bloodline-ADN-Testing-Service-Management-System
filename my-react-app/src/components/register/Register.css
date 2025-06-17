@@ -78,8 +78,8 @@ label {
 ::placeholder {     
     color: #e5e5e5;
 }
-
-button {
+/* button không đuọc css kiểu như này vui lòng đặt class để css */
+/* button {
     margin-top: 40px;
     margin-bottom: 15px;
     width: 100%;    
@@ -91,9 +91,9 @@ button {
     font-size: 18px;
     font-weight: 600;
     cursor: pointer;
-} 
+}  */
  
-button:hover {
+/* button:hover {
     background: #037997;
     transition: all 0.50s ease;
 }
@@ -101,7 +101,7 @@ button:hover {
 button:focus {
     box-shadow: 0px 0px 0px 2px rgba(103, 110, 103, 0.71);
     background: #037997;
-}
+} */
 
 .register-link {
     display: block;
