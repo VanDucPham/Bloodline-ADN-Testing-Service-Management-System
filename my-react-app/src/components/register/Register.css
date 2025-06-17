@@ -22,7 +22,11 @@
 }
 
 .register-form {
+<<<<<<< Updated upstream
     height: 750px;
+=======
+    height: 900px;
+>>>>>>> Stashed changes
     width: 450px;
     background-color: rgba(255, 255, 255,0.13);
     position: absolute;
@@ -58,28 +62,23 @@ label {
     font-weight: 800;
 }
 
-input {
-    margin-top: 10px;
-    margin-bottom: 15px;
-    padding: 11px 15px;
-    font-size: 14px;
-    font-weight: 300;
-    background: rgba(0, 0, 0, 0.22);
-    border: 2px solid #38363654;
-    border-radius: 5px;
-    width: 100%;
+.custom-register-form input,
+.custom-register-form select {
+  /* Style riêng cho input của register */
+  background: #fff;
+  color: #222;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 8px 10px;
+  margin-bottom: 12px;
+  width: 100%;
 }
 
-input:hover {
-    background: #434343;
-    transition: all 0.50s ease;
+.custom-register-form input:focus {
+  background: #f8fafc;
+  color: #222;
+  border-color: #2d7a7a;
 }
-
-input:focus {
-    box-shadow: 0px 2px 2px #0000002b, 0px 5px 10px #00000036;
-    background: #434343;        
-}
-
 ::placeholder {     
     color: #e5e5e5;
 }

@@ -1,6 +1,7 @@
 import React from 'react';
 import './AdminPage.css';
 import { useNavigate } from 'react-router-dom';
+<<<<<<< Updated upstream
 import apiService from "../../service/api";
 
 
@@ -9,6 +10,11 @@ function AdminPage() {
   const navigate = useNavigate();
 
 
+=======
+
+function AdminPage() {
+  const navigate = useNavigate();
+>>>>>>> Stashed changes
   return (
     <div className="admin-page">
       <h2>👨‍💻 Quản Trị Hệ Thống</h2>

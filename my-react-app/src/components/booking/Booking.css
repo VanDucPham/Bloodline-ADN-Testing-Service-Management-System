@@ -1,0 +1,80 @@
+.bookings-form {
+  background-color: #f0e9e9;
+}
+
+.bookings-container h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 20px;
+}
+
+.bookings-success {
+  background: #dff0d8;
+  color: #3c763d;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 14px;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.bookings-form .form-group {
+  margin-bottom: 14px;
+}
+
+.bookings-form label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 14px;
+  color: #333;
+}
+
+.bookings-form input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.bookings-form button {
+  width: 100%;
+  padding: 9px;
+  background: #555;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.bookings-form button:hover {
+  background: #444;
+}
+    
+.bookings-header {
+  display: flex;
+  justify-content: center; /* căn giữa tiêu đề */
+  align-items: center;
+  margin-bottom: 2px;
+  padding: 0 20px;
+}
+
+.bookings-header h2 {
+  margin-top: 40px;
+  font-size: 24px;
+  color: #333;
+}
+
+.bookings-back-link {
+  text-align: left;
+  margin-left: 400px;
+  margin-bottom: 20px;
+}
+
+.bookings-back-link a {
+  color: #0a163d;
+  text-decoration: none;
+  font-size: 16px;
+}
