@@ -14,6 +14,8 @@ import Pricelist from './components/pricelist/Pricelist';
 import UserDashboard from './components/dashboards/UserDashboard';
 
 
+import AboutUs from './page/about';
+import DNATestingPage from './page/dnaTesting';
 
 function App() {
   return (
@@ -28,8 +30,9 @@ function App() {
         <Route path="/payment" element={<Payment />} />
         <Route path="/pricelist" element={<Pricelist />} />
         <Route path="/user" element={<UserDashboard />} />
-        
-      
+        <Route path="/about" element={<AboutUs />} />
+        <Route path="/dna-testing" element={<DNATestingPage />} />
+        <Route path="/admin-dashboard" element={<AdminDashboard activeSection="users" />} />
       </Routes>
     </BrowserRouter>
   );
