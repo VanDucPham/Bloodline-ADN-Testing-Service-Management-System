@@ -10,8 +10,7 @@ function StaffManagement() {
 
   return (
     <div>
-      <div className="flex justify-between items-center pb-4">
-        <h1 className="text-2xl font-bold">Quản lý nhân viên</h1>
+      <div className="flex justify-between items-center pb-4"> 
         <div>
           <ComButton onClick={modal.handleOpen}>Thêm nhân viên</ComButton>
         </div>

@@ -16,6 +16,17 @@ import Booking from './components/booking/Booking';
 import Payment from './components/payment/Payment';
 import Pricelist from './components/pricelist/Pricelist';
 import UserDashboard from './components/dashboards/UserDashboard';
+import AboutUs from './page/about';
+import DNATestingPage from './page/dnaTesting';
+import ComHeaderStaff from './components/Layout/ComHeaderStaff';
+import ComHeaderManager from './components/Layout/ComHeaderManager';
+import ComHeaderAdmin from './components/Layout/ComHeaderAdmin';
+import Cases from './page/staff/cases/Cases';
+import AddCase from './page/staff/cases/AddCase';
+import StaffManagement from './page/manager/staff/StaffManagement';
+import RevenueManagement from './page/manager/revenue/RevenueManagement';
+import SettingsManagement from './page/manager/settings/SettingsManagement';
+import FeedbackManagement from './page/admin/feedbacks/FeedbackManagement';
 
 
 
