@@ -5,6 +5,7 @@ import com.example.Bloodline_ADN_System.Entity.Service;
 import com.example.Bloodline_ADN_System.Entity.User;
 import com.example.Bloodline_ADN_System.dto.AppointmentDTO;
 import com.example.Bloodline_ADN_System.dto.AppointmentResponse;
+import com.example.Bloodline_ADN_System.dto.AppointmentSummaryDTO;
 import com.example.Bloodline_ADN_System.repository.AppointmentRepository;
 import com.example.Bloodline_ADN_System.repository.ServiceRepository;
 import com.example.Bloodline_ADN_System.repository.UserRepository;
@@ -86,12 +87,29 @@ public class AppointmentServiceImpl implements com.example.Bloodline_ADN_System.
                 .toList();
     }
 
-    //Customer xem tất cả các lịch hẹn của họ
-    public List<AppointmentDTO> getAppointmentByUserId(Long userId){
+    //Customer xem tổng quan tất cả các lịch hẹn của họ
+    public List<AppointmentSummaryDTO> getAppointmentByUserId(Long userId){
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
-        return appointmentRepository.findByUserUserId(userId).stream().map(this::toDTO).toList();
+        return appointmentRepository.findByUserUserId(userId).stream()
+                .map(appointment -> {
+                    AppointmentSummaryDTO dto = new AppointmentSummaryDTO();
+                    dto.setAppointmentId(appointment.getAppointmentId());
+                    dto.setAppointmentDate(appointment.getAppointmentDate());
+                    dto.setAppointmentTime(appointment.getAppointmentTime());
+                    dto.setStatus(appointment.getStatus());
+                    dto.setServiceId(appointment.getService().getServiceId());
+                    dto.setAppointmentType(appointment.getType());
+                    return dto;
+                }).toList();
     }
+    //Customer xem chi tiết 1 lịch hẹn
+    public AppointmentDTO getAppointmentDetail(Long appointmentId) {
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new RuntimeException("Lịch hẹn không tồn tại"));
+        return toDTO(appointment);
+    }
+
 
     //Customer hủy lịch hẹn
     public void cancelAppointment(Long id) {
