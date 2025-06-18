@@ -61,8 +61,8 @@ const navigate = useNavigate();
 
         </div>
 
-        <div className="register-section">
-          <div className="register-form-container">
+        <div className="booking-section">
+          <div className="booking-form-container">
             <h2>Đăng ký ngay để nhận <strong>ưu đãi 25% giá xét nghiệm</strong></h2>
             <p>Ưu đãi chỉ áp dụng cho 100 khách hàng đầu tiên trong tháng</p>
             

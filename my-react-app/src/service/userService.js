@@ -12,6 +12,13 @@ class UserService extends BaseApiService {
     async getUserById(id) { return this.get(`/user/${id}`); }
     async deleteUser(id) { return this.delete(`/user/${id}`); }
     async changePassword(passwordData) { return this.post('/user/change-password', passwordData); }
+    async create_app(appointment){
+        return this.post('/create_appointment', appointment) ;
+    }
+    async add_paticipant(participant){
+        return this.post('/add_patici')
+    }
 }
+    
 
 export default UserService

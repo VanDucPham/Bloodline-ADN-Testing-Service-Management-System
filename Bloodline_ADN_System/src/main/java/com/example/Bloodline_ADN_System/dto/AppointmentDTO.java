@@ -8,11 +8,13 @@ import java.time.LocalTime;
 
 @Data
 public class AppointmentDTO {
+    private Long appointmentId;
     private Long userId;
     private Long serviceId;
     private Appointment.AppointmentType appointmentType;   // ADMINISTRATIVE hoặc CIVIL
     private LocalDate appointmentDate;
     private LocalTime appointmentTime;
+    private Appointment.AppointmentStatus appointmentStatus;
     private Appointment.DeliveryMethod deliveryMethod;    // HOME_COLLECTION hoặc SELF_DROP_OFF
     private String appointmentNote;
 }

@@ -30,8 +30,10 @@ public class User {
         private String gender;
         private String phone;
         private String address;
+
         @Enumerated(EnumType.STRING)
-        private Status Status ;
+        private Status status;
+
         @Column(name = "birth_date")
         private LocalDate birthDate;
 
@@ -50,20 +52,24 @@ public class User {
         public enum UserRole {
                 ADMIN, CUSTOMER, STAFF, MANAGER
         }
+
         public void setRoleFromString(String roleString) {
                 this.role = UserRole.valueOf(roleString.toUpperCase());
         }
+
         public String getRoleString() {
-                return this.role.toString();
+                return this.role != null ? this.role.toString() : null;
         }
 
         public enum Status {
-                 ACTIVE, INACTIVE
+                ACTIVE, INACTIVE
         }
+
         public void setStatusFromString(String status) {
-                this.Status = Status.valueOf(status.toUpperCase());
+                this.status = Status.valueOf(status.toUpperCase());
         }
+
         public String getStatusString() {
-                return this.Status.toString();
+                return this.status != null ? this.status.toString() : null;
         }
 }

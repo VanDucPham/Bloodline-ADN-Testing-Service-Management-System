@@ -1,80 +1,79 @@
-.bookings-form {
-  background-color: #f0e9e9;
-}
+/* Login.css */
 
-.bookings-container h2 {
-  text-align: center;
-  color: #333;
-  margin-bottom: 20px;
-  font-size: 20px;
-}
-
-.bookings-success {
-  background: #dff0d8;
-  color: #3c763d;
-  padding: 10px;
-  border-radius: 4px;
-  font-size: 14px;
-  text-align: center;
-  margin-bottom: 16px;
-}
-
-.bookings-form .form-group {
-  margin-bottom: 14px;
-}
-
-.bookings-form label {
-  display: block;
-  margin-bottom: 4px;
-  font-size: 14px;
-  color: #333;
-}
-
-.bookings-form input {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 14px;
-}
-
-.bookings-form button {
-  width: 100%;
-  padding: 9px;
-  background: #555;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  font-size: 15px;
-  cursor: pointer;
-}
-
-.bookings-form button:hover {
-  background: #444;
-}
-    
-.bookings-header {
+.login-bg {
+  background: linear-gradient(to right, #6a11cb, #2575fc);
+  min-height: 100vh;
   display: flex;
-  justify-content: center; /* căn giữa tiêu đề */
+  justify-content: center;
   align-items: center;
-  margin-bottom: 2px;
-  padding: 0 20px;
 }
 
-.bookings-header h2 {
-  margin-top: 40px;
-  font-size: 24px;
-  color: #333;
+.login-form {
+  background-color: white;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
 }
 
-.bookings-back-link {
-  text-align: left;
-  margin-left: 400px;
+.login-form h3 {
   margin-bottom: 20px;
+  color: #333;
+  text-align: center;
 }
 
-.bookings-back-link a {
-  color: #0a163d;
+.login-form label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #444;
+}
+
+.login-form input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.login-form button {
+  width: 100%;
+  padding: 12px;
+  background-color: #2575fc;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.login-form button:hover {
+  background-color: #1a5ed9;
+}
+
+.error {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: -10px;
+  margin-bottom: 10px;
+}
+
+.register-link {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 0.9rem;
+}
+
+.register-link a {
+  color: #2575fc;
   text-decoration: none;
-  font-size: 16px;
+  font-weight: bold;
+}
+
+.register-link a:hover {
+  text-decoration: underline;
 }
