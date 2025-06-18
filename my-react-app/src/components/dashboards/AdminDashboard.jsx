@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import './AdminDashboard.css';
 import apiService from "../../service/api";
@@ -302,6 +301,5 @@ export default function AdminDashboard() {
             )}
         </div>
     );
-
 }
 

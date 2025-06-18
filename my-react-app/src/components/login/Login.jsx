@@ -65,7 +65,6 @@ function Login() {
     };
 
     return (
-
         <div className="login-bg">
             <form className="login-form" onSubmit={handleSubmit}>
                 <h3>Login Here</h3>
@@ -97,7 +96,6 @@ function Login() {
                     Chưa có tài khoản? <Link to="/register">Đăng ký ngay</Link>
                 </p>
             </form>
-
         </div>
     );
 }
