@@ -12,6 +12,7 @@ import com.example.Bloodline_ADN_System.repository.UserRepository;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @org.springframework.stereotype.Service
 public class AppointmentServiceImpl implements com.example.Bloodline_ADN_System.service.AppointmentService {
@@ -26,54 +27,53 @@ public class AppointmentServiceImpl implements com.example.Bloodline_ADN_System.
         this.serviceRepository = serviceRepository;
     }
 
-//    //Customer tạo lịch hẹn
+    //Customer tạo lịch hẹn
+    public AppointmentResponse<AppointmentDTO> createAppointment(AppointmentDTO dto) {
 
-public AppointmentResponse<AppointmentDTO> createAppointment(AppointmentDTO dto) {
+        // Kiểm tra ngày giờ
+        LocalDate appointmentDate = dto.getAppointmentDate();
+        LocalTime appointmentTime = dto.getAppointmentTime();
+        LocalDate today = LocalDate.now();
 
-    // Kiểm tra ngày giờ
-    LocalDate appointmentDate = dto.getAppointmentDate();
-    LocalTime appointmentTime = dto.getAppointmentTime();
-    LocalDate today = LocalDate.now();
-
-    if (appointmentDate.isBefore(today)) {
-        throw new IllegalArgumentException("Không thể đặt lịch trong quá khứ.");
+        if (appointmentDate.isBefore(today)) {
+            throw new IllegalArgumentException("Không thể đặt lịch trong quá khứ.");
     }
 
-    if (!appointmentDate.isAfter(today)) {
-        throw new IllegalArgumentException("Lịch hẹn phải được đặt trước ít nhất 1 ngày.");
+        if (!appointmentDate.isAfter(today)) {
+            throw new IllegalArgumentException("Lịch hẹn phải được đặt trước ít nhất 1 ngày.");
     }
 
-    // Kiểm tra số lượng lịch hẹn trong khung giờ đã đầy chưa
-    int count = appointmentRepository.countByAppointmentDateAndAppointmentTime(appointmentDate, appointmentTime);
-    if (count >= 3) {
-        throw new IllegalArgumentException("Khung giờ đã đầy. Vui lòng chọn khung giờ khác.");
+        // Kiểm tra số lượng lịch hẹn trong khung giờ đã đầy chưa
+        int count = appointmentRepository.countByAppointmentDateAndAppointmentTime(appointmentDate, appointmentTime);
+        if (count >= 3) {
+            throw new IllegalArgumentException("Khung giờ đã đầy. Vui lòng chọn khung giờ khác.");
     }
 
     // Tìm user và service
-    User user = userRepository.findById(dto.getUserId())
+        User user = userRepository.findById(dto.getUserId())
             .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
-    Service service = serviceRepository.findById(dto.getServiceId())
+        Service service = serviceRepository.findById(dto.getServiceId())
             .orElseThrow(() -> new RuntimeException("Dịch vụ không tồn tại"));
 
-    // Ràng buộc loại dịch vụ
-    if (dto.getAppointmentType() == Appointment.AppointmentType.ADMINISTRATIVE &&
+        // Ràng buộc loại dịch vụ
+        if (dto.getAppointmentType() == Appointment.AppointmentType.ADMINISTRATIVE &&
             dto.getDeliveryMethod() == Appointment.DeliveryMethod.HOME_COLLECTION) {
-        throw new IllegalArgumentException("Hành chính chỉ được chọn dịch vụ tại cơ sở!");
+            throw new IllegalArgumentException("Hành chính chỉ được chọn dịch vụ tại cơ sở!");
     }
 
     // Tạo mới lịch hẹn
-    Appointment appointment = new Appointment();
-    appointment.setUser(user);
-    appointment.setService(service);
-    appointment.setType(dto.getAppointmentType());
-    appointment.setAppointmentDate(appointmentDate);
-    appointment.setAppointmentTime(appointmentTime);
-    appointment.setDeliverymethod(dto.getDeliveryMethod());
-    appointment.setAppointmentNote(dto.getAppointmentNote());
-    appointment.setStatus(Appointment.AppointmentStatus.SCHEDULED);
+        Appointment appointment = new Appointment();
+        appointment.setUser(user);
+        appointment.setService(service);
+        appointment.setType(dto.getAppointmentType());
+        appointment.setAppointmentDate(appointmentDate);
+        appointment.setAppointmentTime(appointmentTime);
+        appointment.setDeliverymethod(dto.getDeliveryMethod());
+        appointment.setAppointmentNote(dto.getAppointmentNote());
+        appointment.setStatus(Appointment.AppointmentStatus.SCHEDULED);
 
-    Appointment saved = appointmentRepository.save(appointment);
-    AppointmentDTO responseDto = toDTO(saved);
+        Appointment saved = appointmentRepository.save(appointment);
+        AppointmentDTO responseDto = toDTO(saved);
 
     return new AppointmentResponse<>("Đặt lịch thành công", responseDto);
 }
@@ -108,14 +108,32 @@ public AppointmentResponse<AppointmentDTO> createAppointment(AppointmentDTO dto)
         appointmentRepository.save(appointment);
     }
 
+    //Lọc appointment cho staff và manager
+    public List<AppointmentDTO> filterAppointment(Appointment.AppointmentStatus status, Appointment.AppointmentType type, LocalDate date) {
+        List<Appointment> appointment = appointmentRepository.findByFilters(status, type, date);
+        return appointment.stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
+    //Cập nhật tiến trình cho appointment
+    public AppointmentDTO updateAppointmentProgress(Long id, Appointment.AppointmentStatus status) {
+        Appointment appointment =appointmentRepository.findById(id).orElseThrow(() -> new RuntimeException("Lịch hẹn không tồn tại!"));
+        appointment.setStatus(status);
+        appointment.setStatus(status);
+        Appointment updated = appointmentRepository.save(appointment);
+
+        return toDTO(updated);
+    }
+
 
     public AppointmentDTO toDTO(Appointment appointment) {
         AppointmentDTO dto = new AppointmentDTO();
+        dto.setAppointmentId(appointment.getAppointmentId());
         dto.setUserId(appointment.getUser().getUserId());
         dto.setServiceId(appointment.getService().getServiceId());
         dto.setAppointmentType(appointment.getType());
         dto.setAppointmentDate(appointment.getAppointmentDate());
         dto.setAppointmentTime(appointment.getAppointmentTime());
+        dto.setAppointmentStatus(appointment.getStatus());
         dto.setDeliveryMethod(appointment.getDeliverymethod());
         dto.setAppointmentNote(appointment.getAppointmentNote());
         return dto;
