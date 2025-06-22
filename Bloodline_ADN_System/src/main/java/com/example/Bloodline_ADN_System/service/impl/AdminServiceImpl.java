@@ -2,7 +2,10 @@ package com.example.Bloodline_ADN_System.service.impl;
 
 import com.example.Bloodline_ADN_System.Entity.User;
 import com.example.Bloodline_ADN_System.dto.CreateUserRequest;
+import com.example.Bloodline_ADN_System.dto.UpdateServicePriceRequest;
+import com.example.Bloodline_ADN_System.dto.UpdateServicePriceResponse;
 import com.example.Bloodline_ADN_System.dto.accountResponse;
+import com.example.Bloodline_ADN_System.repository.ServiceRepository;
 import com.example.Bloodline_ADN_System.repository.UserRepository;
 import com.example.Bloodline_ADN_System.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,8 @@ public class AdminServiceImpl implements AdminService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    @Autowired
+    private ServiceRepository serviceRepository;
 
     @Autowired
     public AdminServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
@@ -63,5 +68,17 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public void deleteUser(Long id) {
          userRepository.deleteById(id);
+    }
+
+    @Override
+    public UpdateServicePriceResponse updateServicePrice(UpdateServicePriceRequest request) {
+        com.example.Bloodline_ADN_System.Entity.Service service =
+                serviceRepository.findByServiceId(request.getServiceId())
+                        .orElseThrow(() -> new RuntimeException("Không tìm thấy dịch vụ"));
+
+        service.setServicePrice(request.getNewPrice());
+        serviceRepository.save(service);
+
+        return new UpdateServicePriceResponse(service.getServiceId(), "Cập nhật giá thành công");
     }
 }

@@ -1,0 +1,15 @@
+package com.example.Bloodline_ADN_System.repository;
+
+import com.example.Bloodline_ADN_System.Entity.Service;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
+
+public interface ServiceRepository extends JpaRepository<Service, Long> {
+
+    // Tìm dịch vụ theo ID (để cập nhật giá)
+    Optional<Service> findByServiceId(Long serviceId);
+
+    // Nếu cần tìm theo tên dịch vụ (cho tương lai)
+    Optional<Service> findByServiceName(String serviceName);
+}

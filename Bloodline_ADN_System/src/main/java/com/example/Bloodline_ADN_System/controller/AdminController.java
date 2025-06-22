@@ -1,6 +1,8 @@
 package com.example.Bloodline_ADN_System.controller;
 
 import com.example.Bloodline_ADN_System.dto.CreateUserRequest;
+import com.example.Bloodline_ADN_System.dto.UpdateServicePriceRequest;
+import com.example.Bloodline_ADN_System.dto.UpdateServicePriceResponse;
 import com.example.Bloodline_ADN_System.dto.accountResponse;
 import com.example.Bloodline_ADN_System.service.impl.AdminServiceImpl;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +43,13 @@ public class AdminController {
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         adminService.deleteUser(id);
         return ResponseEntity.ok("Xóa người dùng thành công");
+    }
+
+    //update-price
+    @PutMapping("/update-price")
+    public ResponseEntity<UpdateServicePriceResponse> updateServicePrice(@RequestBody UpdateServicePriceRequest request) {
+        UpdateServicePriceResponse response = adminService.updateServicePrice(request);
+        return ResponseEntity.ok(response);
     }
 
 }
