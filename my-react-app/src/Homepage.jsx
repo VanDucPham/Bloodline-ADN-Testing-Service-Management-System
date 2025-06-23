@@ -2,8 +2,9 @@ import './Homepage.css';
 import Header from './components/Header';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faCoffee, faHome, faBars, faCheck } from '@fortawesome/free-solid-svg-icons';
-
+import Register from './components/register/Register';
 import { useNavigate } from 'react-router-dom';
+import Footer from './components/Footer';
 
 const Homepage = () => {
 const navigate = useNavigate();
@@ -68,23 +69,12 @@ const navigate = useNavigate();
               <button className="login-btn" onClick={() => navigate('/register')} >
                 ĐĂNG KÝ
               </button>
-            
-          </div>
-        </div>
-
-        <div className="footer">
-          <div className="footer-content">
-            <div className="footer-left">
-              <h2>VIETCARE</h2>
-              <h2>DỊCH VỤ</h2>
-
-              <p>Địa chỉ: 123 Đường ABC, Quận 1, TP. Hồ Chí Minh</p>
-              <p>Email: vietcarelab@gmail.com</p>
-            </div>
+              
           </div>
         </div>
 
       </div>
+       <Footer />
     </div>
   )
 }
