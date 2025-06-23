@@ -1,7 +1,7 @@
 package com.example.Bloodline_ADN_System.service;
 
-import com.example.Bloodline_ADN_System.dto.AppointmentDTO;
-import com.example.Bloodline_ADN_System.dto.AppointmentResponse;
+import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentDTO;
+import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentResponse;
 
 import java.util.List;
 

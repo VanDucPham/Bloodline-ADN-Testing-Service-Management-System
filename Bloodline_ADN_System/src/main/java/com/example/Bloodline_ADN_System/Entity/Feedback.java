@@ -6,34 +6,32 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
+// ========================
+// 💬 FEEDBACK ENTITY
+// ========================
 @Entity
 @Table(name = "feedbacks")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Feedback {
-
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
-        @Column(name = "feedback_id")
         private Long feedbackId;
 
         @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(name = "user_id", nullable = false)
+        @JoinColumn(name = "user_id")
         private User user;
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "service_id")
         private Service service;
 
-        @Column(name = "feedback_text", columnDefinition = "TEXT")
+        @Column(columnDefinition = "TEXT")
         private String feedbackText;
 
-        @Column(name = "feedback_date")
         private LocalDateTime feedbackDate;
-
-        @Column(name = "rating")
-        private Integer rating; // 1-5 stars
+        private Integer rating;
 
         @OneToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "appointment_id")

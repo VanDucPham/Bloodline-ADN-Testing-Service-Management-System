@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tracking Lịch hẹn ADN</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      background: #fff;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 4px 20px #00000010;
+    }
+    h1 {
+      color: #2d7a7a;
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .appointment-card {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      margin-bottom: 24px;
+      padding: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .card-header h3 {
+      margin: 0;
+      color: #2d7a7a;
+    }
+
+    .status {
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .status.pending { background: #ffecb3; color: #ff9800; }
+    .status.confirmed { background: #d0f8ce; color: #4caf50; }
+    .status.canceled { background: #ffcdd2; color: #f44336; }
+
+    .card-body p {
+      margin: 6px 0;
+      font-size: 15px;
+    }
+
+    .card-actions {
+      margin-top: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .card-actions button {
+      background: #2d7a7a;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .card-actions button:hover {
+      background: #215e5e;
+    }
+
+    .appointment-details {
+      margin-top: 18px;
+      padding-top: 10px;
+      border-top: 1px solid #ccc;
+    }
+
+    .appointment-details h4 {
+      margin-bottom: 8px;
+      color: #2d7a7a;
+    }
+
+    .appointment-details ul {
+      padding-left: 20px;
+      font-size: 14px;
+    }
+
+    .appointment-details p {
+      font-size: 14px;
+      margin: 4px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Lịch hẹn xét nghiệm ADN của bạn</h1>
+
+    <!-- BẮT ĐẦU MỘT LỊCH HẸN -->
+    <div class="appointment-card">
+      <div class="card-header">
+        <h3>#APT001 - Xét nghiệm cha con</h3>
+        <span class="status pending">Đang xử lý</span>
+      </div>
+      <div class="card-body">
+        <p><strong>Ngày hẹn:</strong> 2025-07-03</p>
+        <p><strong>Địa điểm:</strong> Trung tâm ADN Hà Nội</p>
+
+        <div class="card-actions">
+          <button onclick="alert('Xem bản đồ Google Maps')">📍 Xem bản đồ</button>
+          <button onclick="alert('Tải lịch hẹn PDF')">📥 Tải PDF</button>
+          <button onclick="alert('Tải hồ sơ khách hàng')">📎 Hồ sơ</button>
+          <button onclick="window.location.href='feedback.html'">⭐ Đánh giá</button>
+          <a href="feedback.html" class="btn-rating">⭐ Đánh giá</a>
+
+
+        </div>
+
+        <div class="appointment-details">
+          <h4>📋 Chi tiết lịch hẹn</h4>
+          <p><strong>Người đặt:</strong> Nguyễn Văn A</p>
+          <p><strong>Email:</strong> nguyenvana@gmail.com</p>
+          <p><strong>SĐT:</strong> 0912345678</p>
+          <p><strong>Thành viên:</strong></p>
+          <ul>
+            <li>Nguyễn Văn A (Cha)</li>
+            <li>Nguyễn Văn B (Con)</li>
+          </ul>
+
+          <p><strong>Tiến trình:</strong></p>
+          <ul>
+            <li>✅ Đã đặt lịch</li>
+            <li>✅ Hồ sơ xác nhận</li>
+            <li>🔄 Đang xử lý mẫu</li>
+            <li>⏳ Chờ kết quả</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+     <div class="form-section">
+      <h2>Tiến trình xử lý hồ sơ</h2>
+      <div class="tracker">
+        <div class="tracker-step">Đã nhận mẫu</div>
+        <div class="tracker-step">Đang phân tích</div>
+        <div class="tracker-step">Xác nhận kết quả</div>
+        <div class="tracker-step">Hoàn tất</div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h2>Kết quả xét nghiệm</h2>
+      <div class="summary-box">
+        <p><strong>Tình trạng:</strong> Đang chờ kết quả</p>
+        <p><strong>File kết quả:</strong> <a href="#">📄 Xem kết quả PDF</a></p>
+        <p><strong>Ngày có kết quả dự kiến:</strong> 2025-07-10</p>
+      </div>
+    </div>
+    <!-- KẾT THÚC MỘT LỊCH HẸN -->
+
+    <!-- Có thể lặp thêm các lịch khác như trên -->
+  </div>
+</body>
+</html>

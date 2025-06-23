@@ -5,8 +5,11 @@ import com.example.Bloodline_ADN_System.dto.accountResponse;
 import com.example.Bloodline_ADN_System.dto.updateUserRequest;
 import com.example.Bloodline_ADN_System.repository.UserRepository;
 import com.example.Bloodline_ADN_System.service.impl.AdminServiceImpl;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -53,6 +56,23 @@ public class AdminController {
         System.out.println("có mail rồi");
         return ResponseEntity.ok(exists);
     }
+    @PostMapping(
+            path = "/import_user",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public ResponseEntity<?> importUser(@RequestParam("file") MultipartFile file) {
+        try {
+            adminService.importUserFromExcel(file);
+            return ResponseEntity.ok("Import thành công");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Lỗi khi import file: " + e.getMessage());
+        }
+    }
+
+
+
+
 
 
 }

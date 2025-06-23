@@ -8,20 +8,21 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+// ========================
+// 📅 APPOINTMENT ENTITY
+// ========================
 @Entity
 @Table(name = "appointments")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Appointment {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "appointment_id")
     private Long appointmentId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -35,27 +36,23 @@ public class Appointment {
     private Payment payment;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "appointment_type")
     private AppointmentType type;
 
-    @Column(name = "created_time")
     private LocalDateTime createdTime;
-
-    @Column(name = "appointment_date")
     private LocalDate appointmentDate;
-
-    @Column(name = "appointment_time")
     private LocalTime appointmentTime;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "appointment_status")
     private AppointmentStatus status;
 
     @Enumerated(EnumType.STRING)
-    @Column(name ="delivery_method ")
     private DeliveryMethod deliverymethod;
-    @Column(name = "appointment_note", columnDefinition = "TEXT")
+
+    @Column(columnDefinition = "TEXT")
     private String appointmentNote;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "case_id")
+    private CaseFile caseFile;
 
     @OneToOne(mappedBy = "appointment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Result result;
@@ -63,22 +60,16 @@ public class Appointment {
     @OneToOne(mappedBy = "appointment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Feedback feedback;
 
+    @OneToOne(mappedBy = "appointment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private QRCode qrCode;
+
     @PrePersist
     protected void onCreate() {
         createdTime = LocalDateTime.now();
     }
 
-    public enum AppointmentType {
-        ADMINISTRATIVE, // Hành chính
-        CIVIL           // Dân sự
-    }
-    public enum DeliveryMethod {
-        HOME_COLLECTION,    // Lấy mẫu tại nhà
+    public enum AppointmentType { ADMINISTRATIVE, CIVIL }
+    public enum DeliveryMethod { HOME_COLLECTION, SELF_DROP_OFF }
+    public enum AppointmentStatus { SCHEDULED, CONFIRMED, IN_PROGRESS, COMPLETED, CANCELLED }
 
-        SELF_DROP_OFF,      // Tự gửi đến phòng xét nghiệm
-
-    }
-    public enum AppointmentStatus {
-        SCHEDULED, CONFIRMED, IN_PROGRESS, COMPLETED, CANCELLED
-    }
 }

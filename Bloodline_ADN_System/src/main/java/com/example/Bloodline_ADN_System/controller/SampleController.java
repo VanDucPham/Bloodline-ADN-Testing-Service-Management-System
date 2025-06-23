@@ -1,6 +1,6 @@
 package com.example.Bloodline_ADN_System.controller;
 
-import com.example.Bloodline_ADN_System.dto.SampleCustomerDTO;
+import com.example.Bloodline_ADN_System.dto.managerCaseFile.SampleCustomerDTO;
 import com.example.Bloodline_ADN_System.dto.SampleDTO;
 import com.example.Bloodline_ADN_System.dto.SampleStaffDTO;
 import com.example.Bloodline_ADN_System.dto.SampleUpdateDTO;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/auth/sample")
+@RequestMapping("/api/customer/sample")
 public class SampleController {
     private final SampleService sampleService;
     public SampleController(SampleServiceImpl sampleService) {

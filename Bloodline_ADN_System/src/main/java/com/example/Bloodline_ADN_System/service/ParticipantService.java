@@ -1,6 +1,6 @@
 package com.example.Bloodline_ADN_System.service;
 
-import com.example.Bloodline_ADN_System.dto.ParticipantDTO;
+import com.example.Bloodline_ADN_System.dto.managerCaseFile.ParticipantDTO;
 
 import java.util.List;
 

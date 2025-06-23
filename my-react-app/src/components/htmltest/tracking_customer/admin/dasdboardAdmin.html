@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Admin - Xét nghiệm ADN</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: #f8fafc;
+    }
+    header {
+      background: #2d7a7a;
+      padding: 20px;
+      color: white;
+      text-align: center;
+    }
+    nav {
+      background: #e0f2f1;
+      padding: 10px 20px;
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      border-bottom: 1px solid #ccc;
+    }
+    nav a {
+      color: #2d7a7a;
+      font-weight: bold;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+    }
+    nav a:hover {
+      background-color: #b2dfdb;
+    }
+    .dashboard {
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+    .card-grid {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+    .card {
+      flex: 1;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px #0001;
+      min-width: 260px;
+    }
+    .card h3 {
+      color: #2d7a7a;
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+    .card .value {
+      font-size: 26px;
+      font-weight: bold;
+    }
+    .section-title {
+      font-size: 22px;
+      color: #2d7a7a;
+      margin-bottom: 16px;
+    }
+    .actions {
+      margin-top: 20px;
+      text-align: right;
+    }
+    .actions button {
+      background: #2d7a7a;
+      color: white;
+      padding: 10px 16px;
+      margin-left: 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .actions button:hover {
+      background: #1d5c5c;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px #0001;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 14px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+    th {
+      background: #2d7a7a;
+      color: white;
+    }
+    tr:hover {
+      background: #f1f1f1;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Admin Control Panel - Hệ thống Xét nghiệm ADN</h1>
+  </header>
+  <nav>
+    <a href="#system-overview">📈 Hệ thống</a>
+    <a href="#user-management">👥 Quản lý người dùng</a>
+    <a href="#role-management">🛡️ Phân quyền</a>
+    <a href="#log-audit">📂 Nhật ký</a>
+    <a href="#settings">⚙️ Cấu hình hệ thống</a>
+    <a href="#blog-management">📝 Quản lý blog</a>
+    <a href="#feedback-management">💬 Quản lý feedback</a>
+  </nav>
+
+  <div class="dashboard" id="system-overview">
+    <h2 class="section-title">📈 Tổng quan hệ thống</h2>
+    <div class="card-grid">
+      <div class="card">
+        <h3>Người dùng</h3>
+        <div class="value">+1200</div>
+      </div>
+      <div class="card">
+        <h3>Lịch hẹn đã đặt</h3>
+        <div class="value">+350</div>
+      </div>
+      <div class="card">
+        <h3>Hồ sơ xử lý</h3>
+        <div class="value">180</div>
+      </div>
+      <div class="card">
+        <h3>Hóa đơn đã thanh toán</h3>
+        <div class="value">278</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dashboard" id="user-management">
+    <h2 class="section-title">👥 Quản lý người dùng</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Email</th>
+          <th>Vai trò</th>
+          <th>Trạng thái</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>U001</td>
+          <td>abc@example.com</td>
+          <td>Customer</td>
+          <td>Hoạt động</td>
+          <td><button>Khóa</button> <button>Chỉnh sửa</button></td>
+        </tr>
+        <tr>
+          <td>U002</td>
+          <td>staff@example.com</td>
+          <td>Staff</td>
+          <td>Hoạt động</td>
+          <td><button>Khóa</button> <button>Chỉnh sửa</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="dashboard" id="role-management">
+    <h2 class="section-title">🛡️ Phân quyền</h2>
+    <p>Cho phép phân quyền theo vai trò và tính năng hệ thống.</p>
+    <div class="actions">
+      <button>+ Tạo vai trò mới</button>
+      <button>Cấu hình quyền</button>
+    </div>
+  </div>
+
+  <div class="dashboard" id="log-audit">
+    <h2 class="section-title">📂 Nhật ký hệ thống</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Thời gian</th>
+          <th>Người thao tác</th>
+          <th>Hành động</th>
+          <th>Chi tiết</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>2025-06-19 09:45</td>
+          <td>admin01</td>
+          <td>Khóa tài khoản</td>
+          <td>ID: U001</td>
+        </tr>
+        <tr>
+          <td>2025-06-18 16:20</td>
+          <td>admin01</td>
+          <td>Tạo vai trò mới</td>
+          <td>Role: Supervisor</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="dashboard" id="settings">
+    <h2 class="section-title">⚙️ Cấu hình hệ thống</h2>
+    <p>Thiết lập thông tin hệ thống, thời gian làm việc, email gửi thông báo, bảo mật OTP, v.v.</p>
+    <div class="actions">
+      <button>Lưu thay đổi</button>
+    </div>
+  </div>
+
+  <div class="dashboard" id="blog-management">
+    <h2 class="section-title">📝 Quản lý Blog</h2>
+    <div class="actions">
+      <button>+ Tạo bài viết mới</button>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Tiêu đề</th>
+          <th>Tác giả</th>
+          <th>Ngày tạo</th>
+          <th>Trạng thái</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Tầm quan trọng của ADN trong pháp lý</td>
+          <td>Admin</td>
+          <td>2025-06-01</td>
+          <td>Hiển thị</td>
+          <td><button>Sửa</button> <button>Xóa</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="dashboard" id="feedback-management">
+    <h2 class="section-title">💬 Quản lý Feedback</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Người gửi</th>
+          <th>Thời gian</th>
+          <th>Nội dung</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>F001</td>
+          <td>Nguyen Van A</td>
+          <td>2025-06-15</td>
+          <td>Dịch vụ rất tốt, nhân viên nhiệt tình.</td>
+          <td><button>Xem</button> <button>Xóa</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

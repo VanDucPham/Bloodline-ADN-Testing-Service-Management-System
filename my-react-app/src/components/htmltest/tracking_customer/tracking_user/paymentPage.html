@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Thanh toán dịch vụ xét nghiệm ADN</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    header {
+      background: #2d7a7a;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+    .container {
+      max-width: 700px;
+      margin: 30px auto;
+      background: #fff;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 4px 20px #00000010;
+    }
+    h1, h2 {
+      color: #2d7a7a;
+    }
+    label {
+      font-weight: 600;
+      display: block;
+      margin: 12px 0 6px;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 15px;
+      margin-bottom: 20px;
+    }
+    .summary {
+      background: #eef5f5;
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid #ccd;
+      margin-bottom: 20px;
+    }
+    .summary p {
+      margin: 8px 0;
+    }
+    .btn-primary {
+      background: #2d7a7a;
+      color: white;
+      padding: 12px 24px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: center;
+    }
+    .btn-primary:hover {
+      background: #1d5c5c;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Thanh toán dịch vụ xét nghiệm ADN</h1>
+  </header>
+  <div class="container">
+    <h2>Chi tiết thanh toán</h2>
+    <div class="summary">
+      <p><strong>Dịch vụ:</strong> Xét nghiệm cha - con (Dân sự)</p>
+      <p><strong>Chi nhánh:</strong> Hà Nội - Trung tâm ADN</p>
+      <p><strong>Số người tham gia:</strong> 2</p>
+      <p><strong>Loại mẫu:</strong> Máu</p>
+      <p><strong>Ngày hẹn:</strong> 2025-07-03</p>
+      <p><strong>Tổng chi phí:</strong> <span style="color: #e74c3c; font-size: 18px; font-weight: bold;">2.500.000đ</span></p>
+    </div>
+
+    <h2>Phương thức thanh toán</h2>
+    <label for="payment-method">Chọn phương thức:</label>
+    <select id="payment-method">
+      <option value="vnpay">VNPay</option>
+      <option value="momo">Momo</option>
+      <option value="bank">Chuyển khoản ngân hàng</option>
+      <option value="offline">Thanh toán tại cơ sở</option>
+    </select>
+
+    <button class="btn-primary">Xác nhận thanh toán</button>
+  </div>
+</body>
+</html>

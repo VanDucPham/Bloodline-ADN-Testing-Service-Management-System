@@ -3,8 +3,8 @@
 // ============================
 import BaseApiService from "./api/BaseApiService";
 class UserService extends BaseApiService {
-    async getProfile() { return this.get('/user/profile'); }
-    async updateProfile(userData) { return this.put('/user/profile', userData); }
+    async getProfile() { return this.get('/customer/Profile'); }
+    async updateProfile(userData) { return this.put('/customer', userData); }
     async getAllUsers(params = {}) {
         const queryString = new URLSearchParams(params).toString();
         return this.get(`/user/all?${queryString}`);
@@ -18,6 +18,7 @@ class UserService extends BaseApiService {
     async add_paticipant(participant){
         return this.post('/add_patici')
     }
+
 }
     
 

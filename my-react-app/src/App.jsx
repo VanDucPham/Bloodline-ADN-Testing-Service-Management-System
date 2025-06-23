@@ -17,6 +17,7 @@ import Booking from './components/booking/Booking';
 import Payment from './components/payment/Payment';
 import Pricelist from './components/pricelist/Pricelist';
 import UserDashboard from './components/dashboards/UserDashboard';
+import AppointmentBooking from './components/htmltest/tracking_customer/tracking_user/appointmentBooking';
 
 
 
@@ -35,6 +36,7 @@ function App() {
         <Route path="/payment" element={<Payment />} />
         <Route path="/pricelist" element={<Pricelist />} />
         <Route path="/user" element={<UserDashboard />} />
+        <Route path="/tracking_user" element={<AppointmentBooking />}/>
         
       
       </Routes>
