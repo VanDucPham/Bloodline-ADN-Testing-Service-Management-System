@@ -1,12 +1,10 @@
 package com.example.Bloodline_ADN_System.controller;
 
 import com.example.Bloodline_ADN_System.Entity.Appointment;
-import com.example.Bloodline_ADN_System.dto.AppointmentDTO;
-import com.example.Bloodline_ADN_System.dto.AppointmentResponse;
-import com.example.Bloodline_ADN_System.dto.AppointmentSummaryDTO;
+import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentDTO;
+import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentResponse;
 import com.example.Bloodline_ADN_System.service.AppointmentService;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,17 +33,11 @@ public class AppointmentController {
         return response;
     }
 
-    @GetMapping("/summary/{userId}")
-    public ResponseEntity<List<AppointmentSummaryDTO>> getAppointmentByUserId(@PathVariable Long userId) {
-        return ResponseEntity.ok(appointmentService.getAppointmentByUserId(userId));
-    }
-
     @GetMapping("/{id}")
-    public ResponseEntity<AppointmentDTO> getAppointmentDetail(@PathVariable Long id) {
-        return ResponseEntity.ok(appointmentService.getAppointmentDetail(id));
+    public List<AppointmentDTO> getAppointmentByUserId(@PathVariable Long id) {
+        List<AppointmentDTO> response = appointmentService.getAppointmentByUserId(id);
+        return response;
     }
-
-
 
     @PutMapping("/{id}/cancel")
     public ResponseEntity<?> cancelAppointment(@PathVariable Long id) {
