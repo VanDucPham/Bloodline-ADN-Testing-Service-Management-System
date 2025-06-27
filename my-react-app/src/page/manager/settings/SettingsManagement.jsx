@@ -1,12 +1,15 @@
 import { Tabs, Card, Button, Table, Space, Modal, Form, Input, InputNumber } from 'antd';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import blog from '../../../service/blog';
+import { getData } from '../../../api/api';
 
 function SettingsManagement() {
   const [activeTab, setActiveTab] = useState('1');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
   const [editingRecord, setEditingRecord] = useState(null);
+  const [blogData, setBlogData] = useState([]);
 
   // Sample data - replace with actual API data
   const serviceData = [
@@ -14,10 +17,22 @@ function SettingsManagement() {
     { id: 2, name: 'Xét nghiệm ADN mẹ con', price: 2000000, description: 'Xét nghiệm ADN xác định quan hệ mẹ con' },
   ];
 
-  const blogData = [
-    { id: 1, title: 'Quy trình xét nghiệm ADN', content: 'Nội dung bài viết...', author: 'Admin', date: '2024-03-15' },
-    { id: 2, title: 'Độ chính xác của xét nghiệm ADN', content: 'Nội dung bài viết...', author: 'Admin', date: '2024-03-14' },
-  ];
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try { 
+        const blogs = await getData('/blogs');
+        setBlogData(blogs);
+        console.log(blogs);
+        // console.log(users);
+
+      } catch (error) {
+        // Optionally handle error
+        console.log(error);
+        setBlogData([]);
+      }
+    };
+    fetchBlogs();
+  }, []);
 
   const serviceColumns = [
     {
@@ -59,19 +74,20 @@ function SettingsManagement() {
 
   const blogColumns = [
     {
+      title: 'Ảnh',
+      dataIndex: 'image_url',
+      key: 'image_url',
+      render: (url) => url ? <img src={url} alt="blog" style={{ width: 60, height: 40, objectFit: 'cover', borderRadius: 4 }} /> : null,
+    },
+    {
       title: 'Tiêu đề',
       dataIndex: 'title',
       key: 'title',
     },
     {
-      title: 'Tác giả',
-      dataIndex: 'author',
-      key: 'author',
-    },
-    {
-      title: 'Ngày đăng',
-      dataIndex: 'date',
-      key: 'date',
+      title: 'Tóm tắt',
+      dataIndex: 'summary',
+      key: 'summary',
     },
     {
       title: 'Thao tác',
@@ -160,7 +176,7 @@ function SettingsManagement() {
               Thêm bài viết
             </Button>
           </div>
-          <Table columns={blogColumns} dataSource={blogData} />
+          <Table columns={blogColumns} dataSource={blogData} rowKey="id" />
         </div>
       ),
     },
