@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trang quản lý Staff - Xét nghiệm ADN</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    header {
+      background: #2d7a7a;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 30px auto;
+      background: white;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 4px 20px #00000010;
+    }
+    h2 {
+      color: #2d7a7a;
+      margin-bottom: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+    }
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+    th {
+      background-color: #2d7a7a;
+      color: white;
+    }
+    .actions button {
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      margin-right: 8px;
+    }
+    .confirm {
+      background: #4caf50;
+      color: white;
+    }
+    .reject {
+      background: #e74c3c;
+      color: white;
+    }
+    .upload {
+      background: #3498db;
+      color: white;
+    }
+    .summary {
+      margin-top: 20px;
+      padding: 16px;
+      background: #f1f9f9;
+      border: 1px solid #cce;
+      border-radius: 8px;
+    }
+    .summary p {
+      margin: 8px 0;
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 6px;
+    }
+    input[type="file"], input[type="text"], select, textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Trang quản lý dành cho nhân viên (Staff)</h1>
+  </header>
+  <div class="container">
+    <h2>1. Lịch hẹn chờ xác nhận</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Mã lịch</th>
+          <th>Khách hàng</th>
+          <th>Ngày hẹn</th>
+          <th>Dịch vụ</th>
+          <th>Chi nhánh</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>#APT123</td>
+          <td>Nguyễn Văn A</td>
+          <td>2025-07-04</td>
+          <td>Cha - con</td>
+          <td>Hà Nội</td>
+          <td class="actions">
+            <button class="confirm">✔ Xác nhận</button>
+            <button class="reject">✖ Từ chối</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+   <h2>2. Quản lý mẫu xét nghiệm</h2>
+<form id="sample-form">
+  <div class="form-group">
+    <label for="appointment-code">🔢 Mã lịch hẹn (tự động hoặc nhập tay):</label>
+    <input type="text" id="appointment-code" placeholder="VD: APT123" required />
+  </div>
+
+  <div class="form-group">
+    <label for="sample-id">🧬 Mã mẫu xét nghiệm:</label>
+    <input type="text" id="sample-id" placeholder="VD: SAMPLE001" required />
+  </div>
+
+  <div class="form-group">
+    <label for="sample-type">🧪 Loại mẫu:</label>
+    <select id="sample-type" required>
+      <option value="">-- Chọn loại mẫu --</option>
+      <option value="máu">Mẫu máu</option>
+      <option value="niêm mạc miệng">Niêm mạc miệng</option>
+      <option value="tóc">Tóc có chân</option>
+      <option value="vật dụng cá nhân">Vật dụng cá nhân</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="upload-result">📎 Tải kết quả xét nghiệm (PDF):</label>
+    <input type="file" id="upload-result" accept=".pdf" required />
+  </div>
+
+  <div class="form-group">
+    <label for="note">📝 Ghi chú nội bộ (tuỳ chọn):</label>
+    <textarea id="note" rows="3" placeholder="Ví dụ: Mẫu bảo quản không tốt, cần xét nghiệm lại..."></textarea>
+  </div>
+
+  <button type="submit" class="upload">📤 Gửi kết quả và cập nhật trạng thái</button>
+</form>
+
+<div class="summary">
+  <p><strong>✅ Mẫu gần nhất đã xử lý:</strong></p>
+  <ul>
+    <li><strong>Mã lịch:</strong> APT123</li>
+    <li><strong>Mã mẫu:</strong> SAMPLE001</li>
+    <li><strong>Loại mẫu:</strong> Niêm mạc miệng</li>
+    <li><strong>Trạng thái:</strong> ✅ Đã cập nhật kết quả</li>
+  </ul>
+</div>
+
+
+    <h2>3. Theo dõi tiến độ hồ sơ</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Mã hồ sơ</th>
+          <th>Khách hàng</th>
+          <th>Tiến độ</th>
+          <th>Cập nhật</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>HS2025001</td>
+          <td>Trần Thị B</td>
+          <td>
+            <select>
+              <option>📦 Đã tiếp nhận mẫu</option>
+              <option>🧬 Đang xét nghiệm</option>
+              <option>✅ Đã có kết quả</option>
+              <option>📬 Đã gửi kết quả</option>
+            </select>
+          </td>
+          <td><button class="upload">Cập nhật tiến độ</button></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>4. Ghi chú & hỗ trợ khách hàng</h2>
+    <div class="form-group">
+      <label for="support-request">Ghi chú nội bộ / yêu cầu hỗ trợ:</label>
+      <textarea id="support-request" rows="4" placeholder="VD: Khách hàng yêu cầu nhận kết quả sớm hơn..."></textarea>
+    </div>
+    <button class="upload">💬 Gửi ghi chú</button>
+  </div>
+</body>
+</html>

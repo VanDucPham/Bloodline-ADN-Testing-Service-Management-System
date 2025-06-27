@@ -16,8 +16,14 @@ class adminService extends BaseApiService{
      }
     async check_mail(email) {
     return this.get('/admin/check-email', { params: { email } })
+    
 }
-
+   async importFileUser(formData) {
+      console.log("chạy rồi")
+      console.log(formData)
+      return this.post('/admin/import_user', formData)
+      
+    }
 
 
 }

@@ -4,20 +4,22 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+// ========================
+// 👤 USER ENTITY
+// ========================
 @Entity
 @Table(name = "users")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
-
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
-        @Column(name = "user_id")
         private Long userId;
 
         @Column(unique = true, nullable = false)
@@ -26,6 +28,7 @@ public class User {
         @Column(nullable = false)
         private String password;
 
+        private String indentifiCard;
         private String name;
         private String gender;
         private String phone;
@@ -34,7 +37,6 @@ public class User {
         @Enumerated(EnumType.STRING)
         private Status status;
 
-        @Column(name = "birth_date")
         private LocalDate birthDate;
 
         @Enumerated(EnumType.STRING)
@@ -49,22 +51,24 @@ public class User {
         @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
         private List<Feedback> feedbacks = new ArrayList<>();
 
+        @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+        private List<Notification> notifications = new ArrayList<>();
+
         public enum UserRole {
                 ADMIN, CUSTOMER, STAFF, MANAGER
         }
+        public void setRole(UserRole role) {
+                this.role = UserRole.valueOf(role.toString());
 
-        public void setRoleFromString(String roleString) {
-                this.role = UserRole.valueOf(roleString.toUpperCase());
         }
-
-        public String getRoleString() {
-                return this.role != null ? this.role.toString() : null;
+        public String getRole() {
+                return this.role.toString();
         }
-
         public enum Status {
-                ACTIVE, INACTIVE
-        }
+                ACTIVE, INACTIVE;
 
+
+        }
         public void setStatusFromString(String status) {
                 this.status = Status.valueOf(status.toUpperCase());
         }

@@ -1,0 +1,180 @@
+/* appointmentBooking.css */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #f4f6f8;
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+
+header {
+  background: #2d7a7a;
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+}
+
+.container {
+  max-width: 1000px;
+  margin: 30px auto;
+  background: #fff;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 4px 20px #00000010;
+}
+
+h1, h2 {
+  color: #2d7a7a;
+}
+
+.step-nav {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.step {
+  flex: 1;
+  text-align: center;
+  position: relative;
+  font-weight: bold;
+  color: #999;
+}
+
+.step::before {
+  content: attr(data-step);
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  border-radius: 50%;
+  background: #ccc;
+  color: white;
+  display: inline-block;
+  margin-bottom: 5px;
+}
+
+
+.step.active {
+  color: #2d7a7a;
+}
+
+.step.active::before {
+  background: #2d7a7a;
+}
+
+.progress-bar {
+  height: 4px;
+  background: #e0e0e0;
+  margin-bottom: 30px;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress {
+  height: 100%;
+  background: #2d7a7a;
+  transition: width 0.3s ease-in-out;
+}
+
+.form-container {
+    width: 100%;
+  margin-top: 20px;
+}
+
+.form-section {
+  margin-bottom: 40px;
+}
+
+label {
+  font-weight: 600;
+  display: block;
+  margin: 8px 0 4px;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  font-size: 15px;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.row > div {
+  flex: 1;
+  min-width: 260px;
+}
+
+.participant, .sample-info {
+  background: #f0f8f8;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+}
+
+textarea {
+  min-height: 80px;
+}
+
+.btn-add {
+  background: #009688;
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 5px;
+  transition: background 0.3s;
+}
+
+.btn-add:hover {
+  background: #00796b;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.form-actions button, .btn-primary {
+  background: #2d7a7a;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.form-actions button:hover, .btn-primary:hover {
+  background: #1d5c5c;
+}
+
+.confirmation-card {
+  background: #e0f7fa;
+  border: 1px solid #b2ebf2;
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 30px;
+  line-height: 1.6;
+}
+
+.validate-message {
+  color: #d32f2f;
+  background: #ffebee;
+  padding: 12px;
+  margin-bottom: 20px;
+  border: 1px solid #ffcdd2;
+  border-radius: 6px;
+}

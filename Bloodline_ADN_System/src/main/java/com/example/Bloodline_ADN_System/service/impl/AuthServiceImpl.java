@@ -30,7 +30,7 @@ public class AuthServiceImpl implements AuthService {
 
         String token = jwtService.generateToken(user);
         System.out.println();
-        return new LoginResponse(token, "Đăng nhập thành công", user.getName(),  user.getRoleString(), user.getEmail());
+        return new LoginResponse(token, "Đăng nhập thành công", user.getName(),  user.getRole(), user.getEmail());
     }
 
     @Override
@@ -44,7 +44,7 @@ public class AuthServiceImpl implements AuthService {
         user.setPhone(registerRequest.getPhone());
         user.setName(registerRequest.getFullName());
         // Convert role string to enum
-        user.setRoleFromString("CUSTOMER");
+        user.setRole(User.UserRole.valueOf("CUSTOMER"));
         user.setStatusFromString("ACTIVE");
         userRepo.save(user);
         return "Thành Công";

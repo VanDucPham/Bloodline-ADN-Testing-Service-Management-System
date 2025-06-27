@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gửi phản hồi khách hàng</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      background: #fff;
+      border-radius: 12px;
+      padding: 32px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
+
+    h1, h2 {
+      color: #2d7a7a;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    label {
+      display: block;
+      margin: 12px 0 6px;
+      font-weight: 600;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 15px;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .rating {
+      display: flex;
+      gap: 8px;
+      font-size: 24px;
+      margin: 8px 0 16px;
+    }
+
+    .rating span {
+      cursor: pointer;
+      color: #ccc;
+      transition: color 0.2s;
+    }
+
+    .rating span.selected {
+      color: #f39c12;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .form-grid-full {
+      grid-column: 1 / -1;
+    }
+
+    button {
+      background: #2d7a7a;
+      color: #fff;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: bold;
+      margin-top: 20px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    button:hover {
+      background: #215e5e;
+    }
+
+    .success-message {
+      margin-top: 16px;
+      color: green;
+      text-align: center;
+      display: none;
+    }
+
+    /* Hiển thị feedback */
+    .feedback-list {
+      margin-top: 50px;
+    }
+
+    .feedback-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .feedback-card {
+      background: #fafafa;
+      border-radius: 10px;
+      padding: 20px;
+      border: 1px solid #eee;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+      transition: box-shadow 0.2s;
+    }
+
+    .feedback-card:hover {
+      box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+    }
+
+    .feedback-avatar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .feedback-avatar img {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #2d7a7a30;
+    }
+
+    .feedback-name {
+      font-weight: bold;
+      color: #2d7a7a;
+    }
+
+    .feedback-stars {
+      color: #f39c12;
+    }
+
+    .feedback-date {
+      font-size: 12px;
+      color: #888;
+    }
+
+    .feedback-content {
+      font-size: 14px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>💬 Gửi phản hồi khách hàng</h1>
+    <form id="feedbackForm">
+      <div class="form-grid">
+        <div>
+          <label for="name">Họ tên</label>
+          <input type="text" id="name" name="name" required />
+        </div>
+        <div>
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required />
+        </div>
+        <div class="form-grid-full">
+          <label>Đánh giá dịch vụ</label>
+          <div class="rating" id="rating">
+            <span data-value="1">★</span>
+            <span data-value="2">★</span>
+            <span data-value="3">★</span>
+            <span data-value="4">★</span>
+            <span data-value="5">★</span>
+          </div>
+        </div>
+        <div class="form-grid-full">
+          <label for="feedback">Phản hồi chi tiết</label>
+          <textarea id="feedback" name="feedback" placeholder="Bạn cảm nhận thế nào về dịch vụ?"></textarea>
+        </div>
+      </div>
+      <button type="submit">Gửi phản hồi</button>
+      <div class="success-message" id="successMsg">🎉 Phản hồi của bạn đã được ghi nhận!</div>
+    </form>
+
+    <div class="feedback-list">
+      <h2>🗣️ Phản hồi từ khách hàng khác</h2>
+      <div class="feedback-grid">
+        <div class="feedback-card">
+          <div class="feedback-avatar">
+            <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="avatar">
+            <div>
+              <div class="feedback-name">Nguyễn Thị Lan</div>
+              <div class="feedback-date">12/06/2025</div>
+            </div>
+          </div>
+          <div class="feedback-stars">★★★★★</div>
+          <div class="feedback-content">Tôi rất hài lòng với cách phục vụ. Nhân viên nhiệt tình, chu đáo. Kết quả trả đúng hẹn!</div>
+        </div>
+
+        <div class="feedback-card">
+          <div class="feedback-avatar">
+            <img src="https://randomuser.me/api/portraits/men/34.jpg" alt="avatar">
+            <div>
+              <div class="feedback-name">Trần Văn Minh</div>
+              <div class="feedback-date">05/06/2025</div>
+            </div>
+          </div>
+          <div class="feedback-stars">★★★★☆</div>
+          <div class="feedback-content">Dịch vụ tốt, nhưng nên mở thêm điểm lấy mẫu tại các tỉnh nhỏ. Sẽ quay lại!</div>
+        </div>
+
+        <div class="feedback-card">
+          <div class="feedback-avatar">
+            <img src="https://randomuser.me/api/portraits/men/85.jpg" alt="avatar">
+            <div>
+              <div class="feedback-name">Phạm Quốc Cường</div>
+              <div class="feedback-date">28/05/2025</div>
+            </div>
+          </div>
+          <div class="feedback-stars">★★★★★</div>
+          <div class="feedback-content">Giao diện dễ dùng, hỗ trợ nhanh chóng. Kết quả rõ ràng, chính xác.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const stars = document.querySelectorAll('#rating span');
+    const form = document.getElementById('feedbackForm');
+    const successMsg = document.getElementById('successMsg');
+    let ratingValue = 0;
+
+    stars.forEach(star => {
+      star.addEventListener('click', () => {
+        ratingValue = parseInt(star.dataset.value);
+        stars.forEach(s => s.classList.remove('selected'));
+        for (let i = 0; i < ratingValue; i++) {
+          stars[i].classList.add('selected');
+        }
+      });
+    });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (ratingValue === 0) {
+        alert('Vui lòng chọn mức đánh giá!');
+        return;
+      }
+
+      const data = {
+        name: form.name.value,
+        email: form.email.value,
+        rating: ratingValue,
+        feedback: form.feedback.value
+      };
+
+      console.log('Feedback submitted:', data);
+      form.reset();
+      stars.forEach(s => s.classList.remove('selected'));
+      ratingValue = 0;
+      successMsg.style.display = 'block';
+    });
+  </script>
+</body>
+</html>

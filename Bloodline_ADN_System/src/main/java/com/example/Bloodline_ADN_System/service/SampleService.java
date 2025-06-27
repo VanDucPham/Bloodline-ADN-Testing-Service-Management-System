@@ -1,6 +1,6 @@
 package com.example.Bloodline_ADN_System.service;
 
-import com.example.Bloodline_ADN_System.dto.SampleCustomerDTO;
+import com.example.Bloodline_ADN_System.dto.managerCaseFile.SampleCustomerDTO;
 import com.example.Bloodline_ADN_System.dto.SampleDTO;
 import com.example.Bloodline_ADN_System.dto.SampleStaffDTO;
 import com.example.Bloodline_ADN_System.dto.SampleUpdateDTO;
