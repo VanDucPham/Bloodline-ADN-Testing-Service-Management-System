@@ -1,5 +1,5 @@
 import './App.css';
-import Header from './components/Header';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faCoffee, faHome, faBars, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
@@ -18,27 +18,34 @@ import Payment from './components/payment/Payment';
 import Pricelist from './components/pricelist/Pricelist';
 import UserDashboard from './components/dashboards/UserDashboard';
 import AppointmentBooking from './components/htmltest/tracking_customer/tracking_user/appointmentBooking';
-
-
+import BlogDetail from './components/post-detail/BlogDetail';
+import DnaPost from './components/dna-testing/DnaPost';
+import AllPost from './components/allpost/allpost';
 
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Homepage />}/>
+        <Route path="/" element={<Homepage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/admin" element={<AdminPage />} />
+
+        <Route path="/post" element={<AllPost />} />
+        <Route path="/post-detail/:section/:id" element={<BlogDetail />} />
+        <Route path="/dna" element={<DnaPost />} />
+
+
 
         <Route path="/admin-dashboard" element={<AdminDashboard activeSection="admin" />} />
         <Route path="/booking" element={<Booking />} />
         <Route path="/payment" element={<Payment />} />
         <Route path="/pricelist" element={<Pricelist />} />
         <Route path="/user" element={<UserDashboard />} />
-        <Route path="/tracking_user" element={<AppointmentBooking />}/>
-        
-      
+        <Route path="/tracking_user" element={<AppointmentBooking />} />
+
+
       </Routes>
 
     </BrowserRouter>
