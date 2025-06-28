@@ -2,7 +2,7 @@ package com.example.Bloodline_ADN_System.service.impl;
 
 import com.example.Bloodline_ADN_System.Entity.Participant;
 import com.example.Bloodline_ADN_System.Entity.Sample;
-import com.example.Bloodline_ADN_System.dto.SampleCustomerDTO;
+import com.example.Bloodline_ADN_System.dto.managerCaseFile.SampleCustomerDTO;
 import com.example.Bloodline_ADN_System.dto.SampleDTO;
 import com.example.Bloodline_ADN_System.dto.SampleStaffDTO;
 import com.example.Bloodline_ADN_System.dto.SampleUpdateDTO;
@@ -66,10 +66,19 @@ public class SampleServiceImpl implements SampleService {
         Sample sample = sampleRepository.findById(dto.getSampleId())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy mẫu"));
         sample.setQuality(dto.getQuality());
-        sample.setStatus(Sample.SampleStatus.ANALYZED);
+        sample.setStatus(dto.getStatus());
         sample.setResult(dto.getResult());
         sample.setNotes(dto.getNotes());
         return toDTO(sampleRepository.save(sample));
+    }
+
+    //Lấy sample từ participantId trước khi update
+    public SampleDTO getSampleByParticipantId(Long participantId) {
+        Sample sample = sampleRepository.findByParticipant_ParticipantId(participantId);
+        if (sample == null) {
+            return null;
+        }
+        return toDTO(sample);
     }
 
     private SampleDTO toDTO(Sample sample) {

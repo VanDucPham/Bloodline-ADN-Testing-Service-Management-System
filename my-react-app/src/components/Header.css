@@ -5,6 +5,11 @@
   position: sticky;
   top: 0;
   z-index: 1000;
+<<<<<<< Updated upstream
+=======
+  width: 100%;
+  min-width: 100vw;
+>>>>>>> Stashed changes
 }
 
 .top-bar {
@@ -238,3 +243,6 @@
     min-width: 160px;
   }
 }
+
+
+

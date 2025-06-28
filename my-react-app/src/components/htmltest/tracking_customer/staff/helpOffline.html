@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trang quản lý Staff - Xét nghiệm ADN</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    header {
+      background: #2d7a7a;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 30px auto;
+      background: white;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 4px 20px #00000010;
+    }
+    h2 {
+      color: #2d7a7a;
+      margin-bottom: 20px;
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 6px;
+    }
+    input[type="file"], input[type="text"], input[type="date"], select, textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    .upload {
+      padding: 12px 20px;
+      background: #2d7a7a;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .upload:hover {
+      background: #225656;
+    }
+    .note {
+      font-size: 13px;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Trang tiếp nhận lịch hẹn tại quầy (Staff)</h1>
+  </header>
+  <div class="container">
+    <h2>Bước 1: Thông tin khách hàng</h2>
+    <div class="form-group">
+      <label for="customer-name">👤 Họ tên khách hàng:</label>
+      <input type="text" id="customer-name" placeholder="VD: Nguyễn Văn A" />
+    </div>
+    <div class="form-group">
+      <label for="phone">📞 Số điện thoại:</label>
+      <input type="text" id="phone" placeholder="VD: 0987654321" />
+    </div>
+
+    <h2>Bước 2: Loại hồ sơ & dịch vụ</h2>
+    <div class="form-group">
+      <label for="type">🗂️ Loại hồ sơ:</label>
+      <select id="type">
+        <option value="">-- Chọn loại hồ sơ --</option>
+        <option value="hanh-chinh">Hành chính (chỉ xác minh thông tin)</option>
+        <option value="dan-su">Dân sự (phục vụ tòa án, cá nhân...)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="service">🔬 Dịch vụ xét nghiệm:</label>
+      <select id="service">
+        <option>Cha - con</option>
+        <option>Mẹ - con</option>
+        <option>Xét nghiệm ADN toàn phần</option>
+        <option>Huyết thống mở rộng</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="branch">🏢 Chi nhánh:</label>
+      <select id="branch">
+        <option>Hà Nội</option>
+        <option>TP.HCM</option>
+        <option>Đà Nẵng</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="appointment-date">📅 Ngày hẹn:</label>
+      <input type="date" id="appointment-date" />
+    </div>
+
+    <h2>Bước 3: Thông tin người tham gia (chỉ dân sự)</h2>
+<div class="form-group">
+  <label for="participants">👥 Người tham gia:</label>
+  <textarea id="participants" rows="3" placeholder="VD: Nguyễn Văn A - 1990 - Cha\nNguyễn Văn B - 2015 - Con"></textarea>
+  <div class="note">* Bỏ qua nếu là hồ sơ hành chính</div>
+</div>
+
+<div class="form-group">
+  <label for="sample-type">🧫 Loại mẫu xét nghiệm:</label>
+  <select id="sample-type">
+    <option value="niem-mac">Niêm mạc miệng</option>
+    <option value="toc">Tóc</option>
+    <option value="mong">Móng tay</option>
+    <option value="khac">Khác</option>
+  </select>
+</div>
+
+<div class="form-group">
+  <label for="sample-code">🆔 Chọn mã mẫu có sẵn:</label>
+  <select id="sample-code">
+    <option value="">-- Chọn mã mẫu --</option>
+    <option>#M00123</option>
+    <option>#M00456</option>
+    <option>#M00789</option>
+    <option>#M01000</option>
+    <option>#M02021</option>
+  </select>
+  <div class="note">* Mỗi mã chỉ dùng 1 lần duy nhất, do trung tâm phát trước</div>
+</div>
+        <div class="form-group">
+      <label for="official-docs">📎 Hồ sơ bổ sung (nếu có):</label>
+      <input type="file" id="official-docs" multiple />
+      <div class="note">* Đối với thủ tục hành chính, bắt buộc có bản sao công chứng CMND/CCCD của tất cả người tham gia</div>
+    </div>
+
+    <h2>Bước 4: Thanh toán</h2>
+    <div class="form-group">
+      <label for="payment-method">💳 Phương thức thanh toán:</label>
+      <select id="payment-method">
+        <option>Tiền mặt</option>
+        <option>Chuyển khoản</option>
+        <option>Quét mã QR</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="price">💰 Tổng chi phí (VNĐ):</label>
+      <input type="text" id="price" value="0" readonly />
+    </div>
+
+    <button class="upload">📥 Tạo lịch hẹn & In hóa đơn</button>
+
+
+    <div class="confirmation-box">
+      <h3>✅ Xác nhận hoàn tất thanh toán</h3>
+      <p><strong>Mã hồ sơ:</strong> #HS123456</p>
+      <p><strong>Khách hàng:</strong> Nguyễn Văn A</p>
+      <p><strong>Dịch vụ:</strong> Cha - con</p>
+      <p><strong>Chi nhánh:</strong> Hà Nội</p>
+      <p><strong>Ngày hẹn:</strong> 2025-07-10</p>
+      <p><strong>Trạng thái:</strong> <span style="color: green; font-weight: bold;">ĐÃ THANH TOÁN</span></p>
+    </div>
+
+    <button class="upload">📥 In hóa đơn & Gửi xác nhận</button>
+  </div>
+</body>
+</html>

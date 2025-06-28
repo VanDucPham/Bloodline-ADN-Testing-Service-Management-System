@@ -9,64 +9,68 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    //Customer update profile
     @Override
-    public UserUpdateDTO updateUser(Long id, UserUpdateDTO updatedUser) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
+    public UserUpdateDTO updateUser(String email, UserUpdateDTO updatedUser) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng với email: " + email));
 
-        if (updatedUser.getName() != null) {
-            user.setName(updatedUser.getName());
-        }
-        if (updatedUser.getGender() != null) {
-            user.setGender(updatedUser.getGender());
-        }
-        if (updatedUser.getPhone() != null) {
-            user.setPhone(updatedUser.getPhone());
-        }
-        if (updatedUser.getAddress() != null) {
-            user.setAddress(updatedUser.getAddress());
-        }
-        if (updatedUser.getBirthDate() != null) {
-            user.setBirthDate(updatedUser.getBirthDate());
-        }
-        if (updatedUser.getEmail() != null) {
-            user.setEmail(updatedUser.getEmail());
-        }
-        // Không set lại role, giữ nguyên role gốc của user
+        if (updatedUser.getName() != null) user.setName(updatedUser.getName().toUpperCase());
+        if (updatedUser.getGender() != null) user.setGender(updatedUser.getGender().toUpperCase());
+        if (updatedUser.getAddress() != null) user.setAddress(updatedUser.getAddress());
+        if (updatedUser.getPhone() != null) user.setPhone(updatedUser.getPhone());
+        if (updatedUser.getBirthDate() != null) user.setBirthDate(updatedUser.getBirthDate());
+        if (updatedUser.getIndentifiCard() != null) user.setIndentifiCard(updatedUser.getIndentifiCard());
+        if (updatedUser.getEmail() != null) user.setEmail(updatedUser.getEmail());
 
-        User saved = userRepository.save(user);
-        return toDTO(saved);
+        userRepository.save(user);
+        return toDTO(user);
     }
 
-    //Đổi mật khẩu
-    public void changePassword(Long userId, ChangePasswordDTO changPasswordDTO) {
+    @Override
+    public void changePassword(Long userId, ChangePasswordDTO dto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
 
-        if (!passwordEncoder.matches(changPasswordDTO.getOldPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(dto.getOldPassword(), user.getPassword())) {
             throw new RuntimeException("Mật khẩu hiện tại không đúng");
         }
 
-
-        user.setPassword(passwordEncoder.encode(changPasswordDTO.getNewPassword()));
+        user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
         userRepository.save(user);
     }
-    private UserUpdateDTO toDTO(User user) {
-        UserUpdateDTO response = new UserUpdateDTO();
-        response.setName(user.getName());
-        response.setGender(user.getGender());
-        response.setPhone(user.getPhone());
-        response.setAddress(user.getAddress());
-        response.setBirthDate(user.getBirthDate());
-        response.setEmail(user.getEmail());
-        return response;
+
+    @Override
+    public Optional<User> getUserById(Long userId) {
+        return userRepository.findById(userId) ;
     }
 
+    @Override
+    public UserUpdateDTO getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .map(this::toDTO)
+                .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
+    }
+
+    private UserUpdateDTO toDTO(User user) {
+        UserUpdateDTO dto = new UserUpdateDTO();
+        dto.setUserId(user.getUserId());
+        dto.setName(user.getName());
+        dto.setGender(user.getGender());
+        dto.setPhone(user.getPhone());
+        dto.setAddress(user.getAddress());
+        dto.setEmail(user.getEmail());
+        dto.setIndentifiCard(user.getIndentifiCard());
+        dto.setBirthDate(user.getBirthDate());
+        dto.setRole(User.UserRole.valueOf(user.getRole().toString()));
+      //  dto.setJoined(user.getJoinedDate()); // nếu bạn có trường này trong entity
+        return dto;
+    }
 }

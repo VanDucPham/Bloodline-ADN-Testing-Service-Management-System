@@ -1,9 +1,14 @@
 package com.example.Bloodline_ADN_System.service;
 
+import com.example.Bloodline_ADN_System.Entity.User;
 import com.example.Bloodline_ADN_System.dto.ChangePasswordDTO;
 import com.example.Bloodline_ADN_System.dto.UserUpdateDTO;
 
+import java.util.Optional;
+
 public interface UserService {
-    UserUpdateDTO updateUser(Long id, UserUpdateDTO updatedUser);
-    void changePassword(Long userId, ChangePasswordDTO changPasswordDTO);
+    UserUpdateDTO updateUser(String email, UserUpdateDTO updatedUser);
+    void changePassword(Long userId, ChangePasswordDTO changePasswordDTO);
+    Optional<User> getUserById(Long id);
+    UserUpdateDTO getUserByEmail(String email);
 }

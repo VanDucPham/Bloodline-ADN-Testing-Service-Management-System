@@ -1,0 +1,155 @@
+.user-profile-container {
+  max-width: 840px;
+  margin: 40px auto;
+  background: #f9fafa;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  padding: 32px;
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  
+}
+
+/* Thông báo trạng thái */
+.status-message {
+  margin-bottom: 8px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-align: center;
+  font-size: 15px;
+}
+
+/* Success + Error */
+.status-message.success {
+  background-color: #e6f7f1;
+  color: #10734f;
+  border: 1px solid #28b17b;
+}
+.status-message.error {
+  background-color: #fdeeee;
+  color: #b33228;
+  border: 1px solid #e86d6d;
+}
+
+/* Avatar + Info wrapper */
+.user-profile-card {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  padding: 24px;
+  border-radius: 12px;
+  background: white;
+  border: 1px solid #e0e0e0;
+}
+
+/* Avatar */
+.user-profile-avatar {
+  flex: 0 0 120px;
+  text-align: center;
+}
+.user-profile-avatar img {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #2d7a7a;
+  background: #f1f1f1;
+}
+
+/* Thông tin user */
+.user-profile-info {
+  flex: 1;
+  min-width: 300px;
+}
+
+/* Tên user */
+.user-profile-info h2 {
+  margin-bottom: 12px;
+  font-size: 26px;
+  font-weight: bold;
+  color: #000000; /* Đậm hơn #2d7a7a để nổi hơn trên nền sáng */
+}
+
+/* Text thông tin */
+.user-profile-info p {
+  margin: 6px 0;
+  font-size: 16px;
+  color: #222; /* Thay vì #444 để dễ đọc hơn */
+}
+
+.user-profile-info strong {
+  color: #000;
+}
+
+/* Input */
+.profile-input {
+  width: 100%;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
+  background: #eef2f5;
+  transition: box-shadow 0.2s;
+  color: inherit;
+}
+.profile-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #2d7a7a66;
+  border-color: #2d7a7a;
+}
+
+/* Layout form */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.form-grid input,
+.form-grid select {
+  grid-column: span 2;
+}
+@media (min-width: 600px) {
+  .form-grid input[name="phone"],
+  .form-grid input[name="birthDate"],
+  .form-grid select[name="gender"] {
+    grid-column: span 1;
+  }
+}
+
+/* Nút */
+.user-profile-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+.user-profile-actions button {
+  padding: 10px 22px;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.25s ease;
+  background-color: #2d7a7a;
+  color: white;
+}
+.user-profile-actions button:hover {
+  background-color: #1e5858;
+}
+.logout-btn {
+  background-color: #e74c3c;
+}
+.logout-btn:hover {
+  background-color: #c0392b;
+}
+.back-btn {
+  background-color: #aaa;
+}
+.back-btn:hover {
+  background-color: #888;
+}

@@ -6,10 +6,16 @@ import com.example.Bloodline_ADN_System.dto.accountResponse;
 import com.example.Bloodline_ADN_System.dto.updateUserRequest;
 import com.example.Bloodline_ADN_System.repository.UserRepository;
 import com.example.Bloodline_ADN_System.service.AdminService;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -24,6 +30,28 @@ public class AdminServiceImpl implements AdminService {
         this.passwordEncoder = passwordEncoder;
     }
 
+
+    public void importUserFromExcel(MultipartFile file) throws IOException {
+        Workbook workbook =  new XSSFWorkbook(file.getInputStream());
+        Sheet sheet = workbook.getSheetAt(0);
+        for(Row row : sheet){
+            if(row.getRowNum() == 0){ continue; }
+            String name  = row.getCell(0)==null?"": row.getCell(0).getStringCellValue();
+            String email = row.getCell(1)==null?"": row.getCell(1).getStringCellValue();
+            String password = row.getCell(2)==null?"": row.getCell(2).getStringCellValue();
+            String role = row.getCell(3)==null?"": row.getCell(3).getStringCellValue();
+
+            CreateUserRequest createUserRequest = new CreateUserRequest();
+            createUserRequest.setName(name);
+            createUserRequest.setEmail(email);
+            createUserRequest.setPassword(password);
+            createUserRequest.setRole(role);
+
+            createUser(createUserRequest);
+
+        }
+    workbook.close();
+    }
     @Override
     public void createUser(CreateUserRequest request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
@@ -47,7 +75,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public List<accountResponse> getAllUsers() {
         return userRepository.findAll().stream()
-                .map(u -> new accountResponse(u.getUserId(),u.getName(), u.getEmail(), u.getRoleString(), u.getStatusString()))
+                .map(u -> new accountResponse(u.getUserId(),u.getName(), u.getEmail(), u.getRole(), u.getStatusString()))
                 .collect(java.util.stream.Collectors.toList());
     }
 
@@ -56,7 +84,7 @@ public class AdminServiceImpl implements AdminService {
         User user = userRepository.findById(id).orElseThrow();
         user.setName(request.getName());
         user.setEmail(request.getEmail());
-        user.setRoleFromString(request.getRole());
+        user.setRole(User.UserRole.valueOf(request.getRole()));
         user.setStatusFromString(request.getStatus());
         userRepository.save(user);
     }

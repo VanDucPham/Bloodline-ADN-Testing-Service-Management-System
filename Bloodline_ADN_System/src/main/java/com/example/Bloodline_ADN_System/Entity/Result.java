@@ -6,26 +6,25 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
+// ========================
+// 📊 RESULT ENTITY
+// ========================
 @Entity
 @Table(name = "results")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Result {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "result_id")
     private Long resultId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "test_type")
     private TestType testType;
 
-    @Column(name = "result_value", columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String resultValue;
 
-    @Column(name = "result_date")
     private LocalDateTime resultDate;
 
     @Enumerated(EnumType.STRING)
@@ -38,11 +37,6 @@ public class Result {
     @JoinColumn(name = "appointment_id")
     private Appointment appointment;
 
-    public enum TestType {
-        DNA_PATERNITY, DNA_MATERNITY, DNA_SIBLINGSHIP, DNA_GRANDPARENTAGE
-    }
-
-    public enum ResultStatus {
-        PENDING, IN_PROGRESS, COMPLETED, REVIEWED
-    }
+    public enum TestType { DNA_PATERNITY, DNA_MATERNITY, DNA_SIBLINGSHIP, DNA_GRANDPARENTAGE }
+    public enum ResultStatus { PENDING, IN_PROGRESS, COMPLETED, REVIEWED }
 }

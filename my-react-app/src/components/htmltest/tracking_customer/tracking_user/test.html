@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Đặt lịch hẹn xét nghiệm ADN</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    header {
+      background: #2d7a7a;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 30px auto;
+      background: #fff;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 4px 20px #00000010;
+    }
+    h1, h2 {
+      color: #2d7a7a;
+    }
+    .step-nav {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 30px;
+      counter-reset: step;
+    }
+    .step {
+      text-align: center;
+      flex: 1;
+      position: relative;
+    }
+    .step::before {
+      content: counter(step);
+      counter-increment: step;
+      width: 32px;
+      height: 32px;
+      line-height: 32px;
+      border-radius: 50%;
+      background: #2d7a7a;
+      color: #fff;
+      display: inline-block;
+      margin-bottom: 5px;
+    }
+    .step::after {
+      content: '';
+      position: absolute;
+      top: 16px;
+      left: 50%;
+      height: 2px;
+      width: 100%;
+      background: #2d7a7a;
+      z-index: -1;
+    }
+    .step:last-child::after {
+      content: none;
+    }
+    .form-section {
+      margin-bottom: 40px;
+    }
+    label {
+      font-weight: 600;
+      display: block;
+      margin: 8px 0 4px;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-bottom: 16px;
+      font-size: 15px;
+    }
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .row > div {
+      flex: 1;
+      min-width: 260px;
+    }
+    .participant, .sample-info {
+      background: #f0f8f8;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+    }
+    .btn-add {
+      background: #009688;
+      color: white;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+    .summary-box {
+      background: #eef5f5;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 30px;
+      border: 1px solid #ccd;
+    }
+    .invoice {
+      background: #fff9e6;
+      padding: 20px;
+      border: 1px dashed #caa;
+      border-radius: 8px;
+    }
+    .btn-primary {
+      background: #2d7a7a;
+      color: white;
+      padding: 12px 24px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .btn-primary:hover {
+      background: #1d5c5c;
+    }
+    .confirmation-card {
+      background: #e0f7fa;
+      border: 1px solid #b2ebf2;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 30px;
+    }
+    .tracker {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 40px;
+    }
+    .tracker-step {
+      flex: 1;
+      text-align: center;
+      position: relative;
+      font-weight: bold;
+    }
+    .tracker-step::before {
+      content: '\2713';
+      display: inline-block;
+      background: #4caf50;
+      color: white;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      line-height: 28px;
+      margin-bottom: 6px;
+    }
+    .tracker-step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 14px;
+      right: -50%;
+      width: 100%;
+      height: 2px;
+      background: #ccc;
+      z-index: -1;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Đặt lịch hẹn xét nghiệm ADN</h1>
+  </header>
+  <div class="container">
+    <div class="step-nav">
+      <div class="step">1. Chọn loại hồ sơ</div>
+      <div class="step">2. Thông tin dịch vụ</div>
+      <div class="step">3. Người tham gia</div>
+      <div class="step">4. Mẫu xét nghiệm</div>
+      <div class="step">5. Thanh toán</div>
+      <div class="step">6. Xác nhận</div>
+    </div>
+
+    <!-- Các bước từ 1 đến 3 như cũ -->
+
+    <div class="form-section">
+      <h2>4. Mẫu xét nghiệm</h2>
+      <label>Hình thức lấy mẫu:</label>
+      <select id="collection-method">
+        <option value="tannha">Tại nhà</option>
+        <option value="tancos">Tại cơ sở</option>
+      </select>
+
+      <div id="sample-detail">
+        <div class="sample-info">
+          <label>Mẫu số 1 của ai:</label>
+          <input type="text" placeholder="Họ tên người 1">
+          <label>Loại mẫu:</label>
+          <select>
+            <option>Máu</option>
+            <option>Tóc</option>
+            <option>Niêm mạc</option>
+          </select>
+        </div>
+        <div class="sample-info">
+          <label>Mẫu số 2 của ai:</label>
+          <input type="text" placeholder="Họ tên người 2">
+          <label>Loại mẫu:</label>
+          <select>
+            <option>Máu</option>
+            <option>Tóc</option>
+            <option>Niêm mạc</option>
+          </select>
+        </div>
+        <label>Địa chỉ gửi mẫu:</label>
+        <textarea placeholder="Số nhà, đường, phường, quận..."></textarea>
+      </div>
+    </div>
+
+    <!-- Các bước 5 và 6 như cũ -->
+
+    <div class="form-section">
+      <h2>Tiến trình xử lý hồ sơ</h2>
+      <div class="tracker">
+        <div class="tracker-step">Đã nhận mẫu</div>
+        <div class="tracker-step">Đang phân tích</div>
+        <div class="tracker-step">Xác nhận kết quả</div>
+        <div class="tracker-step">Hoàn tất</div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h2>Kết quả xét nghiệm</h2>
+      <div class="summary-box">
+        <p><strong>Tình trạng:</strong> Đang chờ kết quả</p>
+        <p><strong>File kết quả:</strong> <a href="#">📄 Xem kết quả PDF</a></p>
+        <p><strong>Ngày có kết quả dự kiến:</strong> 2025-07-10</p>
+      </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 20px;">
+      <button class="btn-primary">Xác nhận & Đặt lịch</button>
+    </div>
+  </div>
+</body>
+</html>
