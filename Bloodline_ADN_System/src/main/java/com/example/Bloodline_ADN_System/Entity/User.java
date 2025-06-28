@@ -9,9 +9,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-// ========================
-// 👤 USER ENTITY
-// ========================
 @Entity
 @Table(name = "users")
 @Data
@@ -28,12 +25,20 @@ public class User {
         @Column(nullable = false)
         private String password;
 
-        private String indentifiCard;
+        private String citizenId;
         private String name;
         private String gender;
         private String phone;
         private String address;
 
+        private LocalDate createAt;
+
+        @PrePersist
+        public void prePersist() {
+                if (createAt == null) {
+                        createAt = LocalDate.now();
+                }
+        }
         @Enumerated(EnumType.STRING)
         private Status status;
 
@@ -41,6 +46,10 @@ public class User {
 
         @Enumerated(EnumType.STRING)
         private UserRole role;
+
+        // Staff-specific fields for home collection
+        private String staffCode;          // Mã nhân viên
+
 
         @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
         private List<Appointment> appointments = new ArrayList<>();
@@ -57,18 +66,19 @@ public class User {
         public enum UserRole {
                 ADMIN, CUSTOMER, STAFF, MANAGER
         }
-        public void setRole(UserRole role) {
-                this.role = UserRole.valueOf(role.toString());
 
+        public void setRole(UserRole role) {
+                this.role = role;
         }
+
         public String getRole() {
                 return this.role.toString();
         }
+
         public enum Status {
-                ACTIVE, INACTIVE;
-
-
+                ACTIVE, INACTIVE
         }
+
         public void setStatusFromString(String status) {
                 this.status = Status.valueOf(status.toUpperCase());
         }

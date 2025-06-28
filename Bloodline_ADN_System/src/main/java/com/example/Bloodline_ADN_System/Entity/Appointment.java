@@ -8,9 +8,6 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-// ========================
-// 📅 APPOINTMENT ENTITY
-// ========================
 @Entity
 @Table(name = "appointments")
 @Data
@@ -29,6 +26,10 @@ public class Appointment {
     @JoinColumn(name = "service_id")
     private Service service;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "staff_assigned_id")
+    private User assignedStaff; // Nhân viên được phân công
+
     @OneToMany(mappedBy = "appointment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Participant> participants = new ArrayList<>();
 
@@ -42,14 +43,24 @@ public class Appointment {
     private LocalDate appointmentDate;
     private LocalTime appointmentTime;
 
+    // Trong Appointment.java
+    @Column(length = 255)
+    private String collectionAddress; // Địa chỉ lấy mẫu tại nhà
+
     @Enumerated(EnumType.STRING)
     private AppointmentStatus status;
 
     @Enumerated(EnumType.STRING)
     private DeliveryMethod deliveryMethod;
 
+    @Enumerated(EnumType.STRING)
+    private CollectionStatus collectionStatus; // Trạng thái thu mẫu
+
+    private LocalDateTime estimatedArrivalTime; // Thời gian dự kiến đến
+
     @Column(columnDefinition = "TEXT")
     private String appointmentNote;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_id")
     private CaseFile caseFile;
@@ -66,10 +77,20 @@ public class Appointment {
     @PrePersist
     protected void onCreate() {
         createdTime = LocalDateTime.now();
+        if (deliveryMethod == DeliveryMethod.HOME_COLLECTION) {
+            collectionStatus = CollectionStatus.ASSIGNED;
+        }
     }
 
     public enum AppointmentType { ADMINISTRATIVE, CIVIL }
     public enum DeliveryMethod { HOME_COLLECTION, SELF_DROP_OFF }
     public enum AppointmentStatus { SCHEDULED, CONFIRMED, IN_PROGRESS, COMPLETED, CANCELLED }
-
+    public enum CollectionStatus {
+        ASSIGNED,      // Đã phân công nhân viên
+        TRAVELING,     // Nhân viên đang di chuyển
+        ARRIVED,       // Đã đến địa chỉ khách hàng
+        COLLECTING,    // Đang thu mẫu
+        
+        COMPLETED      // Hoàn thành thu mẫu
+    }
 }
