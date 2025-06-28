@@ -60,6 +60,8 @@ function UserDashboard() {
       setStatus('Đang tải dữ liệu ...');
       try {
         const response = await apiService.user.getProfile();
+        console.log(response)
+
         setUser(response);
         setStatus('');
       } catch (error) {

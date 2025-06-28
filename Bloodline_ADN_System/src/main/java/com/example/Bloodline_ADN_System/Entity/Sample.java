@@ -1,5 +1,6 @@
 package com.example.Bloodline_ADN_System.Entity;
 
+import com.example.Bloodline_ADN_System.dto.SampleDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Sample {
+public class Sample extends SampleDTO {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long sampleId;

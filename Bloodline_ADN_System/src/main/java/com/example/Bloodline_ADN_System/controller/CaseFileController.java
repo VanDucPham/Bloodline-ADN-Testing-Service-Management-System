@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/customer")
+@RequestMapping("/api/customer/caseFile")
 public class CaseFileController {
     private final SampleServiceImpl sampleServiceImpl;
     private AppointmentService appointmentService;
@@ -31,17 +31,13 @@ public class CaseFileController {
     }
 
 
-    @PostMapping("/customer")
+    @PostMapping("/ sample")
     public ResponseEntity<List<SampleDTO>> createSamplesByUser(@RequestBody List<SampleCustomerDTO> dtoList) {
         System.out.println("hello");
         return ResponseEntity.ok(sampleServiceImpl.createSamplesByCustomer(dtoList));
     }
 
-    @PostMapping("/apppointment")
-    public ResponseEntity<AppointmentResponse<AppointmentDTO>> createAppointment(@RequestBody AppointmentDTO dto) {
-        AppointmentResponse<AppointmentDTO> response = appointmentService.createAppointment(dto);
-        return ResponseEntity.ok(response);
-    }
+
 
 
     @PostMapping("/paticipant")

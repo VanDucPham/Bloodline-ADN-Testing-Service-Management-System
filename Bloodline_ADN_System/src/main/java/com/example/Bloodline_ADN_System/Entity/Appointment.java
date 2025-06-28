@@ -46,7 +46,7 @@ public class Appointment {
     private AppointmentStatus status;
 
     @Enumerated(EnumType.STRING)
-    private DeliveryMethod deliverymethod;
+    private DeliveryMethod deliveryMethod;
 
     @Column(columnDefinition = "TEXT")
     private String appointmentNote;

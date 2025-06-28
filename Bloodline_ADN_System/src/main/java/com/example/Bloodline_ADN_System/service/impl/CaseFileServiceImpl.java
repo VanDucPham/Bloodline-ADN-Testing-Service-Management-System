@@ -13,6 +13,7 @@ import com.example.Bloodline_ADN_System.service.CaseFileService;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+@org.springframework.stereotype.Service
 public class CaseFileServiceImpl implements CaseFileService {
     private final UserServiceImpl userServiceImpl;
     private final CaseFileRepository caseFileRepository;
@@ -59,7 +60,7 @@ public class CaseFileServiceImpl implements CaseFileService {
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy hồ sơ với ID: " + id));
 
         caseFileResponse res = new caseFileResponse();
-        res.setId(caseFile.getCaseId());
+       // res.setId(caseFile.getCaseId());
         res.setCaseCode(caseFile.getCaseCode());
         res.setCaseType(caseFile.getCaseType().name());
         res.setStatus(caseFile.getStatus().name());
@@ -72,6 +73,34 @@ public class CaseFileServiceImpl implements CaseFileService {
         }
 
         return res;
+    }
+
+    @Override
+    public String generateCaseCode(String type) {
+        String prefix = switch (type.toUpperCase()){
+            case "ADMINISTRATIVE" -> "HC";
+            case "CIVIL" -> "DS";
+            default -> "N";
+        } ;
+        String caseCode ;
+        int retry = 0 ;
+        do{
+            String timsemap = String.valueOf(System.currentTimeMillis()).substring(7);
+            caseCode = prefix + timsemap;
+            retry++;
+            if(retry> 5){
+                throw new RuntimeException("Không thế tạo mã hồ sơ duy nhaats sau 5 lần thử");
+            }
+        }while(caseFileRepository.existsCaseFilesByCaseCode(caseCode))  ;
+
+
+        return caseCode;
+    }
+
+    @Override
+    public boolean existCaseCode(String caseCode) {
+
+        return false;
     }
 
 

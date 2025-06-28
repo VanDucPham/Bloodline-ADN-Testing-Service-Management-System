@@ -60,6 +60,11 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
     }
 
+    @Override
+    public Optional<User> findUserById(String id) {
+        return Optional.empty();
+    }
+
     private UserUpdateDTO toDTO(User user) {
         UserUpdateDTO dto = new UserUpdateDTO();
         dto.setUserId(user.getUserId());
