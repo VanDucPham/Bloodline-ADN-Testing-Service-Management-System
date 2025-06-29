@@ -1,0 +1,144 @@
+.staff-appointments-container {
+  max-width: 1100px;
+  margin: 36px auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  padding: 32px 28px 24px 28px;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.staff-appointments-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 22px;
+}
+
+.staff-appointments-header h2 {
+  color: #2d3a4a;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.staff-appointments-filters {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.staff-appointments-filters select,
+.staff-appointments-filters input[type="text"] {
+  padding: 8px 12px;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  font-size: 1rem;
+  background: #f9fafb;
+  transition: border 0.2s;
+}
+
+.staff-appointments-filters select:focus,
+.staff-appointments-filters input[type="text"]:focus {
+  border-color: #4f8cff;
+  outline: none;
+  background: #fff;
+}
+
+.staff-appointments-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  background: #fff;
+}
+
+.staff-appointments-table th,
+.staff-appointments-table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid #eaeaea;
+  text-align: left;
+  font-size: 1rem;
+}
+
+.staff-appointments-table th {
+  background: #f5f8fa;
+  color: #34495e;
+  font-weight: 600;
+}
+
+.staff-appointments-table tr:hover {
+  background: #f0f6ff;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #fff;
+}
+
+.status-badge.SCHEDULED { background: #4f8cff; }
+.status-badge.CONFIRMED { background: #38b6ff; }
+.status-badge.IN_PROGRESS { background: #f39c12; }
+.status-badge.COMPLETED { background: #27ae60; }
+.status-badge.CANCELLED { background: #e74c3c; }
+
+.action-btn {
+  padding: 7px 16px;
+  border: none;
+  border-radius: 6px;
+  background: #4f8cff;
+  color: #fff;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-right: 6px;
+}
+
+.action-btn:last-child {
+  margin-right: 0;
+}
+
+.action-btn:hover {
+  background: #38b6ff;
+}
+
+.error-msg {
+  color: #e74c3c;
+  background: #fff0f0;
+  border: 1px solid #f5c2c7;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-top: 8px;
+  text-align: center;
+  font-size: 0.98rem;
+}
+
+.success-msg {
+  color: #27ae60;
+  background: #eafaf1;
+  border: 1px solid #b7ebc6;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-top: 8px;
+  text-align: center;
+  font-size: 0.98rem;
+}
+
+@media (max-width: 800px) {
+  .staff-appointments-container {
+    padding: 18px 6px;
+  }
+  .staff-appointments-table th,
+  .staff-appointments-table td {
+    padding: 8px 4px;
+    font-size: 0.95rem;
+  }
+  .staff-appointments-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}

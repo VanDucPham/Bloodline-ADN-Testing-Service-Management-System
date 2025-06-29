@@ -37,6 +37,11 @@ public class CaseFileController {
         return ResponseEntity.ok(sampleServiceImpl.createSamplesByCustomer(dtoList));
     }
 
+    @PostMapping("/apppointment")
+    public ResponseEntity<AppointmentResponse<AppointmentDTO>> createAppointment(@RequestBody AppointmentDTO dto) {
+        AppointmentResponse<AppointmentDTO> response = appointmentService.createAppointmentByStaff(dto);
+        return ResponseEntity.ok(response);
+    }
 
 
 

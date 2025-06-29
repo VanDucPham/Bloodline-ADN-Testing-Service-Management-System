@@ -80,6 +80,8 @@ function Header() {
             </li>
           ))}
 
+         
+
           {!isLogin && (
             <>
               <li>
@@ -104,9 +106,21 @@ function Header() {
               )}
 
               {role === 'STAFF' && (
-                <li>
-                  <Link to="/staff">Trang Nhân Viên</Link>
-                </li>
+                <>
+                  <li>
+                    <Link to="/staff">Trang Nhân Viên</Link>
+                  </li>
+                  <li>
+                    <button onClick={() => navigate('/staff/appointment')}>
+                      Quản lý lịch hẹn
+                    </button>
+                  </li>
+                  <li>
+                    <button onClick={() => navigate('/staff/appointment/create')}>
+                      + Tạo lịch hẹn
+                    </button>
+                  </li>
+                </>
               )}
 
               {role === 'CUSTOMER' && (

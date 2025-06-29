@@ -27,6 +27,7 @@ public class Sample extends SampleDTO {
     @Enumerated(EnumType.STRING)
     private SampleType sampleType;
 
+    @Column(name = "collection_datetime")
     private LocalDateTime collectionDateTime;
 
     @Enumerated(EnumType.STRING)

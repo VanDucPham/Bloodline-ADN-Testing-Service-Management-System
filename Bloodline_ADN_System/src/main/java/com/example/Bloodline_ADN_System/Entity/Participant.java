@@ -17,6 +17,7 @@ import java.time.LocalDate;
 public class Participant {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "participant_id")
     private Long participantId;
 
     private String name;

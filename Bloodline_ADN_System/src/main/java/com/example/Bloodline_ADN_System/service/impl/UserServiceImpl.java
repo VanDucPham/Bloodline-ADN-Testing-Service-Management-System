@@ -50,7 +50,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<User> getUserById(Long userId) {
         return userRepository.findById(userId) ;
-
     }
 
     @Override

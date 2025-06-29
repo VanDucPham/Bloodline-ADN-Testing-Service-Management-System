@@ -11,4 +11,5 @@ public interface SampleService {
     List<SampleDTO> createSamplesByCustomer(List<SampleCustomerDTO> dtoList);
     List<SampleDTO> createSampleByStaff(List<SampleStaffDTO> dtoList);
     SampleDTO updateSampleInfo(SampleUpdateDTO dto);
+    SampleDTO getSampleByParticipantId(Long participantId);
 }

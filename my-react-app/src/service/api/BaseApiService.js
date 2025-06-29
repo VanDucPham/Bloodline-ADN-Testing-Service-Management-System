@@ -24,12 +24,13 @@ class BaseApiService {
     async request(endpoint, options = {}) {
         const url = `${this.manager.baseURL}${endpoint}`;
         const data = options.data || null;
+        const params = options.params || undefined; // <-- Thêm dòng này
 
         const config = {
             method: options.method || 'GET',
             url,
             headers: this.getHeaders(data, options.headers || {}),
-            data
+           ...(options.method === 'GET' ? { params } : { data }) // <-- xử lý params đúng cho GET
         };
 
         try {

@@ -37,6 +37,7 @@ public class Appointment {
     private Payment payment;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "appointment_type")
     private AppointmentType type;
 
     private LocalDateTime createdTime;
@@ -48,15 +49,21 @@ public class Appointment {
     private String collectionAddress; // Địa chỉ lấy mẫu tại nhà
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "appointment_status")
     private AppointmentStatus status;
 
     @Enumerated(EnumType.STRING)
+
+    @Column(name = "delivery_method")
+    private DeliveryMethod deliverymethod;
+
     private DeliveryMethod deliveryMethod;
 
     @Enumerated(EnumType.STRING)
     private CollectionStatus collectionStatus; // Trạng thái thu mẫu
 
     private LocalDateTime estimatedArrivalTime; // Thời gian dự kiến đến
+
 
     @Column(columnDefinition = "TEXT")
     private String appointmentNote;

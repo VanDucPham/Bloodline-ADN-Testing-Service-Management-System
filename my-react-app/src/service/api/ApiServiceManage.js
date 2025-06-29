@@ -89,6 +89,7 @@ import axios from "axios";
 import AuthService from "../authService";
 import UserService from "../userService";
 import AdminService from "../adminService";
+import StaffService from "../staffservice"; // Import StaffService
 
 class ApiServiceManager {
   constructor() {
@@ -104,6 +105,7 @@ class ApiServiceManager {
     this.auth = new AuthService(this);
     this.user = new UserService(this);
     this.admin = new AdminService(this);
+    this.staff = new StaffService(this); 
 
     this.initializeRequestInterceptor();
     this.initializeResponseInterceptor();

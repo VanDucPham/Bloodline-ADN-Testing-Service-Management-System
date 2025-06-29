@@ -2,6 +2,7 @@ package com.example.Bloodline_ADN_System.service.impl;
 
 import com.example.Bloodline_ADN_System.Entity.Appointment;
 import com.example.Bloodline_ADN_System.Entity.Participant;
+import com.example.Bloodline_ADN_System.dto.ParticipantResponeDTO;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.ParticipantDTO;
 import com.example.Bloodline_ADN_System.repository.AppointmentRepository;
 import com.example.Bloodline_ADN_System.repository.ParticipantRepository;
@@ -48,6 +49,27 @@ public class ParticipantServiceImpl implements ParticipantService {
                     }
                 })
                 .filter(dto -> dto != null) // remove failed items
+                .collect(Collectors.toList());
+    }
+
+    //Lấy danh sách participant từ appointmentId
+    public List<ParticipantResponeDTO> getParticipantByAppointmentId(Long appointmentId) {
+        List<Participant> participants = participantRepository.findByAppointment_AppointmentId(appointmentId);
+
+        // Chuyển sang DTO
+        return participants.stream()
+                .map(dto ->{
+                    ParticipantResponeDTO participantDTO = new ParticipantResponeDTO();
+                    participantDTO.setParticipantId(dto.getParticipantId());
+                    participantDTO.setName(dto.getName());
+                    participantDTO.setRelationship(dto.getRelationship());
+                    participantDTO.setGender(dto.getGender());
+                    participantDTO.setCitizenId(dto.getCitizenId());
+                    participantDTO.setAddress(dto.getAddress());
+                    participantDTO.setBirthDate(dto.getBirthDate());
+                    participantDTO.setAppointmentId(dto.getAppointment().getAppointmentId());
+                    return participantDTO;
+                })
                 .collect(Collectors.toList());
     }
 

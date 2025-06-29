@@ -1,8 +1,10 @@
 package com.example.Bloodline_ADN_System.controller;
 
 import com.example.Bloodline_ADN_System.Entity.Appointment;
+
 import com.example.Bloodline_ADN_System.dto.AppointmentCheckRequest;
 import com.example.Bloodline_ADN_System.dto.ServiceDTO;
+
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentDTO;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentRequest;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentResponse;
@@ -18,7 +20,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/customer/appointment")
+@RequestMapping("/api/appointment")
 public class AppointmentController {
 
     private final AppointmentService appointmentService;
@@ -30,6 +32,12 @@ public class AppointmentController {
         this.timeSlotLimitService = timeSlotLimitService;
         this.serviceImpl = serviceImpl;
     }
+
+
+    @PostMapping()
+    public ResponseEntity<AppointmentResponse<AppointmentDTO>> createAppointment(@RequestBody AppointmentDTO dto) {
+        AppointmentResponse<AppointmentDTO> response = appointmentService.createAppointmentByStaff(dto);
+        return ResponseEntity.ok(response);
 
     /**
      * Kiểm tra lịch trống dựa trên ngày giờ và email người dùng
@@ -46,6 +54,7 @@ public class AppointmentController {
         );
 
         return ResponseEntity.ok(available ? "Lịch trống." : "Lịch không trống.");
+
     }
 
     /**
