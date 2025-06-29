@@ -1,23 +1,55 @@
+
 package com.example.Bloodline_ADN_System.service.impl;
 
-import com.example.Bloodline_ADN_System.Entity.Appointment;
-import com.example.Bloodline_ADN_System.Entity.Service;
-import com.example.Bloodline_ADN_System.Entity.User;
+import com.example.Bloodline_ADN_System.Entity.*;
+import com.example.Bloodline_ADN_System.dto.SampleDTO;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentDTO;
+import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentRequest;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentResponse;
-import com.example.Bloodline_ADN_System.repository.AppointmentRepository;
-import com.example.Bloodline_ADN_System.repository.ServiceRepository;
-import com.example.Bloodline_ADN_System.repository.UserRepository;
+import com.example.Bloodline_ADN_System.dto.managerCaseFile.ParticipantDTO;
+import com.example.Bloodline_ADN_System.repository.*;
+import com.example.Bloodline_ADN_System.service.AppointmentService;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-@org.springframework.stereotype.Service
-public class AppointmentServiceImpl implements com.example.Bloodline_ADN_System.service.AppointmentService {
+@Service
+public class AppointmentServiceImpl implements AppointmentService {
 
     private final AppointmentRepository appointmentRepository;
+
+    private final UserRepository userRepository;
+
+
+    private final ParticipantRepository participantRepository;
+
+
+    private final SampleRepository sampleRepository;
+
+
+    private final CaseFileRepository caseFileRepository;
+    private final CaseFileServiceImpl caseFileService;
+
+    private final TimeSlotLimitRepository timeSlotLimitRepository;
+
+    public AppointmentServiceImpl(CaseFileRepository caseFileRepository,ParticipantRepository participantRepository, AppointmentRepository appointmentRepository, UserRepository userRepository, SampleRepository sampleRepository, TimeSlotLimitRepository timeSlotLimitRepository, CaseFileServiceImpl caseFileService ) {
+        this.appointmentRepository = appointmentRepository;
+        this.participantRepository = participantRepository;
+        this.userRepository = userRepository;
+        this.sampleRepository = sampleRepository;
+        this.timeSlotLimitRepository = timeSlotLimitRepository;
+        this.caseFileRepository = caseFileRepository;
+        this.caseFileService = caseFileService;
+
+    }
+  
+     private final AppointmentRepository appointmentRepository;
     private final UserRepository userRepository;
     private final ServiceRepository serviceRepository;
 
@@ -138,20 +170,163 @@ public class AppointmentServiceImpl implements com.example.Bloodline_ADN_System.
         dto.setAppointmentNote(appointment.getAppointmentNote());
         return dto;
     }
+  
+    @Override
+    public boolean checkAvailability(LocalDate date, LocalTime time, String email) {
 
-//    // Lấy tất cả case của user hiện tại
-//    public List<Appointment> getAppointmentsForCurrentUser(Long currentUserId) {
-//        return appointmentRepository.findByUserId(currentUserId);
-//    }
-//
-//    // Lấy case theo id nếu thuộc về user
-//    public Appointment getAppointmentForCurrentUser(Long currentUserId, Long id) {
-//        Appointment appointment = appointmentRepository.findById(id)
-//                .orElseThrow(() -> new RuntimeException("Not found."));
-//        if (!appointment.getUser().getId().equals(currentUserId)) {
-//            throw new SecurityException("Not authorized.");
-//        }
-//        return appointment;
-//    }
+
+        System.out.println("Checking availability 111111111");
+        if (date.isBefore(LocalDate.now()) || (date.isEqual(LocalDate.now()) && time.isBefore(LocalTime.now()))) {
+            System.out.println("check availability");
+            return false; // Reject past dates and times
+        }
+
+        Optional<TimeSlotLimit> slotOpt = timeSlotLimitRepository.findByStartTimeLessThanEqualAndEndTimeGreaterThanEqual(time, time);
+        if (slotOpt.isEmpty()) {
+            System.out.println("check  nulll ");
+            return false;
+        }
+        TimeSlotLimit slot = slotOpt.get();
+        int currentAppointments = appointmentRepository.countByAppointmentDateAndAppointmentTimeBetween(date, slot.getStartTime(), slot.getEndTime());
+
+        if (currentAppointments >= slot.getMaxAppointments()) {
+            System.out.println("Appointment limit exceeded");
+            return false; // Slot is full
+        }
+
+        Long userId = getUserIdByUsername(email);
+        boolean userAlreadyHasAppointment = appointmentRepository.existsByUser_UserIdAndAppointmentDateAndAppointmentTimeBetween(userId, date, slot.getStartTime(), slot.getEndTime());
+        System.out.println("đã vào đây");
+        return !userAlreadyHasAppointment;
+    }
+
+    @Override
+    public Long getUserIdByUsername(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User không tồn tại"))
+                .getUserId();
+    }
+
+    @Override
+    public boolean isUserIdExist(Long userId) {
+        return userRepository.existsById(userId);
+    }
+
+
+    @Override
+    @Transactional
+    public AppointmentResponse<AppointmentDTO> createAppointment(AppointmentRequest request) {
+        // 1. Lưu hồ sơ CaseFile
+        CaseFile savedCaseFile = request.getCaseFile();
+        savedCaseFile.setCaseCode(caseFileService.generateCaseCode(String.valueOf(request.getCaseFile().getCaseType())));
+        CaseFile caseFile = caseFileRepository.save(savedCaseFile);
+        // 2. Tạo và lưu Appointment
+        Appointment appointment = request.getAppointment();
+        appointment.setCaseFile(savedCaseFile);
+        Appointment savedAppointment = appointmentRepository.save(appointment);
+
+        // 3. Lưu danh sách Participants và tạo Map<CCCD, Participant>
+        Map<String, Participant> citizenIdToParticipant = request.getParticipants()
+                .stream()
+                .map(p -> {
+                    p.setAppointment(savedAppointment);
+                    return participantRepository.save(p);
+                })
+                .collect(Collectors.toMap(Participant::getCitizenId, p -> p));
+
+        // 4. Lưu danh sách Samples
+        for (SampleDTO sampleDto : request.getSamples()) {
+            Participant participant = citizenIdToParticipant.get(sampleDto.getParticipantCitizenId());
+
+            if (participant == null) {
+                throw new RuntimeException("Không tìm thấy participant với CCCD: " + sampleDto.getParticipantCitizenId());
+            }
+
+            Sample sample = new Sample();
+            sample.setParticipant(participant);
+            sample.setSampleType(sampleDto.getSampleType());
+            sample.setCollectionDateTime(sampleDto.getCollectionDateTime());
+            sample.setQuality(sampleDto.getQuality());
+            sample.setStatus(sampleDto.getStatus());
+            sample.setResult(sampleDto.getResult());
+            sample.setNotes(sampleDto.getNotes());
+
+            sampleRepository.save(sample);
+        }
+
+        // 5. Chuẩn bị dữ liệu trả về: AppointmentDTO
+        AppointmentDTO dto = new AppointmentDTO();
+        dto.setAppointmentId(savedAppointment.getAppointmentId());
+        dto.setAppointmentDate(savedAppointment.getAppointmentDate());
+        dto.setAppointmentTime(savedAppointment.getAppointmentTime());
+        dto.setDeliveryMethod(String.valueOf(savedAppointment.getDeliveryMethod()));
+        dto.setCaseCode(
+                Optional.ofNullable(savedAppointment.getCaseFile())
+                        .map(CaseFile::getCaseCode)
+                        .orElse(null)
+        );
+
+        // Participants DTO
+        List<ParticipantDTO> participantDTOs = request.getParticipants().stream()
+                .map(p -> new ParticipantDTO(
+                        p.getParticipantId(),
+                        p.getName(),
+                        p.getRelationship(),
+                        p.getCitizenId(),
+                        p.getAddress(),
+                        p.getBirthDate(),
+                        p.getGender()
+                ))
+                .collect(Collectors.toList());
+        dto.setParticipants(participantDTOs);
+
+        // Samples DTO
+        List<SampleDTO> sampleDTOs = request.getSamples().stream()
+                .map(s -> new SampleDTO(
+                        s.getSampleId(),
+                        s.getParticipant() != null ? s.getParticipant().getParticipantId() : null,
+                        s.getParticipantCitizenId(),
+                        s.getParticipant() != null ? s.getParticipant().getName() : null,
+                        s.getSampleType(),
+                        s.getCollectionDateTime(),
+                        s.getQuality(),
+                        s.getStatus(),
+                        s.getResult(),
+                        s.getNotes()
+                ))
+                .collect(Collectors.toList());
+        dto.setSamples(sampleDTOs);
+
+        return new AppointmentResponse<>("Tạo lịch hẹn thành công!", dto);
+    }
+
+
+
+
+    @Override
+    public List<AppointmentDTO> getAllAppointment() {
+        return List.of();
+    }
+
+    @Override
+    public List<AppointmentDTO> getAppointmentByUserId(Long userId) {
+        return List.of();
+    }
+
+    @Override
+    public void cancelAppointment(Long id) {
+
+    }
+
+    @Override
+    public List<AppointmentDTO> filterAppointment(Appointment.AppointmentStatus status, Appointment.AppointmentType type, LocalDate date) {
+        return List.of();
+    }
+
+    @Override
+    public AppointmentDTO updateAppointmentProgress(Long id, Appointment.AppointmentStatus status) {
+        return null;
+    }
 
 }
+

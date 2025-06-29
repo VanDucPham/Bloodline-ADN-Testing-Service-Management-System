@@ -125,8 +125,8 @@ function Header() {
 
               {role === 'CUSTOMER' && (
                 <li>
-                  <button className="payment-btn" onClick={() => navigate('/payment')}>
-                    <FontAwesomeIcon icon={faMoneyBill} /> Order
+                  <button className="payment-btn" onClick={() => navigate('/tracking_user')}>
+                    <FontAwesomeIcon icon={faMoneyBill}  /> Order
                   </button>
                 </li>
               )}
