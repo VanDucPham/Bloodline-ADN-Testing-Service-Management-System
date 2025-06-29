@@ -64,7 +64,7 @@ public class StaffCaseFileController {
 
     @PostMapping("/appointment/create")
     public ResponseEntity<AppointmentResponse<AppointmentDTO>> createAppointment(@RequestBody AppointmentDTO dto) {
-        AppointmentResponse<AppointmentDTO> response = appointmentService.createAppointment(dto);
+        AppointmentResponse<AppointmentDTO> response = appointmentService.createAppointmentByStaff(dto);
         return ResponseEntity.ok(response);
     }
 

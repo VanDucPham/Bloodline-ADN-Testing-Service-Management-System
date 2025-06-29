@@ -28,7 +28,7 @@ public class AppointmentServiceImpl implements com.example.Bloodline_ADN_System.
     }
 
     //Customer tạo lịch hẹn
-    public AppointmentResponse<AppointmentDTO> createAppointment(AppointmentDTO dto) {
+    public AppointmentResponse<AppointmentDTO> createAppointmentByStaff(AppointmentDTO dto) {
 
         // Kiểm tra ngày giờ
         LocalDate appointmentDate = dto.getAppointmentDate();

@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface AppointmentService {
-    AppointmentResponse<AppointmentDTO> createAppointment(AppointmentDTO dto);
+    AppointmentResponse<AppointmentDTO> createAppointmentByStaff(AppointmentDTO dto);
     List<AppointmentDTO> getAllAppointment();
     List<AppointmentDTO> getAppointmentByUserId(Long userId);
     void cancelAppointment(Long id);
