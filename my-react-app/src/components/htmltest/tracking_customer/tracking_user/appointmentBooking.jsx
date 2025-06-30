@@ -62,13 +62,16 @@ function AppointmentBooking() {
     useEffect(() => {
         const fetchService = async () => {
             try {
-                const userData = localStorage.getItem("userInfo"
+        const userData = localStorage.getItem("userInfo");
+const userItem = userData ? JSON.parse(userData) : null; 
 
-                )
-                const userItem = userData ? JSON.parse(userData) : null; 
-                if(userItem?.user_Id){
-                    setAppointment(... appointment, userId : userItem.user_Id)
-                }
+if (userItem?.user_Id) {
+    setAppointment(prev => ({
+        ...prev,
+        userId: userItem.user_Id
+    }));
+}
+
 
                 const response = await apiService.user.getService();
                 const timeSlot = await apiService.user.getTimeSlot()
