@@ -1,10 +1,8 @@
 package com.example.Bloodline_ADN_System.controller;
 
 import com.example.Bloodline_ADN_System.Entity.Appointment;
-
 import com.example.Bloodline_ADN_System.dto.AppointmentCheckRequest;
 import com.example.Bloodline_ADN_System.dto.ServiceDTO;
-
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentDTO;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentRequest;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentResponse;
@@ -20,48 +18,42 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/appointment")
+@RequestMapping("/api/customer/appointment")
 public class AppointmentController {
 
     private final AppointmentService appointmentService;
     private final Time_slot_limit_Impl timeSlotLimitService;
     private final ServiceImpl serviceImpl;
 
-    public AppointmentController(AppointmentService appointmentService, Time_slot_limit_Impl timeSlotLimitService, ServiceImpl serviceImpl) {
+    public AppointmentController(AppointmentService appointmentService,
+                                 Time_slot_limit_Impl timeSlotLimitService,
+                                 ServiceImpl serviceImpl) {
         this.appointmentService = appointmentService;
         this.timeSlotLimitService = timeSlotLimitService;
         this.serviceImpl = serviceImpl;
     }
 
-
-    @PostMapping()
-    public ResponseEntity<AppointmentResponse<AppointmentDTO>> createAppointment(@RequestBody AppointmentDTO dto) {
-        AppointmentResponse<AppointmentDTO> response = appointmentService.createAppointmentByStaff(dto);
-        return ResponseEntity.ok(response);
-
     /**
      * Kiểm tra lịch trống dựa trên ngày giờ và email người dùng
      */
     @PostMapping("/check-availability")
-    public ResponseEntity<String> checkAvailability(@RequestBody AppointmentCheckRequest request,
+    public ResponseEntity<String> checkAvailability1(@RequestBody AppointmentCheckRequest request,
                                                     Authentication authentication) {
         String email = authentication.getName();
-
         boolean available = appointmentService.checkAvailability(
                 request.getAppointmentDate(),
                 request.getAppointmentTime(),
                 email
         );
-
         return ResponseEntity.ok(available ? "Lịch trống." : "Lịch không trống.");
-
     }
 
     /**
      * Tạo mới một lịch hẹn
      */
     @PostMapping("/create")
-    public ResponseEntity<AppointmentResponse<AppointmentDTO>> createAppointment(@RequestBody AppointmentRequest request) {
+    public ResponseEntity<AppointmentResponse<AppointmentDTO>> createAppointment(
+            @RequestBody AppointmentRequest request) {
         AppointmentResponse<AppointmentDTO> response = appointmentService.createAppointment(request);
         return ResponseEntity.status(201).body(response);
     }
@@ -77,9 +69,9 @@ public class AppointmentController {
     /**
      * Lấy lịch hẹn theo ID người dùng
      */
-    @GetMapping("/{id}")
-    public ResponseEntity<List<AppointmentDTO>> getAppointmentsByUserId(@PathVariable Long id) {
-        return ResponseEntity.ok(appointmentService.getAppointmentByUserId(id));
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<AppointmentDTO>> getAppointmentsByUserId(@PathVariable Long userId) {
+        return ResponseEntity.ok(appointmentService.getAppointmentByUserId(userId));
     }
 
     /**
@@ -94,7 +86,7 @@ public class AppointmentController {
     /**
      * Lọc lịch hẹn theo trạng thái, loại và ngày
      */
-    @GetMapping
+    @GetMapping("/filter")
     public ResponseEntity<List<AppointmentDTO>> filterAppointments(
             @RequestParam(required = false) Appointment.AppointmentStatus status,
             @RequestParam(required = false) Appointment.AppointmentType type,
@@ -106,10 +98,10 @@ public class AppointmentController {
      * Cập nhật trạng thái lịch hẹn
      */
     @PutMapping("/{id}/status")
-    public ResponseEntity<String> updateStatus(@PathVariable Long id,
-                                               @RequestParam Appointment.AppointmentStatus status) {
-        appointmentService.updateAppointmentProgress(id, status);
-        return ResponseEntity.ok("Cập nhật trạng thái thành công.");
+    public ResponseEntity<AppointmentDTO> updateStatus(@PathVariable Long id,
+                                                       @RequestParam Appointment.AppointmentStatus status) {
+        AppointmentDTO updated = appointmentService.updateAppointmentProgress(id, status);
+        return ResponseEntity.ok(updated);
     }
 
     /**
@@ -117,13 +109,14 @@ public class AppointmentController {
      */
     @GetMapping("/time-slots")
     public ResponseEntity<?> getAppointmentTimeSlots() {
-        System.out.println("Đã gọi được slot");
         return ResponseEntity.ok(timeSlotLimitService.getTimeSlotLimit());
     }
 
-    @GetMapping("/service")
-    public ResponseEntity<List<ServiceDTO>> getAppointmentService() {
+    /**
+     * Lấy danh sách dịch vụ
+     */
+    @GetMapping("/services")
+    public ResponseEntity<List<ServiceDTO>> getAppointmentServices() {
         return ResponseEntity.ok(serviceImpl.getAllServices());
     }
-
 }

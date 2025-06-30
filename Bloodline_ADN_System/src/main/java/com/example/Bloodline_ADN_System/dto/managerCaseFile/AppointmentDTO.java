@@ -19,13 +19,35 @@ import java.util.List;
 public class AppointmentDTO {
     private Long appointmentId;
 
+    // Thông tin người dùng
+    private Long userId;
+
+    // Thông tin dịch vụ
+    private Long serviceId;
+
+    // Kiểu lịch hẹn (Hành chính / Dịch vụ)
+    private Appointment.AppointmentType appointmentType;
+
+    // Ngày và giờ
     private LocalDate appointmentDate;
     private LocalTime appointmentTime;
+
+    // Trạng thái (SCHEDULED, CANCELLED, COMPLETED...)
+    private Appointment.AppointmentStatus appointmentStatus;
+
+    // Hình thức nhận kết quả (Tại nhà, tại cơ sở...)
     private String deliveryMethod;
 
+    // Ghi chú
+    private String appointmentNote;
+
+    // Mã hồ sơ (nếu có)
     private String caseCode;
 
+    // Danh sách người tham gia
     private List<ParticipantDTO> participants;
+
+    // Danh sách mẫu
     private List<SampleDTO> samples;
 }
 

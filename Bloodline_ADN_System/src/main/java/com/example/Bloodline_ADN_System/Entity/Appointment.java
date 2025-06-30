@@ -55,9 +55,9 @@ public class Appointment {
     @Enumerated(EnumType.STRING)
 
     @Column(name = "delivery_method")
-    private DeliveryMethod deliverymethod;
-
     private DeliveryMethod deliveryMethod;
+
+
 
     @Enumerated(EnumType.STRING)
     private CollectionStatus collectionStatus; // Trạng thái thu mẫu

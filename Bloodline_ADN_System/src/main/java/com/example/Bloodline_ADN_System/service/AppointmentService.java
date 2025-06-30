@@ -9,17 +9,18 @@ import org.springframework.security.core.Authentication;
 
 import java.time.LocalDate;
 
+import java.time.LocalTime;
 import java.util.List;
 
-public interface AppointmentService {
-    AppointmentResponse<AppointmentDTO> createAppointmentByStaff(AppointmentDTO dto);
+
+
 
 import java.time.LocalTime;
 import java.util.List;
 
 public interface AppointmentService {
 
-
+    AppointmentResponse<AppointmentDTO> createAppointmentByStaff(AppointmentDTO dto);
     @Transactional
     AppointmentResponse<AppointmentDTO> createAppointment(AppointmentRequest request);
 

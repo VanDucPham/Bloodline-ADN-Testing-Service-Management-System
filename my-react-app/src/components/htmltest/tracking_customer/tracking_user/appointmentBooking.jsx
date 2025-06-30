@@ -7,6 +7,12 @@ function AppointmentBooking() {
     const [validateMessage, setValidateMessage] = useState('');
     const [minDate, setMinDate] = useState("") ;
 
+    const usedata = localStorage.getItem('userInfo')
+    const user = usedata ? JSON.parse(usedata): null;
+    console.log(user)
+    if (user){
+        console.log(" User Id",user?.user_Id)
+    }
     const [appointment, setAppointment] = useState({
         userId: '',
         serviceId: '',
@@ -15,6 +21,7 @@ function AppointmentBooking() {
         appointmentTime: '',
         deliveryMethod: '',
         appointmentNote: '',
+
         paymentMethod: '',
         
     });
@@ -40,24 +47,28 @@ function AppointmentBooking() {
     ]);
 
     const [caseFile, setCaseFile] = useState({
+        userId :user?.user_Id ,
         caseCode: '',
         caseType:'',
         serviceId: '',
-        createDate: '',
+        
         status: 'ARCHIVED'
     });
 
     const [service, setService] = useState([]);
 
-    const userInfo = localStorage.getItem("authToken")
-
-    console.log(userInfo);
-    const username = userInfo?.email ;
 
     // 👉 Fetch Service API
     useEffect(() => {
         const fetchService = async () => {
             try {
+                const userData = localStorage.getItem("userInfo"
+
+                )
+                const userItem = userData ? JSON.parse(userData) : null; 
+                if(userItem?.user_Id){
+                    setAppointment(... appointment, userId : userItem.user_Id)
+                }
 
                 const response = await apiService.user.getService();
                 const timeSlot = await apiService.user.getTimeSlot()
@@ -169,12 +180,21 @@ function AppointmentBooking() {
     };
 
     const handleSubmit = async () => {
+
+        const updateAppointment = {
+            ...appointment, userId: user?.user_Id 
+
+        }
+        
+        
+
         console.log('Appointment:', appointment);
         console.log('Participants:', participants);
         console.log('Samples:', samples);
         console.log('Case File:', caseFile);
         
         try {
+            updateAppointment()
             const payLoad = {
                 appointment: appointment,
                 participants : participants,
