@@ -54,7 +54,7 @@ function CreateAppointment() {
         console.log('Staff profile:', res);
 
         setStaffInfo(res);
-        setForm(f => ({ ...f, userId: res.userId }));
+        setForm(f => ({ ...f, userId: res.userId })); //tự động lấy userId
       } catch (e) {
         setStaffInfo(null);
       }
