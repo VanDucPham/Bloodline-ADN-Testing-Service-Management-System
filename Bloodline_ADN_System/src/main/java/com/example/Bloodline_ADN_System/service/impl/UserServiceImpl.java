@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
         if (updatedUser.getAddress() != null) user.setAddress(updatedUser.getAddress());
         if (updatedUser.getPhone() != null) user.setPhone(updatedUser.getPhone());
         if (updatedUser.getBirthDate() != null) user.setBirthDate(updatedUser.getBirthDate());
-        if (updatedUser.getIndentifiCard() != null) user.setIndentifiCard(updatedUser.getIndentifiCard());
+        if (updatedUser.getIndentifiCard() != null) user.setCitizenId(updatedUser.getIndentifiCard());
         if (updatedUser.getEmail() != null) user.setEmail(updatedUser.getEmail());
 
         userRepository.save(user);
@@ -59,6 +59,11 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
     }
 
+    @Override
+    public Optional<User> findUserById(String id) {
+        return Optional.empty();
+    }
+
     private UserUpdateDTO toDTO(User user) {
         UserUpdateDTO dto = new UserUpdateDTO();
         dto.setUserId(user.getUserId());
@@ -67,7 +72,7 @@ public class UserServiceImpl implements UserService {
         dto.setPhone(user.getPhone());
         dto.setAddress(user.getAddress());
         dto.setEmail(user.getEmail());
-        dto.setIndentifiCard(user.getIndentifiCard());
+        dto.setIndentifiCard(user.getCitizenId());
         dto.setBirthDate(user.getBirthDate());
         dto.setRole(User.UserRole.valueOf(user.getRole().toString()));
       //  dto.setJoined(user.getJoinedDate()); // nếu bạn có trường này trong entity

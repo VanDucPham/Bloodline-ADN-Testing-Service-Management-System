@@ -11,7 +11,7 @@ const navigate = useNavigate();
 
   return (
     <div>
-      <Header />
+      
       <div className='' >
         <div className="hero">
           <div className="hero-left">

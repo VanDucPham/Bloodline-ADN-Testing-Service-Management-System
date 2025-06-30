@@ -30,7 +30,7 @@ public class AuthServiceImpl implements AuthService {
 
         String token = jwtService.generateToken(user);
         System.out.println();
-        return new LoginResponse(token, "Đăng nhập thành công", user.getName(),  user.getRole(), user.getEmail());
+        return new LoginResponse(token, "Đăng nhập thành công", user.getUserId(),user.getName(),  user.getRole(), user.getEmail());
     }
 
     @Override

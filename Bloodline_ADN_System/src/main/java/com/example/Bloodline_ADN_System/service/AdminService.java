@@ -12,7 +12,5 @@ public interface AdminService {
     List<accountResponse> getAllUsers();
     void updateUser(Long id, updateUserRequest response);
 
-
-
     void deleteUser(Long id);
 }

@@ -9,15 +9,25 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
+
+    // Lấy danh sách lịch hẹn theo userId
     List<Appointment> findByUserUserId(Long userId);
 
-    //Đếm số lượng lịch theo ngày giờ
-    int countByAppointmentDateAndAppointmentTime(LocalDate date, LocalTime time);
+    // Đếm số lượng lịch hẹn trong một khung giờ cụ thể trong ngày
+    int countByAppointmentDateAndAppointmentTimeBetween(LocalDate date, LocalTime startTime, LocalTime endTime);
 
-    //Dùng để lọc các appointment, có thể lọc theo từng điều kiện họặc cả 3 điều kiện, nếu điều kiện rỗng sẽ hiển thị tất cả appointment
+    // Tìm lịch hẹn theo ngày, giờ và phương thức lấy mẫu
+    Optional<Appointment> findByAppointmentDateAndAppointmentTimeAndDeliveryMethod(LocalDate date, LocalTime time, String method);
+
+    // Kiểm tra xem user đã có lịch hẹn trong khoảng thời gian đó chưa
+    boolean existsByUser_UserIdAndAppointmentDateAndAppointmentTimeBetween(
+            Long userId, LocalDate date, LocalTime start, LocalTime end);
+
+    // Truy vấn tuỳ chọn lọc
     @Query("SELECT a FROM Appointment a " +
             "WHERE (:status IS NULL OR a.status = :status) " +
             "AND (:type IS NULL OR a.type = :type) " +
@@ -26,4 +36,5 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
                                     @Param("type") Appointment.AppointmentType type,
                                     @Param("date") LocalDate date);
 
+    int countByAppointmentDateAndAppointmentTime(LocalDate appointmentDate, LocalTime appointmentTime);
 }

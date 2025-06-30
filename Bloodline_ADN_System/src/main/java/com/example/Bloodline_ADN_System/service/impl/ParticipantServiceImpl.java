@@ -35,7 +35,7 @@ public class ParticipantServiceImpl implements ParticipantService {
                         Participant participant = new Participant();
                         participant.setName(dto.getName());
                         participant.setRelationship(dto.getRelationship());
-                        participant.setGender(dto.getGender());
+                        participant.setGender(Participant.Gender.valueOf(dto.getGender()));
                         participant.setCitizenId(dto.getCitizenId());
                         participant.setAddress(dto.getAddress());
                         participant.setBirthDate(dto.getBirthDate());
@@ -79,7 +79,7 @@ public class ParticipantServiceImpl implements ParticipantService {
         ParticipantDTO dto = new ParticipantDTO();
         dto.setName(participant.getName());
         dto.setRelationship(participant.getRelationship());
-        dto.setGender(participant.getGender());
+        dto.setGender(String.valueOf(participant.getGender()));
         dto.setCitizenId(participant.getCitizenId());
         dto.setAddress(participant.getAddress());
         dto.setBirthDate(participant.getBirthDate());

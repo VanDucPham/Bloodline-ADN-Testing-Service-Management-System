@@ -29,7 +29,8 @@ public class Notification {
 
     private boolean isRead = false;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
 
     private LocalDateTime createdAt;

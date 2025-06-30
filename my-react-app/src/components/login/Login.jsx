@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import apiService from "../../service/api";
 
+
 import './Login.css';
 
 function Login() {
@@ -50,9 +51,13 @@ function Login() {
                 email: formData.username,
                 password: formData.password
             });
-            
-             
+                
           console.log(response)
+       
+
+localStorage.setItem('userInfo', JSON.stringify(response));
+
+         
             // Nếu login thành công thì chuyển trang
             navigate('/');
         } catch (error) {

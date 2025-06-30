@@ -11,4 +11,5 @@ public interface UserService {
     void changePassword(Long userId, ChangePasswordDTO changePasswordDTO);
     Optional<User> getUserById(Long id);
     UserUpdateDTO getUserByEmail(String email);
+    Optional <User> findUserById(String id);
 }

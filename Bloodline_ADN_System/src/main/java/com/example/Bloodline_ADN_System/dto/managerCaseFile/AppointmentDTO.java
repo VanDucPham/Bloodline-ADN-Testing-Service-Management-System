@@ -1,20 +1,54 @@
 package com.example.Bloodline_ADN_System.dto.managerCaseFile;
 
 import com.example.Bloodline_ADN_System.Entity.Appointment;
+import com.example.Bloodline_ADN_System.Entity.CaseFile;
+import com.example.Bloodline_ADN_System.Entity.Participant;
+import com.example.Bloodline_ADN_System.Entity.Sample;
+import com.example.Bloodline_ADN_System.dto.SampleDTO;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class AppointmentDTO {
     private Long appointmentId;
+
+    // Thông tin người dùng
     private Long userId;
+
+    // Thông tin dịch vụ
     private Long serviceId;
-    private Appointment.AppointmentType appointmentType;   // ADMINISTRATIVE hoặc CIVIL
+
+    // Kiểu lịch hẹn (Hành chính / Dịch vụ)
+    private Appointment.AppointmentType appointmentType;
+
+    // Ngày và giờ
     private LocalDate appointmentDate;
     private LocalTime appointmentTime;
+
+    // Trạng thái (SCHEDULED, CANCELLED, COMPLETED...)
     private Appointment.AppointmentStatus appointmentStatus;
-    private Appointment.DeliveryMethod deliveryMethod;    // HOME_COLLECTION hoặc SELF_DROP_OFF
+
+    // Hình thức nhận kết quả (Tại nhà, tại cơ sở...)
+    private String deliveryMethod;
+
+    // Ghi chú
     private String appointmentNote;
+
+    // Mã hồ sơ (nếu có)
+    private String caseCode;
+
+    // Danh sách người tham gia
+    private List<ParticipantDTO> participants;
+
+    // Danh sách mẫu
+    private List<SampleDTO> samples;
 }
+
+

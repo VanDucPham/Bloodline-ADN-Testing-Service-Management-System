@@ -23,6 +23,7 @@ public class QRCode {
     private String code;
 
     @OneToOne
+    @JoinColumn(name= "appointment_id")
     private Appointment appointment;
 
     private LocalDateTime createdAt;
