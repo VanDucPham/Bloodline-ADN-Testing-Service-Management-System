@@ -2,6 +2,7 @@ package com.example.Bloodline_ADN_System.service.impl;
 
 import com.example.Bloodline_ADN_System.Entity.Appointment;
 import com.example.Bloodline_ADN_System.Entity.Feedback;
+import com.example.Bloodline_ADN_System.Entity.ServiceEntity;
 import com.example.Bloodline_ADN_System.Entity.User;
 import com.example.Bloodline_ADN_System.dto.FeedbackDTO;
 import com.example.Bloodline_ADN_System.dto.FeedbackResponse;
@@ -29,14 +30,14 @@ public class FeedbackServiceImpl implements FeedbackService {
     public FeedbackResponse createFeedback(FeedbackDTO feedbackDTO) {
         User user = userRepository.findById(feedbackDTO.getUserId())
                 .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
-        com.example.Bloodline_ADN_System.Entity.Service service = serviceRepository.findById(feedbackDTO.getServiceId())
+        ServiceEntity serviceEntity = serviceRepository.findById(feedbackDTO.getServiceId())
                 .orElseThrow(() -> new RuntimeException("Dịch vụ không tồn tại"));
         Appointment appointment = appointmentRepository.findById(feedbackDTO.getAppointmentId())
                 .orElseThrow(() -> new RuntimeException("Lịch hẹn không tồn tại"));
 
         Feedback feedback = new Feedback();
         feedback.setUser(user);
-        feedback.setService(service);
+        feedback.setService(serviceEntity);
         feedback.setAppointment(appointment);
         feedback.setFeedbackText(feedbackDTO.getFeedbackText());
         feedback.setRating(feedbackDTO.getRating());

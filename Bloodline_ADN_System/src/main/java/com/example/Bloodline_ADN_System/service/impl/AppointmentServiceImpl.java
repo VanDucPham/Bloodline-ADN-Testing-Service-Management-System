@@ -58,12 +58,15 @@ public class AppointmentServiceImpl implements AppointmentService {
         User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
 
-        Service service = (Service) serviceRepository.findById(dto.getServiceId())
+
+        ServiceEntity service = serviceRepository.findById(dto.getServiceId())
                 .orElseThrow(() -> new RuntimeException("Dịch vụ không tồn tại"));
 
+
         Appointment appointment = new Appointment();
+        //nếu có toEntity thì không cần set thủ công như thế này
         appointment.setUser(user);
-        appointment.setService((com.example.Bloodline_ADN_System.Entity.Service) service);
+        appointment.setService(service);
         appointment.setType(dto.getAppointmentType());
         appointment.setAppointmentDate(dto.getAppointmentDate());
         appointment.setAppointmentTime(dto.getAppointmentTime());

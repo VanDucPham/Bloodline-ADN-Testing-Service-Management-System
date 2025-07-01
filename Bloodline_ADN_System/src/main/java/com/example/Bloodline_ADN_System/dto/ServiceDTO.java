@@ -17,6 +17,11 @@ public class ServiceDTO {
     private Double servicePrice ;
 
     public ServiceDTO(Long serviceId, String serviceName, String serviceDescription, Double servicePrice) {
+        this.serviceId = serviceId;
+        this.serviceName = serviceName;
+        this.serviceDescription = serviceDescription;
+        this.servicePrice = servicePrice;
     }
+
 }
 

@@ -1,10 +1,13 @@
 package com.example.Bloodline_ADN_System.controller;
 
 import com.example.Bloodline_ADN_System.dto.CreateUserRequest;
+import com.example.Bloodline_ADN_System.dto.ServiceDTO;
 import com.example.Bloodline_ADN_System.dto.accountResponse;
 import com.example.Bloodline_ADN_System.dto.updateUserRequest;
 import com.example.Bloodline_ADN_System.repository.UserRepository;
+import com.example.Bloodline_ADN_System.service.ServiceList;
 import com.example.Bloodline_ADN_System.service.impl.AdminServiceImpl;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,15 +18,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin")
+@AllArgsConstructor
 public class AdminController {
 
     private final AdminServiceImpl adminService;
     private final UserRepository userRepository;
+    private final ServiceList serviceList;
 
-    public AdminController(AdminServiceImpl adminService, UserRepository userRepository) {
-        this.adminService = adminService;
-        this.userRepository = userRepository;
-    }
 
     @PostMapping("/create")
     public ResponseEntity<?> createUser(@RequestBody CreateUserRequest request) {
@@ -70,9 +71,32 @@ public class AdminController {
         }
     }
 
+    @GetMapping("/service/get")
+    public ResponseEntity<List<ServiceDTO>> getAllServices() {
+        List<ServiceDTO> service = serviceList.getAllServices();
+        return ResponseEntity.ok(service);
+    }
 
+    @GetMapping("/service/get/{id}")
+    public ResponseEntity<ServiceDTO> getServiceById(@PathVariable Long id) {
+        ServiceDTO service = serviceList.getServiceById(id);
+        return ResponseEntity.ok(service);
+    }
 
+    @PostMapping("/service/add")
+    public ResponseEntity<ServiceDTO> addService(@RequestBody ServiceDTO serviceDTO) {
+        return ResponseEntity.ok(serviceList.createService(serviceDTO));
+    }
 
+    @PutMapping("/service/update/{id}")
+    public ResponseEntity<ServiceDTO> updateService(@PathVariable Long id,@RequestBody ServiceDTO serviceDTO){
+        return ResponseEntity.ok(serviceList.updateService(id,serviceDTO));
+    }
 
+    @DeleteMapping("service/delete/{id}")
+    public ResponseEntity<String> deleteService(@PathVariable Long id) {
+        serviceList.deleteService(id);
+        return ResponseEntity.ok("Xóa dịch vụ thành công");
+    }
 
 }

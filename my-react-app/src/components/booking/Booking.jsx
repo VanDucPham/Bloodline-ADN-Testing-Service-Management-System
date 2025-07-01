@@ -10,7 +10,7 @@ function Booking() {
     phone: '',
     email: '',
     date: '',
-    service: location.state?.service || '',
+    serviceEntity: location.state?.serviceEntity || '',
   });
   const [success, setSuccess] = useState(false);
 
@@ -52,12 +52,12 @@ function Booking() {
 
       <form className="bookings-form" onSubmit={handleSubmit}>
         <div className="form-group">
-          <label htmlFor="service">Loại dịch vụ:</label>
+          <label htmlFor="serviceEntity">Loại dịch vụ:</label>
           <input
             type="text"
-            id="service"
-            name="service"
-            value={form.service}
+            id="serviceEntity"
+            name="serviceEntity"
+            value={form.serviceEntity}
             readOnly
           />
         </div>

@@ -24,7 +24,7 @@ public class Appointment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "service_id")
-    private Service service;
+    private ServiceEntity service;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "staff_assigned_id")

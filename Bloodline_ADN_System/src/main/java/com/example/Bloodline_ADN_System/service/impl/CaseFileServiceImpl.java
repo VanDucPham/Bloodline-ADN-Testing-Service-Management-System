@@ -1,9 +1,8 @@
 package com.example.Bloodline_ADN_System.service.impl;
 
 import com.example.Bloodline_ADN_System.Entity.CaseFile;
-import com.example.Bloodline_ADN_System.Entity.Service;
+import com.example.Bloodline_ADN_System.Entity.ServiceEntity;
 import com.example.Bloodline_ADN_System.Entity.User;
-import com.example.Bloodline_ADN_System.dto.UserUpdateDTO;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.caseFileDTO;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.caseFileResponse;
 import com.example.Bloodline_ADN_System.repository.CaseFileRepository;
@@ -45,7 +44,7 @@ public class CaseFileServiceImpl implements CaseFileService {
 
 
         if (req.getServiceId() != null) {
-            Optional<Service> serviceOpt = serviceRepository.findById(req.getServiceId());
+            Optional<ServiceEntity> serviceOpt = serviceRepository.findById(req.getServiceId());
             if (serviceOpt.isEmpty()) {
                 throw new RuntimeException("Không tìm thấy dịch vụ với ID: " + req.getServiceId());
             }

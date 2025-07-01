@@ -25,7 +25,7 @@ public class Feedback {
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "service_id")
-        private Service service;
+        private ServiceEntity service;
 
         @Column(columnDefinition = "TEXT")
         private String feedbackText;
