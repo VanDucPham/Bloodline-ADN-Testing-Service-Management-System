@@ -1,5 +1,6 @@
 package com.example.Bloodline_ADN_System.service;
 
+import com.example.Bloodline_ADN_System.Entity.Sample;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.SampleCustomerDTO;
 import com.example.Bloodline_ADN_System.dto.SampleDTO;
 import com.example.Bloodline_ADN_System.dto.SampleStaffDTO;
@@ -12,4 +13,6 @@ public interface SampleService {
     List<SampleDTO> createSampleByStaff(List<SampleStaffDTO> dtoList);
     SampleDTO updateSampleInfo(SampleUpdateDTO dto);
     SampleDTO getSampleByParticipantId(Long participantId);
+
+    void saveAll(List<Sample> samples);
 }

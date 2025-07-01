@@ -5,14 +5,16 @@ import apiService from '../../../../service/api';
 function AppointmentBooking() {
     const [step, setStep] = useState(1);
     const [validateMessage, setValidateMessage] = useState('');
-    const [minDate, setMinDate] = useState("") ;
+    const [minDate, setMinDate] = useState("");
 
     const usedata = localStorage.getItem('userInfo')
-    const user = usedata ? JSON.parse(usedata): null;
+    const user = usedata ? JSON.parse(usedata) : null;
     console.log(user)
-    if (user){
-        console.log(" User Id",user?.user_Id)
+    if (user) {
+        console.log(" User Id", user?.user_Id)
     }
+
+
     const [appointment, setAppointment] = useState({
         userId: '',
         serviceId: '',
@@ -21,15 +23,15 @@ function AppointmentBooking() {
         appointmentTime: '',
         deliveryMethod: '',
         appointmentNote: '',
-
+        collectionAddress: '',
         paymentMethod: '',
-        
+
     });
     const [timeSlot, setTimeSlot] = useState([{
-        id : '',
-        startTime : '' ,
-        endTime : '',
-        maxAppointment : ''
+        id: '',
+        startTime: '',
+        endTime: '',
+        maxAppointment: ''
     }])
     const [participants, setParticipants] = useState([{
         name: '',
@@ -42,16 +44,16 @@ function AppointmentBooking() {
     }]);
 
     const [samples, setSamples] = useState([
-        {  participantCitizenId : '',sampleType: '' },
-        {  participantCitizenId : '',sampleType: '' }
+        { participantCitizenId: '', sampleType: '' },
+        
     ]);
 
     const [caseFile, setCaseFile] = useState({
-        userId :user?.user_Id ,
+        userId: '',
         caseCode: '',
-        caseType:'',
+        caseType: '',
         serviceId: '',
-        
+
         status: 'ARCHIVED'
     });
 
@@ -62,68 +64,70 @@ function AppointmentBooking() {
     useEffect(() => {
         const fetchService = async () => {
             try {
-        const userData = localStorage.getItem("userInfo");
-const userItem = userData ? JSON.parse(userData) : null; 
+                const userData = localStorage.getItem("userInfo");
+                const userItem = userData ? JSON.parse(userData) : null;
 
-if (userItem?.user_Id) {
-    setAppointment(prev => ({
-        ...prev,
-        userId: userItem.user_Id
-    }));
-}
+                if (userItem?.user_Id) {
+                    setAppointment(prev => ({
+                        ...prev,
+                        userId: userItem.user_Id
+                    }));
+                }
 
 
                 const response = await apiService.user.getService();
                 const timeSlot = await apiService.user.getTimeSlot()
                 setTimeSlot(timeSlot)
                 setService(response);
-                console.log("Các slot time:" , timeSlot)
+                console.log("Các slot time:", timeSlot)
                 console.log("Các dịch vụ hiện có là:", response);
             } catch (error) {
                 console.log("Không thể tải các dịch vụ lên được", error);
             }
-            
-                const now = new Date();
-                now.setDate(now.getDate()+ 1);
-                const yyyy = now.getFullYear();
-                const mm = String(now.getMonth()+ 1).padStart(2,"0");
-                const dd = String(now.getDate()).padStart(2, "0");
-                setMinDate(`${yyyy}-${mm}-${dd}`);
-            
+
+            const now = new Date();
+            now.setDate(now.getDate() + 1);
+            const yyyy = now.getFullYear();
+            const mm = String(now.getMonth() + 1).padStart(2, "0");
+            const dd = String(now.getDate()).padStart(2, "0");
+            setMinDate(`${yyyy}-${mm}-${dd}`);
+
         };
         fetchService(); // GỌI HÀM
     }, []);
     const checkAvailability = async () => {
-    try {
-        const response = await apiService.user.checkAvailability({
-            appointmentDate: appointment.appointmentDate,
-            appointmentTime: appointment.appointmentTime
-        });
+        try {
+            const response = await apiService.user.checkAvailability({
+                appointmentDate: appointment.appointmentDate,
+                appointmentTime: appointment.appointmentTime
+            });
 
-        console.log("Response message:", response); // "Lịch trống." hoặc "Lịch không trống."
-        
-        if (response === "Lịch trống.") {
-            return true;
-        } else {
-            setValidateMessage(response); // Hiển thị thông báo từ BE
+            console.log("Response message:", response); // "Lịch trống." hoặc "Lịch không trống."
+
+            if (response === "Lịch trống.") {
+                return true;
+            } else {
+                setValidateMessage(response); // Hiển thị thông báo từ BE
+                return false;
+            }
+        } catch (error) {
+            console.log("Lỗi khi kiểm tra lịch hẹn", error);
+            setValidateMessage("Đã xảy ra lỗi kết nối. Vui lòng thử lại.");
             return false;
         }
-    } catch (error) {
-        console.log("Lỗi khi kiểm tra lịch hẹn", error);
-        setValidateMessage("Đã xảy ra lỗi kết nối. Vui lòng thử lại.");
-        return false;
     }
-}
     const handleTimeSlotChange = (e) => {
-        
+
     }
 
     const handleInputChange = (e) => {
         setCaseFile({ ...caseFile, caseType: e.target.value });
+        setAppointment({ ...appointment, appointmentType: e.target.value })
     };
 
     const handleServiceChange = (e) => {
         setAppointment({ ...appointment, serviceId: e.target.value });
+        setCaseFile({ ...caseFile, serviceId: e.target.value })
     };
 
     const handleDateChange = (e) => {
@@ -132,10 +136,10 @@ if (userItem?.user_Id) {
 
     const [selectedTime, setSelectedTime] = useState('');
 
-  const handleTimeChange = (startTime) => {
-  setSelectedTime(startTime);
-  setAppointment({ ...appointment, appointmentTime: startTime });
-};
+    const handleTimeChange = (startTime) => {
+        setSelectedTime(startTime);
+        setAppointment({ ...appointment, appointmentTime: startTime });
+    };
 
 
     const handleDeliveryChange = (e) => {
@@ -149,33 +153,45 @@ if (userItem?.user_Id) {
     };
 
     const addParticipant = () => {
-        setParticipants([...participants, {
+        const newParticipant = {
             name: '',
             relationship: '',
             citizenId: '',
             address: '',
             birthDate: '',
             gender: ''
-        }]);
+        };
+        setParticipants(prev => [...prev, newParticipant]);
+        setSamples(prev => [...prev, { participantCitizenId: '', sampleType: '' }]);
     };
-    
+
+    const removeParticipant = (index) => {
+        const updatedParticipants = participants.filter((_, i) => i !== index);
+        setParticipants(updatedParticipants);
+
+        // Đồng bộ mẫu tương ứng
+        const updatedSamples = samples.filter((_, i) => i !== index);
+        setSamples(updatedSamples);
+    };
+
+
     const handleSampleChange = (index, e) => {
-    const updated = [...samples];
-    const { name, value } = e.target;
+        const updated = [...samples];
+        const { name, value } = e.target;
 
-    updated[index][name] = value;
+        updated[index][name] = value;
 
-    // Nếu thay đổi CCCD => tự động cập nhật tên người tham gia
-    if (name === 'participantCitizenId') {
-        console.log("Giá trị chọn từ dropdown:", value);
-    console.log("Danh sách participants:", participants);
-    
-        const matched = participants.find(p => p.citizenId.trim() === value);
-        updated[index]['participantName'] = matched?.name || '';
-    }
+        // Nếu thay đổi CCCD => tự động cập nhật tên người tham gia
+        if (name === 'participantCitizenId') {
+            console.log("Giá trị chọn từ dropdown:", value);
+            console.log("Danh sách participants:", participants);
 
-    setSamples(updated);
-};
+            const matched = participants.find(p => p.citizenId.trim() === value);
+            updated[index]['participantName'] = matched?.name || '';
+        }
+
+        setSamples(updated);
+    };
 
 
     const handlePaymentMethodChange = (e) => {
@@ -185,77 +201,92 @@ if (userItem?.user_Id) {
     const handleSubmit = async () => {
 
         const updateAppointment = {
-            ...appointment, userId: user?.user_Id 
+            ...appointment, userId: user?.user_Id
 
         }
-        
-        
+        const updatedCaseFile = {
+            ...caseFile,
+            userId: user?.user_Id
+        };
 
-        console.log('Appointment:', appointment);
+
+
+        console.log('Appointment:', updateAppointment);
         console.log('Participants:', participants);
         console.log('Samples:', samples);
-        console.log('Case File:', caseFile);
-        
+        console.log('Case File:', updatedCaseFile);
+
         try {
-            updateAppointment()
+
             const payLoad = {
-                appointment: appointment,
-                participants : participants,
-                samples : samples,
-                caseFile : caseFile
-            };
+  appointment: updateAppointment,
+  participants: participants,
+  caseFile: updatedCaseFile,
+};
+
+// CHẶN GỬI SAMPLES nếu là hành chính
+if (appointment.appointmentType !== "ADMINISTRATIVE") {
+  const validSamples = samples.filter(s => s.participantCitizenId); // thêm điều kiện
+  payLoad.samples = validSamples;
+}
+
             console.log(payLoad)
             await apiService.user.create_app(payLoad);
             alert('Lịch hẹn được đặt thành công!')
-            
+
         } catch (error) {
-            console.error('Lỗi khi tạo lịch:', error) ;
+            console.error('Lỗi khi tạo lịch:', error);
             alert("Đặt lịch thất bại, vui lòng đặt lại")
         }
     };
 
     const nextStep = async () => {
-    if (step === 1 && !caseFile.caseType) {
-        setValidateMessage('Vui lòng chọn loại hồ sơ.');
-        return;
-    }
-
-    if (step === 2 && (!appointment.serviceId || !appointment.appointmentDate || !appointment.appointmentTime)) {
-        setValidateMessage('Vui lòng nhập đầy đủ thông tin dịch vụ.');
-        return;
-    }
-
-    if (appointment.deliveryMethod === 'HOME-COLLECTION' && caseFile.caseCode === 'hanhchinh') {
-        setValidateMessage('Thủ tục hành chính chỉ được lấy mẫu tại cơ sở.');
-        return;
-    }
-
-    if (step === 2) {
-        const available = await checkAvailability();
-        if (!available) {
-            setValidateMessage('Khung giờ này đã đầy, vui lòng chọn thời gian khác.');
+        if (step === 1 && !caseFile.caseType) {
+            setValidateMessage('Vui lòng chọn loại hồ sơ.');
             return;
         }
-    }
 
-    if (step === 3 && participants.some(p => !p.name || !p.birthDate || !p.gender || !p.relationship)) {
-        setValidateMessage('Vui lòng nhập đầy đủ thông tin người tham gia.');
-        return;
-    }
+        if (step === 2 && (!appointment.serviceId || !appointment.appointmentDate || !appointment.appointmentTime)) {
+            setValidateMessage('Vui lòng nhập đầy đủ thông tin dịch vụ.');
+            return;
+        }
 
-    if (step === 4 && samples.some(s => !s.participantCitizenId || !s.sampleType)) {
-        setValidateMessage('Vui lòng nhập đầy đủ thông tin mẫu xét nghiệm.');
-        return;
-    }
+        if (appointment.deliveryMethod === 'HOME_COLLECTION' && caseFile.caseFile === 'ADMINISTRATIVE') {
+            setValidateMessage('Thủ tục hành chính chỉ được lấy mẫu tại cơ sở.');
+            return;
+        }
 
-    if (step === 6 && !appointment.paymentMethod) {
-        setValidateMessage('Vui lòng chọn phương thức thanh toán.');
-        return;
-    }
+        if (step === 2) {
+            const available = await checkAvailability();
+            if (!available) {
+                setValidateMessage('Khung giờ này đã đầy, vui lòng chọn thời gian khác.');
+                return;
+            }
+        }
 
-    setValidateMessage('');
-    setStep(step + 1);
-};
+        if (step === 3 && participants.some(p => !p.name || !p.birthDate || !p.gender || !p.relationship)) {
+            setValidateMessage('Vui lòng nhập đầy đủ thông tin người tham gia.');
+            return;
+        }
+        if (step === 4 && appointment.appointmentType === "HOME_COLLECTION") {
+            if (samples.some(s => !s.participantCitizenId || !s.sampleType)) {
+                setValidateMessage('Vui lòng nhập đầy đủ thông tin mẫu xét nghiệm.');
+                return;
+            }
+
+
+
+        }
+
+
+        if (step === 6 && !appointment.paymentMethod) {
+            setValidateMessage('Vui lòng chọn phương thức thanh toán.');
+            return;
+        }
+
+        setValidateMessage('');
+        setStep(step + 1);
+    };
 
 
     const prevStep = () => setStep(step - 1);
@@ -323,29 +354,40 @@ if (userItem?.user_Id) {
                             <label>Chọn ngày hẹn:</label>
                             <input type="date" value={appointment.appointmentDate} min={minDate} onChange={handleDateChange} />
                             <div className="grid grid-cols-2 gap-3">
-  {timeSlot.map((slot) => (
-    <button
-      key={slot.startTime}
-      onClick={() => handleTimeChange(slot.startTime)}
-      type="button"
-      className={`border rounded-lg p-2 transition duration-200 text-center ${
-        selectedTime === slot.startTime
-          ? 'bg-blue-500 text-white font-semibold'
-          : 'bg-white hover:bg-blue-100'
-      }`}
-    >
-      {slot.startTime.substring(0, 5)} - {slot.endTime.substring(0, 5)}
-    </button>
-  ))}
-</div>
+                                {timeSlot.map((slot) => (
+                                    <button
+                                        key={slot.startTime}
+                                        onClick={() => handleTimeChange(slot.startTime)}
+                                        type="button"
+                                        className={`border rounded-lg p-2 transition duration-200 text-center ${selectedTime === slot.startTime
+                                                ? 'bg-blue-500 text-white font-semibold'
+                                                : 'bg-white hover:bg-blue-100'
+                                            }`}
+                                    >
+                                        {slot.startTime.substring(0, 5)} - {slot.endTime.substring(0, 5)}
+                                    </button>
+                                ))}
+                            </div>
 
-                            
+
                             <label>Hình thức lấy mẫu:</label>
                             <select value={appointment.deliveryMethod} onChange={handleDeliveryChange}>
-                                <option value="">-- Chọn hình thức --</option>
-                                <option value="HOME_COLLECTION">Tại nhà</option>
-                                <option value="SELF_DROP_OFF">Tại cơ sở</option>
-                            </select>
+    <option value="">-- Chọn hình thức --</option>
+    <option value="SELF_DROP_OFF">Tại cơ sở</option>
+    <option
+        value="HOME_COLLECTION"
+        disabled={caseFile.caseType === 'ADMINISTRATIVE'}
+    >
+        Tại nhà
+    </option>
+    <option
+        value="HOME_DELIVERY"
+        disabled={caseFile.caseType === 'ADMINISTRATIVE'}
+    >
+        Nhân viên đến lấy tận nhà
+    </option>
+</select>
+
                             <div className="form-actions">
                                 <button onClick={prevStep}>Quay lại</button>
                                 <button onClick={nextStep}>Tiếp theo</button>
@@ -363,7 +405,7 @@ if (userItem?.user_Id) {
                                     <label>Ngày sinh:</label>
                                     <input type="date" name="birthDate" value={participant.birthDate} onChange={(e) => handleParticipantChange(index, e)} />
                                     <label>Căn cước công dân :</label>
-                                     <input name="citizenId"  value={participant.citizenId} onChange={(e) => handleParticipantChange(index,e)}/>
+                                    <input name="citizenId" value={participant.citizenId} onChange={(e) => handleParticipantChange(index, e)} />
                                     <label>Giới tính:</label>
                                     <select name="gender" value={participant.gender} onChange={(e) => handleParticipantChange(index, e)}>
                                         <option value="">-- Chọn giới tính --</option>
@@ -373,9 +415,19 @@ if (userItem?.user_Id) {
                                     </select>
                                     <label>Quan hệ:</label>
                                     <input type="text" name="relationship" placeholder="Cha, con, mẹ..." value={participant.relationship} onChange={(e) => handleParticipantChange(index, e)} />
+                                    <button className="btn-add" onClick={addParticipant}>+ Thêm người</button>
+                                    <button
+                                        onClick={() => removeParticipant(index)}
+                                        style={{ color: 'red', marginLeft: '10px' }}
+                                        disabled={participants.length <= 1}
+                                    >
+                                        🗑️ Xóa
+                                    </button>
                                 </div>
+
                             ))}
-                            <button className="btn-add" onClick={addParticipant}>+ Thêm người</button>
+
+
                             <div className="form-actions">
                                 <button onClick={prevStep}>Quay lại</button>
                                 <button onClick={nextStep}>Tiếp theo</button>
@@ -383,57 +435,92 @@ if (userItem?.user_Id) {
                         </div>
                     )}
 
-                    {step === 4 && (
-    <div className="form-section">
-        <h2>4. Mẫu xét nghiệm</h2>
-        {samples.map((sample, index) => (
+                 {step === 4 && (
+  <div className="form-section">
+    <h2>4. Mẫu xét nghiệm</h2>
+
+    {appointment?.deliveryMethod === "SELF_DROP_OFF" && (
+      <div style={{ padding: '20px', background: '#fff3cd', borderRadius: '5px', border: '1px solid #ffeeba' }}>
+        <strong>Lưu ý:</strong> Vui lòng đến cơ sở để lấy mẫu và đem đầy đủ giấy tờ cần thiết.
+      </div>
+    )}
+
+    {(appointment?.deliveryMethod === "HOME_COLLECTION" || appointment?.deliveryMethod === "HOME_DELIVERY") && (
+      <>
+        {appointment.deliveryMethod === "HOME_DELIVERY" && (
+          <div style={{ marginBottom: '20px' }}>
+            <label>Địa chỉ lấy mẫu tại nhà:</label>
+            <input
+              type="text"
+              name="homeAddress"
+              placeholder="Nhập địa chỉ nhà"
+              value={appointment.collectionAddress || ''}
+              onChange={(e) =>
+                setAppointment({ ...appointment, collectionAddress: e.target.value })
+              }
+            />
+          </div>
+        )}
+
+        {samples.map((sample, index) => {
+          const participant = participants.find(p => p.citizenId === sample.participantCitizenId);
+          return (
             <div key={index} className="sample-info">
-                <label>Mẫu số {index + 1} của ai:</label>
-                <select
-                    name="participantCitizenId"
-                    value={sample.participantCitizenId}
-                    onChange={(e) => handleSampleChange(index, e)}
-                >
-                    <option value="">-- Chọn người tham gia --</option>
-                    {participants.map((p, idx) => (
-                        <option key={idx} value={p.citizenId}>
-                            {p.name} - {p.citizenId}
-                        </option>
-                    ))}
-                </select>
+              <label>Mẫu số {index + 1} của ai:</label>
+              <select
+                name="participantCitizenId"
+                value={sample.participantCitizenId}
+                onChange={(e) => handleSampleChange(index, e)}
+              >
+                <option value="">-- Chọn người tham gia --</option>
+                {participants.map((p, idx) => (
+                  <option key={idx} value={p.citizenId}>
+                    {p.name} - {p.citizenId}
+                  </option>
+                ))}
+              </select>
 
-                {/* Tự động hiển thị tên người tham gia đã chọn */}
-                {sample.participantCitizenId && (
-                    <div className="participant-details" style={{ marginTop: '10px', padding: '10px', background: '#f9f9f9', borderRadius: '5px' }}>
-                        <p><strong>Họ tên:</strong> {sample.participantName}</p>
-                        <p><strong>Ngày sinh:</strong> {
-                            participants.find(p => p.citizenId === sample.participantCitizenId)?.birthDate
-                        }</p>
-                        <p><strong>Giới tính:</strong> {
-                            participants.find(p => p.citizenId === sample.participantCitizenId)?.gender
-                        }</p>
-                    </div>
-                )}
-
-                <label>Loại mẫu:</label>
-                <select
-                    name="sampleType"
-                    value={sample.sampleType}
-                    onChange={(e) => handleSampleChange(index, e)}
+              {participant && (
+                <div
+                  className="participant-details"
+                  style={{
+                    marginTop: '10px',
+                    padding: '10px',
+                    background: '#f9f9f9',
+                    borderRadius: '5px',
+                  }}
                 >
-                    <option value="">-- Chọn loại mẫu --</option>
-                    <option value="BLOOD">Máu</option>
-                    <option value="HAIR">Tóc</option>
-                    <option value="SALIVA">Niêm mạc</option>
-                </select>
+                  <p><strong>Họ tên:</strong> {participant.name}</p>
+                  <p><strong>Ngày sinh:</strong> {participant.birthDate}</p>
+                  <p><strong>Giới tính:</strong> {participant.gender}</p>
+                </div>
+              )}
+
+              <label>Loại mẫu:</label>
+              <select
+                name="sampleType"
+                value={sample.sampleType || ''}
+                onChange={(e) => handleSampleChange(index, e)}
+              >
+                <option value="">-- Chọn loại mẫu --</option>
+                <option value="BLOOD">Máu</option>
+                <option value="HAIR">Tóc</option>
+                <option value="SALIVA">Niêm mạc</option>
+              </select>
             </div>
-        ))}
-        <div className="form-actions">
-            <button onClick={prevStep}>Quay lại</button>
-            <button onClick={nextStep}>Tiếp theo</button>
-        </div>
+          );
+        })}
+      </>
+    )}
+
+    <div className="form-actions">
+      <button onClick={prevStep}>Quay lại</button>
+      <button onClick={nextStep}>Tiếp theo</button>
     </div>
+  </div>
 )}
+
+
 
                     {step === 5 && (
                         <div className="form-section">

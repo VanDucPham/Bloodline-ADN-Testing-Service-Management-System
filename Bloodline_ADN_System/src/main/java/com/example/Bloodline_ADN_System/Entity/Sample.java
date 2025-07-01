@@ -24,8 +24,8 @@ public class Sample extends SampleDTO {
     @JoinColumn(name = "participant_id")
     private Participant participant;
 
-    @Enumerated(EnumType.STRING)
-    private SampleType sampleType;
+
+    private String sampleType;
 
     @Column(name = "collection_datetime")
     private LocalDateTime collectionDateTime;
@@ -41,7 +41,7 @@ public class Sample extends SampleDTO {
     @Column(columnDefinition = "TEXT")
     private String notes;
 
-    public enum SampleType { BLOOD, SALIVA, HAIR, OTHER }
+
     public enum SampleQuality { EXCELLENT, GOOD, FAIR, POOR }
     public enum SampleStatus { COLLECTED, PROCESSING, ANALYZED, COMPLETED }
 }

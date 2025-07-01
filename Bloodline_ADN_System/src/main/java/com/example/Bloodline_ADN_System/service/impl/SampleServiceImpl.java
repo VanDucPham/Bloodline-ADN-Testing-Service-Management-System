@@ -81,6 +81,11 @@ public class SampleServiceImpl implements SampleService {
         return toDTO(sample);
     }
 
+    @Override
+    public void saveAll(List<Sample> samples) {
+
+    }
+
     private SampleDTO toDTO(Sample sample) {
         SampleDTO dto = new SampleDTO();
         dto.setSampleId(sample.getSampleId());
