@@ -24,6 +24,9 @@ return this.post('/customer/appointment/check-availability', data)
    async getTimeSlot(){
     return this.get('/customer/appointment/time-slots')
    }
+   async getListAppointment(){
+    return this.get('/customer/appointmentList')
+   }
   
 
 }

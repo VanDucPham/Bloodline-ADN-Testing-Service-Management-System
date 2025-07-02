@@ -18,6 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 public class AppointmentDTO {
 
+    private Long appointmentId;
 
     // Thông tin người dùng
     private Long userId;
@@ -43,7 +44,7 @@ public class AppointmentDTO {
     // Ghi chú
     private String appointmentNote;
 
-    // Mã hồ sơ (nếu có)
+
     private String caseCode;
 
     // Danh sách người tham gia

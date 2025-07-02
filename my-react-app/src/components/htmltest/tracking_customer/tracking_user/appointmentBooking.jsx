@@ -44,7 +44,7 @@ function AppointmentBooking() {
     }]);
 
     const [samples, setSamples] = useState([
-        { participantCitizenId: '', sampleType: '' },
+        { participantCitizenId: '', sampleType: ''  },
         
     ]);
 
@@ -219,17 +219,11 @@ function AppointmentBooking() {
         try {
 
             const payLoad = {
-  appointment: updateAppointment,
-  participants: participants,
-  caseFile: updatedCaseFile,
-};
-
-// CHẶN GỬI SAMPLES nếu là hành chính
-if (appointment.appointmentType !== "ADMINISTRATIVE") {
-  const validSamples = samples.filter(s => s.participantCitizenId); // thêm điều kiện
-  payLoad.samples = validSamples;
-}
-
+                appointment: updateAppointment,
+                participants: participants,
+                samples: samples,
+                caseFile: updatedCaseFile
+            };
             console.log(payLoad)
             await apiService.user.create_app(payLoad);
             alert('Lịch hẹn được đặt thành công!')

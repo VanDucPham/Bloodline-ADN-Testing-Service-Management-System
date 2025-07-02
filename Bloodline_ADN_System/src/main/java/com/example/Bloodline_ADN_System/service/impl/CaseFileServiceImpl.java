@@ -7,20 +7,21 @@ import com.example.Bloodline_ADN_System.dto.managerCaseFile.caseFileDTO;
 import com.example.Bloodline_ADN_System.repository.CaseFileRepository;
 import com.example.Bloodline_ADN_System.repository.ServiceRepository;
 import com.example.Bloodline_ADN_System.service.CaseFileService;
+import com.example.Bloodline_ADN_System.service.UserService;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @org.springframework.stereotype.Service
 public class CaseFileServiceImpl implements CaseFileService {
-    private final UserServiceImpl userServiceImpl;
+    private final UserService userService;
     private final CaseFileRepository caseFileRepository;
     private final ServiceRepository serviceRepository;
 
-    public CaseFileServiceImpl(UserServiceImpl userServiceImpl,
+    public CaseFileServiceImpl(UserService userService,
                                CaseFileRepository caseFileRepository,
                                ServiceRepository serviceRepository) {
-        this.userServiceImpl = userServiceImpl;
+        this.userService = userService;
         this.caseFileRepository = caseFileRepository;
         this.serviceRepository = serviceRepository;
     }
@@ -29,7 +30,7 @@ public class CaseFileServiceImpl implements CaseFileService {
     @Override
     public CaseFile createCaseFile(caseFileDTO req) {
         // Lấy user từ ID
-        User user = userServiceImpl.findUserById(req.getUserId())
+        User user = userService.findUserById(req.getUserId())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng với ID: " + req.getUserId()));
         Service service = serviceRepository.findById(req.getServiceId()).orElseThrow(()->new RuntimeException("Không timfg thấy dichj vụ với ID" + req.getServiceId()));
 
@@ -57,8 +58,11 @@ public class CaseFileServiceImpl implements CaseFileService {
     }
 
     @Override
-    public CaseFile findById(int id) {
-        return null;
+    public CaseFile findById(Long id) {
+
+
+
+        return caseFileRepository.findById(id).orElse(null);
     }
 
     @Override

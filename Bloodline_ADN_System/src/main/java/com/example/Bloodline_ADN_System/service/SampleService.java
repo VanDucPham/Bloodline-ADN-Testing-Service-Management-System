@@ -13,6 +13,6 @@ public interface SampleService {
     List<SampleDTO> createSampleByStaff(List<SampleStaffDTO> dtoList);
     SampleDTO updateSampleInfo(SampleUpdateDTO dto);
     SampleDTO getSampleByParticipantId(Long participantId);
-
+    SampleDTO updateSample(SampleDTO dto);
     void saveAll(List<Sample> samples);
 }

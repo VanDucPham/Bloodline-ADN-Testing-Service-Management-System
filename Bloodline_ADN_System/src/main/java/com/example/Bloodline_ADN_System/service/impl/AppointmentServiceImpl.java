@@ -5,8 +5,7 @@ import com.example.Bloodline_ADN_System.Entity.*;
 import com.example.Bloodline_ADN_System.dto.SampleDTO;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.*;
 import com.example.Bloodline_ADN_System.repository.*;
-import com.example.Bloodline_ADN_System.service.AppointmentService;
-import com.example.Bloodline_ADN_System.service.UserService;
+import com.example.Bloodline_ADN_System.service.*;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -21,34 +20,33 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     private final AppointmentRepository appointmentRepository;
     private final UserRepository userRepository;
-    private final SampleServiceImpl sampleService;
-    private final ParticipantServiceImpl participantService;
-    private final CaseFileServiceImpl caseFileService;
+    private final SampleService sampleService;
+    private final ParticipantService participantService;
+    private final CaseFileService caseFileService;
+
     private final TimeSlotLimitRepository timeSlotLimitRepository;
     private final ServiceRepository serviceRepository;
-    private final UserServiceImpl userServiceimpl;
-    private final UserService userService;
+
 
     public AppointmentServiceImpl(CaseFileRepository caseFileRepository,
                                   ParticipantRepository participantRepository,
                                   AppointmentRepository appointmentRepository,
                                   UserRepository userRepository,
-                                  SampleRepository sampleRepository, SampleServiceImpl sampleServiceImpl, ParticipantServiceImpl participantService,
+                                  SampleRepository sampleRepository, SampleService sampleService, ParticipantService participantService,
                                   TimeSlotLimitRepository timeSlotLimitRepository,
-                                  CaseFileServiceImpl caseFileService,
-                                  ServiceRepository serviceRepository, UserServiceImpl userServiceimpl, UserService userService) {
+                                  CaseFileService caseFileService,
+                                  ServiceRepository serviceRepository) {
         this.appointmentRepository = appointmentRepository;
 
         this.userRepository = userRepository;
-        this.sampleService= sampleServiceImpl;
+        this.sampleService= sampleService;
         this.participantService = participantService;
 
         this.timeSlotLimitRepository = timeSlotLimitRepository;
 
         this.caseFileService = caseFileService;
         this.serviceRepository = serviceRepository;
-        this.userServiceimpl = userServiceimpl;
-        this.userService = userService;
+
     }
 
     // --------------------- CUSTOMER CREATE APPOINTMENT ---------------------
@@ -92,12 +90,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         }
     }
 
-//    private void validateServiceCombination(AppointmentDTO dto) {
-//        if (dto.getAppointmentType() == Appointment.AppointmentType.ADMINISTRATIVE &&
-//                dto.getDeliveryMethod() == Appointment.DeliveryMethod.HOME_COLLECTION) {
-//            throw new IllegalArgumentException("Hành chính chỉ được chọn dịch vụ tại cơ sở!");
-//        }
-//    }
+
 
     // --------------------- CUSTOMER CREATE FULL APPOINTMENT ---------------------
 
@@ -207,7 +200,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     private SampleDTO toSampleDTO(SampleDTO s) {
         return new SampleDTO(s.getSampleId(), s.getParticipantId(), s.getParticipantCitizenId(),
-                s.getParticipantName(), s.getSampleType(), s.getCollectionDateTime(),
+                s.getParticipantName(),s.getGender() ,s.getSampleType(), s.getCollectionDateTime(),
                 s.getQuality(), s.getStatus(), s.getResult(), s.getNotes());
     }
 
@@ -262,7 +255,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Override
     public void cancelAppointment(Long id) {
         Appointment appointment = appointmentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Lịch hẹn không tồn tại"));
+                .orElseThrow(() -> new RuntimeException("Lịch hẹn không tồn tại."));
 
         if (!appointment.getAppointmentDate().isAfter(LocalDate.now())) {
             throw new IllegalArgumentException("Chỉ được phép hủy lịch trước ít nhất 1 ngày.");
@@ -291,9 +284,35 @@ public class AppointmentServiceImpl implements AppointmentService {
         return toDTO(appointmentRepository.save(appointment));
     }
 
+
+    @Override
+    public void updateAppointment(AppointmentDTO appointmentDTO, Long appointmentId) {
+        // Lấy thông tin lịch hẹn hiện tại
+        Appointment appointment = appointmentRepository.getAppointmentsByAppointmentId(appointmentId);
+
+        // Cập nhật các trường từ DTO
+        if (appointmentDTO.getAppointmentDate() != null)
+            appointment.setAppointmentDate(appointmentDTO.getAppointmentDate());
+
+        if (appointmentDTO.getAppointmentTime() != null)
+            appointment.setAppointmentTime(appointmentDTO.getAppointmentTime());
+
+        if (appointmentDTO.getAppointmentNote() != null)
+            appointment.setAppointmentNote(appointmentDTO.getAppointmentNote());
+
+        if (appointmentDTO.getCollectionAddress() != null)
+            appointment.setCollectionAddress(appointmentDTO.getCollectionAddress());
+
+        if (appointmentDTO.getDeliveryMethod() != null)
+            appointment.setDeliveryMethod(Appointment.DeliveryMethod.valueOf(appointmentDTO.getDeliveryMethod()));
+
+        // Lưu lại
+        appointmentRepository.save(appointment);
+    }
+
     public AppointmentDTO toDTO(Appointment appointment) {
         AppointmentDTO dto = new AppointmentDTO();
-
+        dto.setAppointmentId(appointment.getAppointmentId());
         dto.setUserId(appointment.getUser().getUserId());
         dto.setServiceId(appointment.getService().getServiceId());
         dto.setAppointmentType(appointment.getType());

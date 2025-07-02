@@ -11,8 +11,9 @@ public interface CaseFileService {
 
 
 
+
     List<CaseFile> findAll() ;
-    CaseFile findById(int id);
+    CaseFile findById(Long customerId);
 
     List<CaseFile> findByFileName(String fileName);
     List<CaseFile> findByFileType(String fileType);

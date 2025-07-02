@@ -80,6 +80,7 @@ public class ParticipantServiceImpl implements ParticipantService {
     }
 
 
+
     private ParticipantDTO toDTO(Participant participant) {
         ParticipantDTO dto = new ParticipantDTO();
         dto.setName(participant.getName());

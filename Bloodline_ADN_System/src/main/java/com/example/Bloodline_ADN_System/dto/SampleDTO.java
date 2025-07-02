@@ -15,6 +15,7 @@ public class SampleDTO {
     private Long participantId;
     private String participantCitizenId ;
     private String participantName;
+    private String gender ;
     private String sampleType;
     private LocalDateTime collectionDateTime;
     private Sample.SampleQuality quality;

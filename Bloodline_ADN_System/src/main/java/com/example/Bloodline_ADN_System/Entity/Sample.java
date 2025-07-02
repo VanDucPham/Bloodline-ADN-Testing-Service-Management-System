@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Sample extends SampleDTO {
+public class Sample {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long sampleId;

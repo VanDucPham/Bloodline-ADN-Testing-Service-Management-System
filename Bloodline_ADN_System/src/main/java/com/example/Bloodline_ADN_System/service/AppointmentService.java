@@ -43,5 +43,6 @@ public interface AppointmentService {
 
 
 
+    void updateAppointment(AppointmentDTO appointmentDTO, Long appointmentId);
 }
 

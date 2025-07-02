@@ -1,20 +1,33 @@
 package com.example.Bloodline_ADN_System.controller;
 
 import com.example.Bloodline_ADN_System.dto.ChangePasswordDTO;
+import com.example.Bloodline_ADN_System.dto.SampleDTO;
+import com.example.Bloodline_ADN_System.dto.TrackingAppoint.AppointmentResponseDTO;
 import com.example.Bloodline_ADN_System.dto.UserUpdateDTO;
+import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentDTO;
+import com.example.Bloodline_ADN_System.service.AppointmentService;
 import com.example.Bloodline_ADN_System.service.UserService;
+import com.example.Bloodline_ADN_System.service.impl.AppointmentServiceImpl;
+import com.example.Bloodline_ADN_System.service.impl.CustomerServiceImp;
+import com.example.Bloodline_ADN_System.service.impl.SampleServiceImpl;
 import com.example.Bloodline_ADN_System.service.impl.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/customer")
 @RequiredArgsConstructor
-public class UserController {
+public class CustomerController {
     private final UserService userService;
     private final UserServiceImpl userServiceImpl;
+    private final AppointmentServiceImpl appointmentService;
+    private final CustomerServiceImp customerServiceImp;
+    private final SampleServiceImpl sampleServiceImpl;
+
     @PutMapping
     public ResponseEntity<UserUpdateDTO> updateUser(Authentication authentication, @RequestBody UserUpdateDTO updatedUser) {
         String email = authentication.getName() ;
@@ -35,5 +48,16 @@ public class UserController {
 
         return ResponseEntity.ok(userService.getUserByEmail(email));
     }
-
+    @GetMapping("/appointmentList")
+    public ResponseEntity<?> getAppointmentList(Authentication authentication) {
+        String email = authentication.getName(); // lấy email từ phiên đăng nhập
+        Long userId = appointmentService.getUserIdByUsername(email); // lấy userId từ email
+        List<AppointmentResponseDTO> appointments = customerServiceImp.getAllAppointments(userId);
+        return ResponseEntity.ok(appointments);
+    }
+    @PutMapping("/updateSample")
+    public ResponseEntity<?> updateSample(@RequestBody SampleDTO dto) {
+            sampleServiceImpl.updateSample(dto);
+        return ResponseEntity.ok("Sample updated successfully");
+    }
 }
