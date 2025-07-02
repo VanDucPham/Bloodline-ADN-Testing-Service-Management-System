@@ -23,9 +23,9 @@ function AdminPage() {
         <button className="admin-btn">Danh sách tài khoản</button>
       </div>
       <div className="admin-section">
-        <h3>Quản lý dịch vụ</h3>
+        <h3>Quản lý dịch vụ và blog</h3>
         <button className="admin-btn" onClick={() => navigate('/admin/service/list')}>Quản lý dịch vụ</button>
-        
+        <button className="admin-btn" onClick={() => navigate('/admin/blog/create')}>Quản lý blog</button>
       </div>
       <div className="admin-section">
         <h3>Báo cáo & Thống kê</h3>

@@ -1,20 +1,23 @@
 package com.example.Bloodline_ADN_System.controller;
 
-import com.example.Bloodline_ADN_System.dto.CreateUserRequest;
-import com.example.Bloodline_ADN_System.dto.ServiceDTO;
-import com.example.Bloodline_ADN_System.dto.accountResponse;
-import com.example.Bloodline_ADN_System.dto.updateUserRequest;
+import com.example.Bloodline_ADN_System.Entity.Blog;
+import com.example.Bloodline_ADN_System.Entity.User;
+import com.example.Bloodline_ADN_System.dto.*;
 import com.example.Bloodline_ADN_System.repository.UserRepository;
+import com.example.Bloodline_ADN_System.service.BlogService;
 import com.example.Bloodline_ADN_System.service.ServiceList;
+import com.example.Bloodline_ADN_System.service.UserService;
 import com.example.Bloodline_ADN_System.service.impl.AdminServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -24,7 +27,8 @@ public class AdminController {
     private final AdminServiceImpl adminService;
     private final UserRepository userRepository;
     private final ServiceList serviceList;
-
+    private final BlogService blogService;
+    private final UserService userService;
 
     @PostMapping("/create")
     public ResponseEntity<?> createUser(@RequestBody CreateUserRequest request) {
@@ -98,5 +102,40 @@ public class AdminController {
         serviceList.deleteService(id);
         return ResponseEntity.ok("Xóa dịch vụ thành công");
     }
+
+    @GetMapping ("/profile")
+    public ResponseEntity<UserUpdateDTO> getProfile(Authentication authentication) {
+        String email = authentication.getName();
+        return ResponseEntity.ok(userService.getUserByEmail(email));
+    }
+
+    @PostMapping("/blog/create")
+    public ResponseEntity<BlogDTO> createBlog(@RequestBody BlogDTO dto) {
+        return ResponseEntity.ok(blogService.createBlog(dto));
+    }
+
+    @GetMapping("/blog/all")
+    public List<BlogDTO> getAllBlogs() {
+        return blogService.getAllBlogDTO();
+    }
+
+    // Lấy blog theo id, trả về DTO
+    @GetMapping("/blog/get/{id}")
+    public Optional<BlogDTO> getBlogById(@PathVariable Long id) {
+        return blogService.getBlogById(id);
+    }
+
+    // Xóa blog
+    @DeleteMapping("/blog/delete/{id}")
+    public void deleteBlog(@PathVariable Long id) {
+        blogService.deleteBlog(id);
+    }
+
+    // Cập nhật blog từ DTO
+    @PutMapping("/blog/update/{id}")
+    public BlogDTO updateBlog(@PathVariable Long id, @RequestBody BlogDTO dto) {
+        return blogService.updateBlog(id, dto);
+    }
+
 
 }

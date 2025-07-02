@@ -2,8 +2,6 @@ import BaseApiService from "./api/BaseApiService";
 class adminService extends BaseApiService {
    async getAllUser() {
       return this.get("/admin/alluser")
-
-
    }
    async createUser(data) {
       return this.post('/admin/create', data)
@@ -45,6 +43,29 @@ class adminService extends BaseApiService {
       return this.delete(`/admin/service/delete/${id}`);
    }
 
+   async getProfile() {
+      return this.get('/admin/profile');
+   }  
+
+   async createBlog(blog) {
+      return this.post('/admin/blog/create', blog);
+   }
+
+   async getAllBlog() {
+      return this.get('/admin/blog/all');
+   }
+
+   async updateBlog(id, blog) {
+      return this.put(`/admin/blog/update/${id}`, blog);
+   }  
+
+   async deleteBlog(id) {
+      return this.delete(`/admin/blog/delete/${id}`);
+   }
+   
+   async getBlogById(id) {
+      return this.get(`/admin/blog/get/${id}`);
+   }
 
 }
 export default adminService

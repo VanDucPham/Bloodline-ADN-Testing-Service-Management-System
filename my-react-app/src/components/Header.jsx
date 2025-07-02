@@ -73,7 +73,19 @@ function Header() {
               {item.submenu && (
                 <ul className="dropdown-menu">
                   {item.submenu.map((subItem) => (
-                    <li key={subItem}><span>{subItem}</span></li>
+                    <li key={subItem}>
+                      <span
+                        onClick={() => {
+                          if (item.name === 'KIẾN THỨC' && subItem === 'Tất cả bài viết') {
+                            navigate('/blogs');
+                          }
+                          // Thêm các điều hướng khác nếu cần
+                        }}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        {subItem}
+                      </span>
+                    </li>
                   ))}
                 </ul>
               )}

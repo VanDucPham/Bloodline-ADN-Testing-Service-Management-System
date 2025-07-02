@@ -64,6 +64,8 @@ import AppointmentBooking from './components/htmltest/tracking_customer/tracking
 import StaffAppointments from './components/staffappointments/StaffAppointments';
 import CreateAppointment from './components/staffappointments/CreateAppointment';
 import ServiceList from './components/role/ServiceList';
+import BlogForm from './components/role/BlogForm';
+import BlogList from './components/allpost/BlogList';
 
 function App() {
   return (
@@ -83,6 +85,8 @@ function App() {
         <Route path="/staff/appointment" element={<StaffAppointments />} />
         <Route path="/staff/appointment/create" element={<CreateAppointment />} />
         <Route path="/admin/service/list" element={<ServiceList />} />
+        <Route path="/admin/blog/create" element={<BlogForm />} />
+        <Route path="/blogs" element={<BlogList />} />
         {/* Thêm các route khác nếu cần */}
       </Routes>
     </BrowserRouter>
