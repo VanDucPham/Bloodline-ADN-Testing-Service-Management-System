@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './appointmentBooking.css';
 import apiService from '../../../../service/api';
+import { Navigate } from 'react-router-dom';
 
 function AppointmentBooking() {
     const [step, setStep] = useState(1);
@@ -217,13 +218,17 @@ function AppointmentBooking() {
         console.log('Case File:', updatedCaseFile);
 
         try {
+const filteredSamples = samples.filter(s =>
+    s.participantCitizenId?.trim() !== '' && s.sampleType?.trim() !== ''
+);
 
-            const payLoad = {
-                appointment: updateAppointment,
-                participants: participants,
-                samples: samples,
-                caseFile: updatedCaseFile
-            };
+const payLoad = {
+    appointment: updateAppointment,
+    participants: participants,
+    samples: filteredSamples,
+    caseFile: updatedCaseFile
+};
+
             console.log(payLoad)
             await apiService.user.create_app(payLoad);
             alert('Lịch hẹn được đặt thành công!')
@@ -232,6 +237,7 @@ function AppointmentBooking() {
             console.error('Lỗi khi tạo lịch:', error);
             alert("Đặt lịch thất bại, vui lòng đặt lại")
         }
+        Navigate("/tracking_user")
     };
 
     const nextStep = async () => {

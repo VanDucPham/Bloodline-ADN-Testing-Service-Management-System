@@ -18,6 +18,8 @@ const AppointmentList = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [appointments, setAppointments] = useState([]);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [editingParticipant, setEditingParticipant] = useState(null);
+const [showEditModal, setShowEditModal] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -104,7 +106,55 @@ const handleCancelAppointment = async (appointmentId) => {
   }
 };
 
+const handleSaveParticipant = async () => {
+  try {
+    const response = await apiService.user.updateParticipant(editingParticipant.participantId, {
+      name: editingParticipant.name,
+      citizenId: editingParticipant.citizenId,
+      relationShip: editingParticipant.relationship,
+      sample: {
+        sampleType: editingParticipant.sampleDTO?.sampleType
+      }
+    });
 
+    const data = response;
+
+    if (data.success) {
+      showToast('success', data.message || 'Cập nhật thành công');
+      // Cập nhật lại danh sách hoặc đóng modal nếu cần
+      closeModal();
+      // Optionally reload:
+      // fetchAppointments();
+    } else {
+      showToast('danger', data.message || 'Cập nhật thất bại');
+    }
+  } catch (error) {
+    const message =
+      error.response?.data?.message || 'Lỗi không xác định khi cập nhật';
+    showToast('danger', message);
+    console.error(error);
+  }
+  setSelectedAppointment((prev) => {
+  if (!prev) return prev;
+
+  const updatedParticipants = prev.participantResponseDTOS.map((item) =>
+    item.participantId === editingParticipant.participantId
+      ? { ...item, ...editingParticipant }
+      : item
+  );
+
+  return { ...prev, participantResponseDTOS: updatedParticipants };
+});
+
+};
+
+const openEditParticipantModal = (participant) => {
+  setEditingParticipant({
+    ...participant,
+    sampleDTO: participant.sampleDTO || {}
+  });
+  setShowEditModal(true);
+};
 
   return (
     <div className={`appointment-container ${isDarkMode ? "dark" : ""}`}>
@@ -142,9 +192,7 @@ const handleCancelAppointment = async (appointmentId) => {
               <button className="card-btn view" onClick={() => openModal(appointment)}>
                 <FontAwesomeIcon icon={faEye} /> Xem
               </button>
-              <button className="card-btn edit" onClick={() => showToast('warning', 'Chỉnh sửa lịch hẹn')}>
-                <FontAwesomeIcon icon={faEdit} /> Sửa
-              </button>
+              
               <button
                 className="card-btn cancel"
                 onClick={() => handleCancelAppointment(appointment.appointmentId)}
@@ -195,7 +243,15 @@ const handleCancelAppointment = async (appointmentId) => {
                       <td>{p.relationship}</td>
                       <td>{p.sampleDTO?.sampleType || 'Chưa có'}</td>
                       <td>{p.sampleDTO?.status || 'Chưa thu thập'}</td>
-                      <td><button className="edit-btn" onClick={editParticipant}>Sửa</button></td>
+                      <td>
+  <button
+    className="edit-btn"
+    onClick={() => openEditParticipantModal(p)}
+  >
+    Sửa
+  </button>
+</td>
+
                     </tr>
                   ))}
                 </tbody>
@@ -234,7 +290,56 @@ const handleCancelAppointment = async (appointmentId) => {
           <span>{toast.message}</span>
         </div>
       )}
+      {showEditModal && editingParticipant && (
+  <div className="modal-overlay" onClick={() => setShowEditModal(false)}>
+    <div className="modal-content small" onClick={(e) => e.stopPropagation()}>
+      <h3>Chỉnh sửa người tham gia</h3>
+
+      <label>Họ tên:</label>
+      <input
+        value={editingParticipant.name}
+        onChange={(e) =>
+          setEditingParticipant({ ...editingParticipant, name: e.target.value })
+        }
+      />
+
+      <label>Số CCCD:</label>
+      <input
+        value={editingParticipant.citizenId}
+        onChange={(e) =>
+          setEditingParticipant({ ...editingParticipant, citizenId: e.target.value })
+        }
+      />
+
+      <label>Quan hệ:</label>
+      <input
+        value={editingParticipant.relationship}
+        onChange={(e) =>
+          setEditingParticipant({ ...editingParticipant, relationship: e.target.value })
+        }
+      />
+
+      <label>Loại mẫu:</label>
+      <input
+        value={editingParticipant.sampleDTO.sampleType || ''}
+        onChange={(e) =>
+          setEditingParticipant({
+            ...editingParticipant,
+            sampleDTO: { ...editingParticipant.sampleDTO, sampleType: e.target.value }
+          })
+        }
+      />
+
+      <div className="modal-actions">
+        <button onClick={() => setShowEditModal(false)}>Hủy</button>
+        <button onClick={handleSaveParticipant}>Lưu</button>
+      </div>
     </div>
+  </div>
+)}
+
+    </div>
+    
   );
 };
 

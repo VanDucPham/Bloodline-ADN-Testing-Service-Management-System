@@ -30,6 +30,9 @@ return this.post('/customer/appointment/check-availability', data)
   async cancelAppointment(data){
     return this.put(`/customer/appointment/${data}/cancel`);
   }
+   async updateParticipant(id, data) {
+    return this.put(`/customer/${id}/update`, data);
+  }
 
 }
     
