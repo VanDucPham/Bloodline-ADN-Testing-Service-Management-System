@@ -1,9 +1,8 @@
 package com.example.Bloodline_ADN_System.Entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import java.time.LocalDateTime;
 
 // ========================
@@ -11,7 +10,8 @@ import java.time.LocalDateTime;
 // ========================
 @Entity
 @Table(name = "feedbacks")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Feedback {

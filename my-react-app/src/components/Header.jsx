@@ -9,17 +9,26 @@ const menuItems = [
   { name: 'TRANG CHỦ', path: '/' },
   {
     name: 'GIỚI THIỆU',
-    submenu: ['Về chúng tôi', 'Hỏi đáp ADN huyết thống']
+    submenu: [
+      { name: 'Về chúng tôi' },
+      { name: 'Hỏi đáp ADN huyết thống' }
+    ]
   },
   { name: 'DỊCH VỤ' },
   { name: 'BẢNG GIÁ', path: '/pricelist' },
   {
     name: 'KIẾN THỨC',
-    submenu: ['Tất cả bài viết', 'Xét nghiệm ADN']
+    submenu: [
+      { name: 'Tất cả bài viết', path: '/blog' },
+      { name: 'Xét nghiệm ADN' }
+    ]
   },
   {
     name: 'DỰ ÁN',
-    submenu: ['Dự án đang triển khai', 'Thư viện kỹ thuật']
+    submenu: [
+      { name: 'Dự án đang triển khai' },
+      { name: 'Thư viện kỹ thuật' }
+    ]
   },
   { name: 'LIÊN HỆ' }
 ];
@@ -81,7 +90,15 @@ function Header() {
               {item.submenu && (
                 <ul className="dropdown-menu">
                   {item.submenu.map((subItem) => (
-                    <li key={subItem}><span>{subItem}</span></li>
+                    <li
+                      key={subItem.name || subItem}
+                      onClick={e => {
+                        e.stopPropagation();
+                        if (subItem.path) navigate(subItem.path);
+                      }}
+                    >
+                      <span>{subItem.name || subItem}</span>
+                    </li>
                   ))}
                 </ul>
               )}

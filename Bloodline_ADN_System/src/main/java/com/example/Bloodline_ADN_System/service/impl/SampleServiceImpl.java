@@ -67,6 +67,7 @@ public class SampleServiceImpl implements SampleService {
     }
 
     //Nhân viên điền thêm thông tin cho sample sau khi nhận được mẫu dành cho dịch vụ tự lấy mẫu
+    @Transactional
     public SampleDTO updateSampleInfo(SampleUpdateDTO dto) {
         Sample sample = sampleRepository.findById(dto.getSampleId())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy mẫu"));

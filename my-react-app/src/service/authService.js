@@ -37,5 +37,9 @@ class AuthService extends BaseApiService {
         const userInfo = localStorage.getItem('userInfo');
         return userInfo ? JSON.parse(userInfo) : null;
     }
+
+    async getBlog() {
+        return this.get('/auth/blog');
+    }
 }
 export default AuthService

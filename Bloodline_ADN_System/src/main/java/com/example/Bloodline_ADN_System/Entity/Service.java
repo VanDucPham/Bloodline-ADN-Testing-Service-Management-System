@@ -1,9 +1,8 @@
 package com.example.Bloodline_ADN_System.Entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,19 +11,24 @@ import java.util.List;
 // ========================
 @Entity
 @Table(name = "services")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Service {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "service_id")
     private Long serviceId;
 
+    @Column(name = "service_name")
     private String serviceName;
 
-    @Column(columnDefinition = "TEXT")
+//    @Column(columnDefinition = "TEXT")
+    @Column(name ="service_description")
     private String serviceDescription;
 
+    @Column(name = "service_price")
     private Double servicePrice;
     @OneToMany(mappedBy = "service", cascade = CascadeType.ALL , fetch = FetchType.LAZY)
     private List<CaseFile> caseFiles = new ArrayList<>() ;

@@ -111,10 +111,9 @@ public class AppointmentController {
      * Cập nhật trạng thái lịch hẹn
      */
     @PutMapping("/{id}/status")
-    public ResponseEntity<AppointmentDTO> updateStatus(@PathVariable Long id,
-                                                       @RequestParam Appointment.AppointmentStatus status) {
-        AppointmentDTO updated = appointmentService.updateAppointmentProgress(id, status);
-        return ResponseEntity.ok(updated);
+    public ResponseEntity<AppointmentDTO> updateAppointment(@PathVariable Long id, @RequestParam("status") Appointment.AppointmentStatus status,
+                                                            @RequestParam("collectionStatus") Appointment.CollectionStatus collectionStatus) {
+        return ResponseEntity.ok(appointmentService.updateAppointmentProgress(id, status, collectionStatus));
     }
 
     /**

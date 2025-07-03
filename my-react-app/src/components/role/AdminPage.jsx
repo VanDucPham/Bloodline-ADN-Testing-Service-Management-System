@@ -8,7 +8,6 @@ import apiService from "../../service/api";
 function AdminPage() {
   const navigate = useNavigate();
 
-
   return (
     <div className="admin-page">
       <h2>👨‍💻 Quản Trị Hệ Thống</h2>
@@ -19,14 +18,14 @@ function AdminPage() {
           onClick={() => navigate('/admin-dashboard')}
         >
           Phân quyền tài khoản
-        </button>        <button className="admin-btn">Thêm tài khoản mới</button>
+        </button>
+        <button className="admin-btn">Thêm tài khoản mới</button>
         <button className="admin-btn">Danh sách tài khoản</button>
       </div>
       <div className="admin-section">
-        <h3>Quản lý dịch vụ</h3>
-        <button className="admin-btn">Thêm dịch vụ</button>
-        <button className="admin-btn">Cập nhật giá dịch vụ</button>
-        <button className="admin-btn">Danh sách dịch vụ</button>
+        <h3>Quản lý dịch vụ và blog</h3>
+        <button className="admin-btn" onClick={() => navigate('/admin/service/list')}>Quản lý dịch vụ</button>
+        <button className="admin-btn" onClick={() => navigate('/admin/blog/create')}>Quản lý blog</button>
       </div>
       <div className="admin-section">
         <h3>Báo cáo & Thống kê</h3>

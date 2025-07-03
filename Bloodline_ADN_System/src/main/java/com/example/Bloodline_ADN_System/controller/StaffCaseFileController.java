@@ -3,6 +3,7 @@ package com.example.Bloodline_ADN_System.controller;
 import com.example.Bloodline_ADN_System.Entity.Appointment;
 import com.example.Bloodline_ADN_System.dto.*;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentDTO;
+import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentRequest;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentResponse;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.ParticipantDTO;
 import com.example.Bloodline_ADN_System.service.*;
@@ -51,9 +52,9 @@ public class StaffCaseFileController {
     }
 
     @PutMapping("/apointment/update/{id}")
-    public ResponseEntity<AppointmentDTO> updateAppointment(@PathVariable Long id, @RequestParam("status") Appointment.AppointmentStatus status
-    ) {
-        return ResponseEntity.ok(appointmentService.updateAppointmentProgress(id, status));
+    public ResponseEntity<AppointmentDTO> updateAppointment(@PathVariable Long id, @RequestParam("status") Appointment.AppointmentStatus status,
+                                                            @RequestParam("collectionStatus") Appointment.CollectionStatus collectionStatus) {
+        return ResponseEntity.ok(appointmentService.updateAppointmentProgress(id, status, collectionStatus));
     }
 
     @GetMapping("/sample/get/{id}")
@@ -63,8 +64,9 @@ public class StaffCaseFileController {
     }
 
     @PostMapping("/appointment/create")
-    public ResponseEntity<AppointmentResponse<AppointmentDTO>> createAppointment(@RequestBody AppointmentDTO dto) {
-        AppointmentResponse<AppointmentDTO> response = appointmentService.createAppointmentByStaff(dto);
+    public ResponseEntity<AppointmentResponse<AppointmentDTO>> createAppointment(
+            @RequestBody AppointmentRequest request) {
+        AppointmentResponse<AppointmentDTO> response = appointmentService.createAppointmentByStaff(request);
         return ResponseEntity.ok(response);
     }
 

@@ -14,7 +14,8 @@ import java.util.List;
 
 public interface AppointmentService {
 
-    AppointmentResponse<AppointmentDTO> createAppointmentByStaff(AppointmentDTO dto);
+    AppointmentResponse<AppointmentDTO> createAppointmentCaseFile(AppointmentDTO dto);
+    AppointmentResponse<AppointmentDTO> createAppointmentByStaff(AppointmentRequest request);
     @Transactional
     AppointmentResponse<AppointmentDTO> createAppointment(AppointmentRequest request);
 
@@ -23,7 +24,7 @@ public interface AppointmentService {
     List<AppointmentDTO> getAppointmentByUserId(Long userId);
     ApiMessResponse cancelAppointment(Long id);
     List<AppointmentDTO> filterAppointment(Appointment.AppointmentStatus status, Appointment.AppointmentType type, LocalDate date);
-    AppointmentDTO updateAppointmentProgress(Long id, Appointment.AppointmentStatus status);
+    AppointmentDTO updateAppointmentProgress(Long id, Appointment.AppointmentStatus status,Appointment.CollectionStatus collectionStatus);
 
 
   //  Long getUserIdByUsername(String username);
