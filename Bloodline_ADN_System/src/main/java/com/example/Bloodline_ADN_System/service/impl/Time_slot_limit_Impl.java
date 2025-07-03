@@ -48,16 +48,17 @@ public class Time_slot_limit_Impl implements Time_slot_limit_Service {
     public TimeSlotLimitResponse update(TimeSlotLimitRequest request) {
         validate(request, false);
 
-        // ✅ NOTE: Dùng .trim() để đảm bảo không lỗi khi parse
-        LocalTime start = LocalTime.parse(request.getStartTime().trim());
-        LocalTime end = LocalTime.parse(request.getEndTime().trim());
-
-        Optional<TimeSlotLimit> optional = timeSlotLimitRepository.findByStartTimeAndEndTime(start, end);
+        // Lấy slot cũ theo oldStartTime, oldEndTime
+        LocalTime originalStart = LocalTime.parse(request.getOldStartTime().trim());
+        LocalTime originalEnd = LocalTime.parse(request.getOldEndTime().trim());
+        Optional<TimeSlotLimit> optional = timeSlotLimitRepository.findByStartTimeAndEndTime(originalStart, originalEnd);
         if (optional.isEmpty()) {
             throw new RuntimeException("Time slot not found.");
         }
 
         TimeSlotLimit slot = optional.get();
+        slot.setStartTime(LocalTime.parse(request.getStartTime().trim()));
+        slot.setEndTime(LocalTime.parse(request.getEndTime().trim()));
         slot.setMaxAppointments(request.getMaxAppointments());
 
         timeSlotLimitRepository.save(slot);

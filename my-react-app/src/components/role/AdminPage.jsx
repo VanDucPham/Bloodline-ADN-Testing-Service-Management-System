@@ -1,7 +1,7 @@
 import React from 'react';
 import './AdminPage.css';
 import { useNavigate } from 'react-router-dom';
-import apiService from "../../service/api";
+
 
 
 
@@ -33,6 +33,12 @@ function AdminPage() {
         <button className="admin-btn">Xem báo cáo tổng quan</button>
         <button className="admin-btn">Xuất báo cáo PDF</button>
         <button className="admin-btn">Xuất báo cáo Excel</button>
+      </div>
+      <div className="admin-section">
+        <h3>Quản lý khung giờ</h3>
+        <button className="admin-btn" onClick={() => navigate('/admin/time-slot-limit')}>
+          Quản lý khung giờ giới hạn
+        </button>
       </div>
     </div>
   );

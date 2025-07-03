@@ -12,25 +12,24 @@ class BaseApiService {
         const token = localStorage.getItem('authToken');
         const isFormData = data instanceof FormData;
 
-        const headers = {
-            ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
-            ...(token && { 'Authorization': `Bearer ${token}` }),
+        return {
+            ...(isFormData ? {} : {'Content-Type': 'application/json'}),
+            ...(token && {'Authorization': `Bearer ${token}`}),
             ...optionsHeaders // Ưu tiên headers truyền vào
         };
-
-        return headers;
     }
 
     async request(endpoint, options = {}) {
         const url = `${this.manager.baseURL}${endpoint}`;
         const data = options.data || null;
-        const params = options.params || undefined; // <-- Thêm dòng này
+        const params = options.params || undefined;
 
         const config = {
             method: options.method || 'GET',
             url,
             headers: this.getHeaders(data, options.headers || {}),
-           ...(options.method === 'GET' ? { params } : { data }) // <-- xử lý params đúng cho GET
+            ...(params ? { params } : {}),
+            ...(data && options.method !== 'GET' ? { data } : {})
         };
 
         try {
