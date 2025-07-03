@@ -1,6 +1,6 @@
 package com.example.Bloodline_ADN_System.service.impl;
 
-import com.example.Bloodline_ADN_System.Entity.ServiceEntity;
+import com.example.Bloodline_ADN_System.Entity.Service;
 import com.example.Bloodline_ADN_System.dto.ServiceDTO;
 import com.example.Bloodline_ADN_System.repository.ServiceRepository;
 import com.example.Bloodline_ADN_System.service.ServiceList;
@@ -26,16 +26,16 @@ public class ServiceListImpl implements ServiceList {
     }
 
     public ServiceDTO createService(ServiceDTO dto) {
-        ServiceEntity serviceEntity = toEntity(dto);
-        return toDTO(serviceRepository.save(serviceEntity));
+        Service service = toEntity(dto);
+        return toDTO(serviceRepository.save(service));
     }
 
     public ServiceDTO updateService(Long id, ServiceDTO updateDTO) {
-        ServiceEntity serviceEntity = serviceRepository.findById(id).orElseThrow(() -> new RuntimeException("Dịch vụ không tồn tại"));
-        serviceEntity.setServiceName(updateDTO.getServiceName());
-        serviceEntity.setServiceDescription(updateDTO.getServiceDescription());
-        serviceEntity.setServicePrice(updateDTO.getServicePrice());
-        return toDTO(serviceRepository.save(serviceEntity));
+        Service service = serviceRepository.findById(id).orElseThrow(() -> new RuntimeException("Dịch vụ không tồn tại"));
+        service.setServiceName(updateDTO.getServiceName());
+        service.setServiceDescription(updateDTO.getServiceDescription());
+        service.setServicePrice(updateDTO.getServicePrice());
+        return toDTO(serviceRepository.save(service));
     }
 
     public void deleteService(Long id) {
@@ -44,15 +44,15 @@ public class ServiceListImpl implements ServiceList {
     }
 
     // Mapping methods
-    public ServiceDTO toDTO(ServiceEntity serviceEntity) {
+    public ServiceDTO toDTO(Service service) {
         return new ServiceDTO(
-                serviceEntity.getServiceId(),
-                serviceEntity.getServiceName(),
-                serviceEntity.getServiceDescription(),
-                serviceEntity.getServicePrice()
+                service.getServiceId(),
+                service.getServiceName(),
+                service.getServiceDescription(),
+                service.getServicePrice()
         );
     }
-    public ServiceEntity toEntity(ServiceDTO dto) {
+    public Service toEntity(ServiceDTO dto) {
 
         Double price = dto.getServicePrice();
         if (price == null) {
@@ -66,11 +66,11 @@ public class ServiceListImpl implements ServiceList {
         if (nameExists) {
             throw new IllegalArgumentException("Tên dịch vụ đã tồn tại");
         }
-        ServiceEntity serviceEntity = new ServiceEntity();
-        serviceEntity.setServiceName(dto.getServiceName());
-        serviceEntity.setServiceDescription(dto.getServiceDescription());
-        serviceEntity.setServicePrice(price);
+        Service service = new Service();
+        service.setServiceName(dto.getServiceName());
+        service.setServiceDescription(dto.getServiceDescription());
+        service.setServicePrice(price);
 
-        return serviceEntity;
+        return service;
     }
 }

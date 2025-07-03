@@ -8,7 +8,7 @@
 - Đặt tên: `feature/[mã_sv]/[mô_tả_ngắn]`
 - Ví dụ:
   - `feature/be01/authentication`
-  - `feature/be02/serviceEntity-registration`
+  - `feature/be02/service-registration`
   - `feature/be03/dashboard-report`
 
 ### 🔁 Luồng làm việc

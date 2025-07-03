@@ -2,6 +2,8 @@ package com.example.Bloodline_ADN_System.controller;
 
 
 import com.example.Bloodline_ADN_System.dto.BlogDTO;
+import com.example.Bloodline_ADN_System.dto.Login.LoginRequest;
+import com.example.Bloodline_ADN_System.dto.Login.LoginResponse;
 import com.example.Bloodline_ADN_System.dto.RegisterRequest;
 import com.example.Bloodline_ADN_System.service.AuthService;
 import com.example.Bloodline_ADN_System.service.BlogService;
@@ -20,12 +22,11 @@ import java.util.List;
 public class AuthController {
 
     private final AuthServiceImpl authService;
-    public final BlogService blogService;
-
+    private final BlogService blogService;
 
     @PostMapping("/login")
-    public ResponseEntity<com.example.Bloodline_ADN_System.dto.LoginResponse> login(@RequestBody com.example.Bloodline_ADN_System.dto.LoginRequest loginRequest) {
-        com.example.Bloodline_ADN_System.dto.LoginResponse loginResponse = authService.login(loginRequest);
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
+        LoginResponse loginResponse = authService.login(loginRequest);
         return ResponseEntity.ok(loginResponse);
     }
 
@@ -43,7 +44,6 @@ public class AuthController {
     public List<BlogDTO> getAllBlogs() {
         return blogService.getAllBlogDTO();
     }
-
 
 
 

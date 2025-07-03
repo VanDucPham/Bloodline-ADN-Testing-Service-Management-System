@@ -24,7 +24,7 @@ public class Appointment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "service_id")
-    private ServiceEntity service;
+    private Service service;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "staff_assigned_id")
@@ -90,7 +90,7 @@ public class Appointment {
     }
 
     public enum AppointmentType { ADMINISTRATIVE, CIVIL }
-    public enum DeliveryMethod { HOME_COLLECTION, SELF_DROP_OFF }
+    public enum DeliveryMethod { HOME_COLLECTION, SELF_DROP_OFF , HOME_DELIVERY }
     public enum AppointmentStatus { SCHEDULED, CONFIRMED, IN_PROGRESS, COMPLETED, CANCELLED }
     public enum CollectionStatus {
         ASSIGNED,      // Đã phân công nhân viên

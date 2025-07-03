@@ -7,9 +7,13 @@ class StaffService extends BaseApiService {
     }
 
 
-    async updateAppointmentStatus(appointmentId, newStatus) {
-    return this.put(`/staff/apointment/update/${appointmentId}?status=${newStatus}`, {});
-}
+    /**
+     * Cập nhật trạng thái lịch hẹn và/hoặc trạng thái thu mẫu.
+     * Nếu chỉ muốn cập nhật 1 trường, truyền trường còn lại là giá trị hiện tại.
+     */
+    async updateAppointmentStatusAndCollectionStatus(appointmentId, status, collectionStatus) {
+        return this.put(`/staff/apointment/update/${appointmentId}?status=${status}&collectionStatus=${collectionStatus}`, {});
+    }
 
     async getParticipantsByAppointmentId(appointmentId) {
         return this.get(`/staff/participant/${appointmentId}`);

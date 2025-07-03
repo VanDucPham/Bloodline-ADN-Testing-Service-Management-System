@@ -73,6 +73,12 @@ public class ParticipantServiceImpl implements ParticipantService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<Participant> saveAll(List<Participant> participants) {
+
+        return participantRepository.saveAll(participants);
+    }
+
 
 
     private ParticipantDTO toDTO(Participant participant) {

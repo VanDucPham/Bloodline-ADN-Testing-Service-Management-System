@@ -17,6 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AppointmentDTO {
+
     private Long appointmentId;
 
     // Thông tin người dùng
@@ -38,11 +39,14 @@ public class AppointmentDTO {
     // Hình thức nhận kết quả (Tại nhà, tại cơ sở...)
     private String deliveryMethod;
 
+    private String collectionAddress ;
+
     // Ghi chú
     private String appointmentNote;
 
-    // Mã hồ sơ (nếu có)
     private String caseCode;
+    private Appointment.CollectionStatus collectionStatus;
+
 
     // Danh sách người tham gia
     private List<ParticipantDTO> participants;

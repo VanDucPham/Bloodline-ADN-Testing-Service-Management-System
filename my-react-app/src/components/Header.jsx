@@ -1,25 +1,34 @@
 import React, { useState } from 'react';
 import './Header.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMagnifyingGlass, faCircleUser, faMoneyBill } from '@fortawesome/free-solid-svg-icons';
-import { Link, useNavigate } from 'react-router-dom';
+import { faCircleUser, faMoneyBill } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate } from 'react-router-dom';
 import apiService from '../service/api';
 
 const menuItems = [
   { name: 'TRANG CHỦ', path: '/' },
   {
     name: 'GIỚI THIỆU',
-    submenu: ['Về chúng tôi', 'Hỏi đáp ADN huyết thống']
+    submenu: [
+      { name: 'Về chúng tôi' },
+      { name: 'Hỏi đáp ADN huyết thống' }
+    ]
   },
   { name: 'DỊCH VỤ' },
   { name: 'BẢNG GIÁ', path: '/pricelist' },
   {
     name: 'KIẾN THỨC',
-    submenu: ['Tất cả bài viết', 'Xét nghiệm ADN']
+    submenu: [
+      { name: 'Tất cả bài viết', path: '/blog' },
+      { name: 'Xét nghiệm ADN' }
+    ]
   },
   {
     name: 'DỰ ÁN',
-    submenu: ['Dự án đang triển khai', 'Thư viện kỹ thuật']
+    submenu: [
+      { name: 'Dự án đang triển khai' },
+      { name: 'Thư viện kỹ thuật' }
+    ]
   },
   { name: 'LIÊN HỆ' }
 ];
@@ -30,7 +39,6 @@ function Header() {
 
   const userData = localStorage.getItem('userInfo');
   const user = userData ? JSON.parse(userData) : null;
-
   const isLogin = !!user;
   const name = user?.fullName;
   const role = user?.role;
@@ -38,6 +46,7 @@ function Header() {
   const handleLogout = async () => {
     try {
       await apiService.auth.logout();
+      localStorage.removeItem('userInfo');
       navigate('/');
     } catch (error) {
       console.error('Lỗi khi đăng xuất', error);
@@ -45,46 +54,50 @@ function Header() {
   };
 
   return (
-    <header className="header">
-      {/* Top Bar */}
-      <div className="top-bar">
-        <img src="/logo.png" alt="Vietcare Logo" className="logo" />
-        <div className="contact-info">
-          <div>Hỗ trợ tư vấn 24/7 <br /><strong>Hoàn toàn MIỄN PHÍ</strong></div>
-          <div>0339 773 330</div>
-          <div>vietcarelab@gmail.com</div>
-          <div>388 đường 81, phường Tân Quy<br />quận 7, TP. Hồ Chí Minh</div>
+    <header className="main-header">
+      <div className="header-top">
+        <div className="header-logo-group">
+          <img src="public/images/freepik__a-stylized-test-tube-containing-a-swirling-colorfu__21054.jpeg" alt="Vietcare Logo" className="logo" />
+          <div className="brand-title">
+            <span className="brand-main">Vietcare Lab</span>
+            <span className="brand-sub">Xét nghiệm ADN - Chính xác & Bảo mật</span>
+          </div>
+        </div>
+        <div className="header-contact-group">
+          <a href="tel:0339773330" className="header-hotline">
+            <i className="fas fa-phone-alt"></i> 0339 773 330
+          </a>
+          <span className="header-email">
+            <i className="fas fa-envelope"></i> vietcarelab@gmail.com
+          </span>
+          <span className="header-address">
+            <i className="fas fa-map-marker-alt"></i> 388 đường 81, P.Tân Quy, Q.7, TP.HCM
+          </span>
         </div>
       </div>
 
-      {/* Navbar */}
-      <nav className="navbar" role="navigation" aria-label="Main menu">
+      <nav className="navbar">
         <ul>
           {menuItems.map((item) => (
             <li
               key={item.name}
               className={`menu-item ${item.submenu ? 'dropdown' : ''} ${activeMenu === item.name ? 'active' : ''}`}
-              onClick={() => {
-                setActiveMenu(item.name);
-                if (item.path) navigate(item.path);
-              }}
+              onMouseEnter={() => item.submenu && setActiveMenu(item.name)}
+              onMouseLeave={() => item.submenu && setActiveMenu('')}
+              onClick={() => item.path && navigate(item.path)}
             >
               <span>{item.name}</span>
               {item.submenu && (
                 <ul className="dropdown-menu">
                   {item.submenu.map((subItem) => (
-                    <li key={subItem}>
-                      <span
-                        onClick={() => {
-                          if (item.name === 'KIẾN THỨC' && subItem === 'Tất cả bài viết') {
-                            navigate('/blogs');
-                          }
-                          // Thêm các điều hướng khác nếu cần
-                        }}
-                        style={{ cursor: 'pointer' }}
-                      >
-                        {subItem}
-                      </span>
+                    <li
+                      key={subItem.name || subItem}
+                      onClick={e => {
+                        e.stopPropagation();
+                        if (subItem.path) navigate(subItem.path);
+                      }}
+                    >
+                      <span>{subItem.name || subItem}</span>
                     </li>
                   ))}
                 </ul>
@@ -92,68 +105,45 @@ function Header() {
             </li>
           ))}
 
-         
-
-          {!isLogin && (
+          {!isLogin ? (
             <>
               <li>
-                <button className="login-btn" onClick={() => navigate('/login')}>ĐĂNG NHẬP</button>
+                <button className="btn login-btn" onClick={() => navigate('/login')}>ĐĂNG NHẬP</button>
               </li>
               <li>
-                <Link className="login-btn" to="/register">Đăng ký</Link>
+                <button className="btn register-btn" onClick={() => navigate('/register')}>ĐĂNG KÝ</button>
               </li>
             </>
-          )}
-
-          {isLogin && (
+          ) : (
             <>
               <li className="user-info">Xin chào, {name}</li>
-
               {role === 'ADMIN' && (
                 <li>
-                  <button className="admin-btn" onClick={() => navigate('/admin')} title="Trang admin">
-                    <FontAwesomeIcon icon={faCircleUser} /> Trang admin
+                  <button className="btn" onClick={() => navigate('/admin')}>
+                    <FontAwesomeIcon icon={faCircleUser} /> Admin
                   </button>
                 </li>
               )}
-
               {role === 'STAFF' && (
                 <>
-                  <li>
-                    <Link to="/staff">Trang Nhân Viên</Link>
-                  </li>
-                  <li>
-                    <button onClick={() => navigate('/staff/appointment')}>
-                      Quản lý lịch hẹn
-                    </button>
-                  </li>
-                  <li>
-                    <button onClick={() => navigate('/staff/appointment/create')}>
-                      + Tạo lịch hẹn
-                    </button>
-                  </li>
+                  <li><button className="btn" onClick={() => navigate('/staff/appointment')}>Lịch hẹn</button></li>
+                  <li><button className="btn" onClick={() => navigate('/staff/appointment/create')}>+ Tạo lịch</button></li>
                 </>
               )}
-
               {role === 'CUSTOMER' && (
                 <li>
-                  <button className="payment-btn" onClick={() => navigate('/payment')}>
-                    <FontAwesomeIcon icon={faMoneyBill} /> Order
+                  <button className="btn" onClick={() => navigate('/CustomerApointmentList')}>
+                    <FontAwesomeIcon icon={faMoneyBill} /> Lịch hẹn
                   </button>
                 </li>
               )}
-
-              {/* Hồ sơ áp dụng cho tất cả role */}
-              {['ADMIN', 'STAFF', 'CUSTOMER'].includes(role) && (
-                <li>
-                  <button className="user-btn" onClick={() => navigate('/user')} title="Hồ sơ cá nhân">
-                    <FontAwesomeIcon icon={faCircleUser} /> Hồ sơ
-                  </button>
-                </li>
-              )}
-
               <li>
-                <button className="logout-btn" onClick={handleLogout}>Đăng xuất</button>
+                <button className="btn" onClick={() => navigate('/user')}>
+                  <FontAwesomeIcon icon={faCircleUser} /> Hồ sơ
+                </button>
+              </li>
+              <li>
+                <button className="btn logout-btn" onClick={handleLogout}>ĐĂNG XUẤT</button>
               </li>
             </>
           )}
