@@ -2,6 +2,7 @@
 package com.example.Bloodline_ADN_System.service.impl;
 
 import com.example.Bloodline_ADN_System.Entity.*;
+import com.example.Bloodline_ADN_System.dto.ApiMessResponse;
 import com.example.Bloodline_ADN_System.dto.SampleDTO;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.*;
 import com.example.Bloodline_ADN_System.repository.*;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -252,18 +254,40 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .toList();
     }
 
-    @Override
-    public void cancelAppointment(Long id) {
-        Appointment appointment = appointmentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Lịch hẹn không tồn tại."));
-
-        if (!appointment.getAppointmentDate().isAfter(LocalDate.now())) {
-            throw new IllegalArgumentException("Chỉ được phép hủy lịch trước ít nhất 1 ngày.");
+    public ApiMessResponse cancelAppointment(Long id) {
+        Optional<Appointment> optionalAppointment = appointmentRepository.findById(id);
+        if (optionalAppointment.isEmpty()) {
+            return new ApiMessResponse(false, "Không tìm thấy lịch hẹn.");
         }
 
+        Appointment appointment = optionalAppointment.get();
+
+        if (appointment.getStatus() == Appointment.AppointmentStatus.CANCELLED) {
+            return new ApiMessResponse(false, "Lịch hẹn đã bị hủy trước đó.");
+        }
+
+        if (appointment.getStatus() != Appointment.AppointmentStatus.COMPLETED
+                && appointment.getStatus() != Appointment.AppointmentStatus.SCHEDULED) {
+            return new ApiMessResponse(false, "Chỉ có thể hủy lịch hẹn đã xác nhận (COMPLETED) hoặc đang chờ (SCHEDULED).");
+        }
+
+
+        // Kiểm tra ngày hiện tại cách ngày hẹn < 2 ngày
+        LocalDate appointmentDate = appointment.getAppointmentDate(); // Giả sử kiểu LocalDate
+        LocalDate today = LocalDate.now();
+        long daysBetween = ChronoUnit.DAYS.between(today, appointmentDate);
+
+        if (daysBetween < 2) {
+            return new ApiMessResponse(false, "Không thể hủy lịch hẹn trước 2 ngày.");
+        }
+
+        // Hủy thành công
         appointment.setStatus(Appointment.AppointmentStatus.CANCELLED);
         appointmentRepository.save(appointment);
+        return new ApiMessResponse(true, "Hủy lịch hẹn thành công.");
     }
+
+
 
     @Override
     public List<AppointmentDTO> filterAppointment(Appointment.AppointmentStatus status,

@@ -9,7 +9,7 @@ import {
 import './CustomerApointment.css';
 import { useNavigate } from 'react-router-dom';
 import apiService from '../../../../service/api';
-import BaseApiService from '../../../../service/api/BaseApiService';
+
 
 const AppointmentList = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -20,17 +20,18 @@ const AppointmentList = () => {
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() =>  {
-      const fetchService = async () =>{
-        try {
-           const response = await apiService.user.getListAppointment()
-          setAppointments(response)
-        } catch (error) {
-          console.log("Không lấy dducouocw danh sách app", error)
-        }
-         
+  useEffect(() => {
+    const fetchService = async () => {
+      try {
+        const response = await apiService.user.getListAppointment()
+        console.log(response)
+        setAppointments(response)
+      } catch (error) {
+        console.log("Không lấy dducouocw danh sách app", error)
       }
-      fetchService()
+
+    }
+    fetchService()
   }, []);
 
   const showToast = (type, message) => {
@@ -61,9 +62,49 @@ const AppointmentList = () => {
       case "SCHEDULED": return "Đã lên lịch";
       case "COMPLETED": return "Hoàn thành";
       case "CANCELLED": return "Đã hủy";
+      case "CONFIRMED": return "Đã xác nhận";
+      case "IN_PROGRESS": return "Đang xử lý";
       default: return "";
     }
+
+
   };
+const handleCancelAppointment = async (appointmentId) => {
+  try {
+    const response = await apiService.user.cancelAppointment(appointmentId);
+    
+    // DEBUG
+    console.log("API Response:", response);
+
+    
+
+    if (response && response.success) {
+      showToast('success', response.message || 'Hủy lịch hẹn thành công.');
+
+      // ✅ Cập nhật danh sách trạng thái
+      setAppointments((prev) =>
+        prev.map((item) =>
+          item.appointmentId === appointmentId
+            ? { ...item, statusAppointment: 'CANCELLED' }
+            : item
+        )
+      );
+    } else {
+      showToast('danger', response?.message || 'Hủy lịch hẹn thất bại.');
+    }
+  } catch (error) {
+    console.error("ERROR during cancel:", error);
+
+    const message =
+      error.response?.response?.message ||
+      error.message ||
+      'Lỗi không xác định khi hủy lịch hẹn';
+
+    showToast('danger', message);
+  }
+};
+
+
 
   return (
     <div className={`appointment-container ${isDarkMode ? "dark" : ""}`}>
@@ -104,9 +145,13 @@ const AppointmentList = () => {
               <button className="card-btn edit" onClick={() => showToast('warning', 'Chỉnh sửa lịch hẹn')}>
                 <FontAwesomeIcon icon={faEdit} /> Sửa
               </button>
-              <button className="card-btn cancel" onClick={() => showToast('danger', 'Đã hủy lịch hẹn')}>
+              <button
+                className="card-btn cancel"
+                onClick={() => handleCancelAppointment(appointment.appointmentId)}
+              >
                 <FontAwesomeIcon icon={faTimes} /> Hủy
               </button>
+
             </div>
           </div>
         ))}
@@ -140,12 +185,13 @@ const AppointmentList = () => {
             <div className={`tab-content ${activeTab === 1 ? 'active' : ''}`}>
               <table className="detail-table">
                 <thead>
-                  <tr><th>Họ tên</th><th>Quan hệ</th><th>Loại mẫu</th><th>Trạng thái mẫu</th><th>Hành động</th></tr>
+                  <tr><th>Họ tên</th><th>Số căn cước công dân</th><th>Quan hệ</th><th>Loại mẫu</th><th>Trạng thái mẫu</th><th>Hành động</th></tr>
                 </thead>
                 <tbody>
                   {selectedAppointment.participantResponseDTOS.map((p, index) => (
                     <tr key={index}>
                       <td>{p.name}</td>
+                      <td>{p.citizenId}</td>
                       <td>{p.relationship}</td>
                       <td>{p.sampleDTO?.sampleType || 'Chưa có'}</td>
                       <td>{p.sampleDTO?.status || 'Chưa thu thập'}</td>
@@ -181,7 +227,7 @@ const AppointmentList = () => {
       )}
 
       {toast.show && (
-        <div className={`toast show ${toast.type}`}> 
+        <div className={`toast show ${toast.type}`}>
           <FontAwesomeIcon
             icon={toast.type === "danger" ? faTimesCircle : toast.type === "warning" ? faExclamationCircle : faCheckCircle}
           />

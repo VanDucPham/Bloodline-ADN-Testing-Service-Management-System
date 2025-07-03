@@ -27,7 +27,9 @@ return this.post('/customer/appointment/check-availability', data)
    async getListAppointment(){
     return this.get('/customer/appointmentList')
    }
-  
+  async cancelAppointment(data){
+    return this.put(`/customer/appointment/${data}/cancel`);
+  }
 
 }
     
