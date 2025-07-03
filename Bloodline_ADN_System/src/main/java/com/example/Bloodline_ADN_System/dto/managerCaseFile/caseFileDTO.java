@@ -11,9 +11,9 @@ import java.util.List;
 @NoArgsConstructor
 public class caseFileDTO {
     private String caseCode;
-    private String caseType; // ADMINISTRATIVE, CIVIL
-    private String status;   // ACTIVE, CLOSED, CANCELLED,...
-    private Long serviceId;  // Optional
-    private Long createdByUserId;
+    private String caseType;
+    private String status;
+    private Long serviceId;
+    private Long userId;
 }
 

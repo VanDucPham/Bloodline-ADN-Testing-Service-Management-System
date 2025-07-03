@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './Header.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleUser, faMoneyBill } from '@fortawesome/free-solid-svg-icons';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import apiService from '../service/api';
 
 const menuItems = [
@@ -45,14 +45,25 @@ function Header() {
   };
 
   return (
-    <header className="header">
-      <div className="top-bar">
-        <img src="/logo.png" alt="Vietcare Logo" className="logo" />
-        <div className="contact-info">
-          <div>Hỗ trợ tư vấn 24/7 <br /><strong>Hoàn toàn MIỄN PHÍ</strong></div>
-          <div>0339 773 330</div>
-          <div>vietcarelab@gmail.com</div>
-          <div>388 đường 81, P.Tân Quy, Q.7, TP.HCM</div>
+    <header className="main-header">
+      <div className="header-top">
+        <div className="header-logo-group">
+          <img src="public/images/freepik__a-stylized-test-tube-containing-a-swirling-colorfu__21054.jpeg" alt="Vietcare Logo" className="logo" />
+          <div className="brand-title">
+            <span className="brand-main">Vietcare Lab</span>
+            <span className="brand-sub">Xét nghiệm ADN - Chính xác & Bảo mật</span>
+          </div>
+        </div>
+        <div className="header-contact-group">
+          <a href="tel:0339773330" className="header-hotline">
+            <i className="fas fa-phone-alt"></i> 0339 773 330
+          </a>
+          <span className="header-email">
+            <i className="fas fa-envelope"></i> vietcarelab@gmail.com
+          </span>
+          <span className="header-address">
+            <i className="fas fa-map-marker-alt"></i> 388 đường 81, P.Tân Quy, Q.7, TP.HCM
+          </span>
         </div>
       </div>
 
@@ -104,8 +115,8 @@ function Header() {
               )}
               {role === 'CUSTOMER' && (
                 <li>
-                  <button className="btn" onClick={() => navigate('/tracking_user')}>
-                    <FontAwesomeIcon icon={faMoneyBill} /> Đơn hàng
+                  <button className="btn" onClick={() => navigate('/CustomerApointmentList')}>
+                    <FontAwesomeIcon icon={faMoneyBill} /> Lịch hẹn
                   </button>
                 </li>
               )}
