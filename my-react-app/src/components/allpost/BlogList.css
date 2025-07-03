@@ -1,66 +1,97 @@
-.blog-list-container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 24px;
-}
+
 .blog-card {
-  border: 1px solid #eee;
-  border-radius: 8px;
-  margin-bottom: 32px;
   background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+  padding: 0 0 32px 0;
+  margin: 32px auto 40px auto;
+  max-width: 900px;
+  min-width: 320px;
+  border: 1px solid #e6e6e6;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
 .blog-card-img {
   width: 100%;
-  max-height: 300px;
+  height: 340px;
   object-fit: cover;
   display: block;
-}
-.blog-card-body {
-  padding: 24px;
+  border-radius: 0;
+  background: #f3f3f3;
 }
 .blog-card-meta {
   display: flex;
   align-items: center;
-  margin-bottom: 8px;
-  gap: 12px;
+  gap: 18px;
+  font-size: 1rem;
+  color: #4b4b4b;
+  margin: 18px 0 8px 0;
 }
 .blog-card-date {
-  background: #1956b7;
+  background: #1a3c3b;
   color: #fff;
-  border-radius: 4px;
-  padding: 2px 12px;
+  font-size: 0.95rem;
   font-weight: 600;
-  font-size: 14px;
+  border-radius: 4px;
+  padding: 4px 14px;
+  margin-right: 8px;
+  display: inline-block;
 }
 .blog-card-author {
-  color: #1956b7;
-  font-weight: 600;
-  font-size: 14px;
-}
-.blog-card-comments {
-  color: #888;
-  font-size: 14px;
+  color: #1a3c3b;
+  font-weight: 500;
 }
 .blog-card-title {
-  margin: 8px 0 12px 0;
-  font-size: 1.4rem;
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+  color: #f58220;
+  line-height: 1.2;
 }
 .blog-card-desc {
-  color: #444;
-  margin-bottom: 16px;
+  font-size: 1.13rem;
+  color: #222;
+  margin-bottom: 10px;
+  line-height: 1.7;
+  max-width: 98%;
 }
 .blog-card-btn {
-  background: #ff9800;
+  background: #f58220;
   color: #fff;
   border: none;
-  border-radius: 4px;
-  padding: 8px 20px;
+  border-radius: 6px;
+  padding: 8px 22px;
+  font-size: 1.08rem;
   font-weight: 600;
   cursor: pointer;
+  margin-top: 8px;
   transition: background 0.2s;
+  box-shadow: 0 2px 8px rgba(245,130,32,0.08);
 }
 .blog-card-btn:hover {
-  background: #e67c00;
+  background: #1a3c3b;
+}
+.blog-card-error {
+  color: #c00;
+  background: #fff0f0;
+  border: 1px solid #fbb;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 18px auto;
+  max-width: 540px;
+  text-align: center;
+}
+@media (max-width: 900px) {
+  .blog-card {
+    max-width: 99vw;
+    margin: 18px 0 32px 0;
+  }
+  .blog-card-img {
+    height: 180px;
+  }
+  .blog-card-title {
+    font-size: 1.2rem;
+  }
+  .blog-card-desc {
+    font-size: 1rem;
+  }
 }

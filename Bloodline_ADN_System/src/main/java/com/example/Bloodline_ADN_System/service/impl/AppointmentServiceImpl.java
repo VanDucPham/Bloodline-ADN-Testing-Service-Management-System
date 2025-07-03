@@ -2,55 +2,54 @@
 package com.example.Bloodline_ADN_System.service.impl;
 
 import com.example.Bloodline_ADN_System.Entity.*;
+import com.example.Bloodline_ADN_System.dto.ApiMessResponse;
 import com.example.Bloodline_ADN_System.dto.SampleDTO;
-import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentDTO;
-import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentRequest;
-import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentResponse;
-import com.example.Bloodline_ADN_System.dto.managerCaseFile.ParticipantDTO;
+import com.example.Bloodline_ADN_System.dto.managerCaseFile.*;
 import com.example.Bloodline_ADN_System.repository.*;
-import com.example.Bloodline_ADN_System.service.AppointmentService;
+import com.example.Bloodline_ADN_System.service.*;
 import jakarta.transaction.Transactional;
-import org.springframework.stereotype.Service;
+import lombok.AllArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-@Service
+@org.springframework.stereotype.Service
+@AllArgsConstructor
 public class AppointmentServiceImpl implements AppointmentService {
 
     private final AppointmentRepository appointmentRepository;
     private final UserRepository userRepository;
-    private final ParticipantRepository participantRepository;
-    private final SampleRepository sampleRepository;
-    private final CaseFileRepository caseFileRepository;
-    private final CaseFileServiceImpl caseFileService;
+    private final SampleService sampleService;
+    private final ParticipantService participantService;
+    private final CaseFileService caseFileService;
     private final TimeSlotLimitRepository timeSlotLimitRepository;
     private final ServiceRepository serviceRepository;
 
-    public AppointmentServiceImpl(CaseFileRepository caseFileRepository,
-                                  ParticipantRepository participantRepository,
-                                  AppointmentRepository appointmentRepository,
-                                  UserRepository userRepository,
-                                  SampleRepository sampleRepository,
-                                  TimeSlotLimitRepository timeSlotLimitRepository,
-                                  CaseFileServiceImpl caseFileService,
-                                  ServiceRepository serviceRepository) {
-        this.appointmentRepository = appointmentRepository;
-        this.participantRepository = participantRepository;
-        this.userRepository = userRepository;
-        this.sampleRepository = sampleRepository;
-        this.timeSlotLimitRepository = timeSlotLimitRepository;
-        this.caseFileRepository = caseFileRepository;
-        this.caseFileService = caseFileService;
-        this.serviceRepository = serviceRepository;
-    }
 
-    // --------------------- CUSTOMER CREATE APPOINTMENT ---------------------
+    // ---------------------CREATE APPOINTMENT FOR CASEFILE---------------------
     @Override
-    public AppointmentResponse<AppointmentDTO> createAppointmentByStaff(AppointmentDTO dto) {
+    public AppointmentResponse<AppointmentDTO> createAppointmentCaseFile(AppointmentDTO dto) {
+//        // 1. Save Case File
+//        caseFileDTO caseFiledto = request.getCaseFile();
+//        System.out.println(request.getCaseFile().getUserId());
+//        System.out.println(caseFiledto.getUserId());
+//        userRepository.findAll().forEach(System.out::println);
+//        System.out.println("userId: " + caseFiledto.getUserId() + ", type: " + caseFiledto.getUserId().getClass());
+//        Optional<User> test = userRepository.findById(6L);
+//        System.out.println("Found? " + test.isPresent());
+//
+//        String caseCodegen = caseFileService.generateCaseCode(String.valueOf(caseFiledto.getCaseType())) ;
+//        caseFiledto.setCaseCode(caseCodegen);
+//        CaseFile caseFile = new CaseFile();
+//        caseFile  = caseFileService.createCaseFile(caseFiledto);
+//
+//
+//        // 2. Validate
+//        AppointmentDTO dto = request.getAppointment();
         validateAppointmentDate(dto.getAppointmentDate());
         validateSlotAvailability(dto.getAppointmentDate(), dto.getAppointmentTime());
 
@@ -58,10 +57,8 @@ public class AppointmentServiceImpl implements AppointmentService {
         User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
 
-
-        ServiceEntity service = serviceRepository.findById(dto.getServiceId())
+        Service service = serviceRepository.findById(dto.getServiceId())
                 .orElseThrow(() -> new RuntimeException("Dịch vụ không tồn tại"));
-
 
         Appointment appointment = new Appointment();
         //nếu có toEntity thì không cần set thủ công như thế này
@@ -73,6 +70,52 @@ public class AppointmentServiceImpl implements AppointmentService {
         appointment.setDeliveryMethod(Appointment.DeliveryMethod.valueOf(dto.getDeliveryMethod()));
         appointment.setAppointmentNote(dto.getAppointmentNote());
         appointment.setStatus(Appointment.AppointmentStatus.SCHEDULED);
+        appointment.setCollectionStatus(Appointment.CollectionStatus.ASSIGNED);
+
+        Appointment saved = appointmentRepository.save(appointment);
+        return new AppointmentResponse<>("Đặt lịch thành công", toDTO(saved));
+    }
+
+    @Override
+    public AppointmentResponse<AppointmentDTO> createAppointmentByStaff(AppointmentRequest request) {
+        // 1. Save Case File
+        caseFileDTO caseFiledto = request.getCaseFile();
+        System.out.println(request.getCaseFile().getUserId());
+        System.out.println(caseFiledto.getUserId());
+        userRepository.findAll().forEach(System.out::println);
+        System.out.println("userId: " + caseFiledto.getUserId() + ", type: " + caseFiledto.getUserId().getClass());
+        Optional<User> test = userRepository.findById(6L);
+        System.out.println("Found? " + test.isPresent());
+
+        String caseCodegen = caseFileService.generateCaseCode(String.valueOf(caseFiledto.getCaseType())) ;
+        caseFiledto.setCaseCode(caseCodegen);
+        CaseFile caseFile = new CaseFile();
+        caseFile  = caseFileService.createCaseFile(caseFiledto);
+
+
+        // 2. Validate
+        AppointmentDTO dto = request.getAppointment();
+        validateAppointmentDate(dto.getAppointmentDate());
+        validateSlotAvailability(dto.getAppointmentDate(), dto.getAppointmentTime());
+
+
+        User user = userRepository.findById(dto.getUserId())
+                .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
+
+        Service service = serviceRepository.findById(dto.getServiceId())
+                .orElseThrow(() -> new RuntimeException("Dịch vụ không tồn tại"));
+
+        Appointment appointment = new Appointment();
+        //nếu có toEntity thì không cần set thủ công như thế này
+        appointment.setUser(user);
+        appointment.setService(service);
+        appointment.setType(dto.getAppointmentType());
+        appointment.setAppointmentDate(dto.getAppointmentDate());
+        appointment.setAppointmentTime(dto.getAppointmentTime());
+        appointment.setDeliveryMethod(Appointment.DeliveryMethod.valueOf(dto.getDeliveryMethod()));
+        appointment.setAppointmentNote(dto.getAppointmentNote());
+        appointment.setStatus(Appointment.AppointmentStatus.SCHEDULED);
+        appointment.setCollectionStatus(Appointment.CollectionStatus.ASSIGNED);
 
         Appointment saved = appointmentRepository.save(appointment);
         return new AppointmentResponse<>("Đặt lịch thành công", toDTO(saved));
@@ -92,56 +135,108 @@ public class AppointmentServiceImpl implements AppointmentService {
         }
     }
 
-//    private void validateServiceCombination(AppointmentDTO dto) {
-//        if (dto.getAppointmentType() == Appointment.AppointmentType.ADMINISTRATIVE &&
-//                dto.getDeliveryMethod() == Appointment.DeliveryMethod.HOME_COLLECTION) {
-//            throw new IllegalArgumentException("Hành chính chỉ được chọn dịch vụ tại cơ sở!");
-//        }
-//    }
+
 
     // --------------------- CUSTOMER CREATE FULL APPOINTMENT ---------------------
+
+
+
     @Override
     @Transactional
     public AppointmentResponse<AppointmentDTO> createAppointment(AppointmentRequest request) {
-        CaseFile savedCaseFile = request.getCaseFile();
-        savedCaseFile.setCaseCode(caseFileService.generateCaseCode(String.valueOf(savedCaseFile.getCaseType())));
-        CaseFile caseFile = caseFileRepository.save(savedCaseFile);
+        // 1. Save Case File
+        caseFileDTO caseFiledto = request.getCaseFile();
+        System.out.println(request.getCaseFile().getUserId());
+        System.out.println(caseFiledto.getUserId());
+        userRepository.findAll().forEach(System.out::println);
+        System.out.println("userId: " + caseFiledto.getUserId() + ", type: " + caseFiledto.getUserId().getClass());
+        Optional<User> test = userRepository.findById(6L);
+        System.out.println("Found? " + test.isPresent());
 
-        Appointment appointment = request.getAppointment();
-        appointment.setCaseFile(savedCaseFile);
+        String caseCodegen = caseFileService.generateCaseCode(String.valueOf(caseFiledto.getCaseType())) ;
+        caseFiledto.setCaseCode(caseCodegen);
+        CaseFile caseFile = new CaseFile();
+         caseFile  = caseFileService.createCaseFile(caseFiledto);
+
+
+        // 2. Validate
+        AppointmentDTO dto = request.getAppointment();
+        validateAppointmentDate(dto.getAppointmentDate());
+        validateSlotAvailability(dto.getAppointmentDate(), dto.getAppointmentTime());
+
+        // 3. Create & Save Appointment
+
+
+        User user = userRepository.findById(dto.getUserId())
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng với ID: " + dto.getUserId()));
+
+
+
+        com.example.Bloodline_ADN_System.Entity.Service service = serviceRepository.findById(dto.getServiceId())
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy dịch vụ với ID: " + dto.getServiceId()));
+
+        Appointment appointment = new Appointment();
+        appointment.setUser(user);
+        appointment.setService(service);
+        appointment.setType(dto.getAppointmentType());
+        appointment.setAppointmentDate(dto.getAppointmentDate());
+        appointment.setCollectionAddress(dto.getCollectionAddress());
+        appointment.setAppointmentTime(dto.getAppointmentTime());
+        appointment.setDeliveryMethod(Appointment.DeliveryMethod.valueOf(dto.getDeliveryMethod()));
+        appointment.setAppointmentNote(dto.getAppointmentNote());
+        appointment.setStatus(Appointment.AppointmentStatus.SCHEDULED);
+        appointment.setCaseFile(caseFile);
         Appointment savedAppointment = appointmentRepository.save(appointment);
+        AppointmentDTO savedDto = toDTO(savedAppointment);
 
-        Map<String, Participant> participantMap = request.getParticipants().stream()
-                .map(p -> {
-                    p.setAppointment(savedAppointment);
-                    return participantRepository.save(p);
-                })
+// 4. Save Participants
+        List<Participant> participants = request.getParticipants().stream()
+                .map(dto1 -> dto1.toEntity(savedAppointment))
+                .collect(Collectors.toList());
+
+        List<Participant> savedParticipants = participantService.saveAll(participants);
+
+        // ✅ Tạo lại map từ danh sách đã lưu, có ID đầy đủ
+        Map<String, Participant> participantMap = savedParticipants.stream()
                 .collect(Collectors.toMap(Participant::getCitizenId, p -> p));
+        // 5. Save Samples
+        List<SampleDTO> sampleDTOs = request.getSamples();
 
-        for (SampleDTO sampleDto : request.getSamples()) {
-            Participant participant = participantMap.get(sampleDto.getParticipantCitizenId());
-            if (participant == null) {
-                throw new RuntimeException("Không tìm thấy participant với CCCD: " + sampleDto.getParticipantCitizenId());
-            }
+        if (sampleDTOs != null ) {
+            List<Sample> samples = sampleDTOs.stream()
+                    .map(sampleDto -> {
+                        Participant participant = participantMap.get(sampleDto.getParticipantCitizenId());
+                        if (participant == null) {
+                            throw new RuntimeException("Không tìm thấy participant với CCCD: " + sampleDto.getParticipantCitizenId());
+                        }
 
-            Sample sample = new Sample();
-            sample.setParticipant(participant);
-            sample.setSampleType(sampleDto.getSampleType());
-            sample.setCollectionDateTime(sampleDto.getCollectionDateTime());
-            sample.setQuality(sampleDto.getQuality());
-            sample.setStatus(sampleDto.getStatus());
-            sample.setResult(sampleDto.getResult());
-            sample.setNotes(sampleDto.getNotes());
-            sampleRepository.save(sample);
+                        Sample sample = new Sample();
+                        sample.setParticipant(participant);
+                        sample.setSampleType(sampleDto.getSampleType());
+                        sample.setCollectionDateTime(sampleDto.getCollectionDateTime());
+                        sample.setQuality(sampleDto.getQuality());
+                        sample.setStatus(sampleDto.getStatus());
+                        sample.setResult(sampleDto.getResult());
+                        sample.setNotes(sampleDto.getNotes());
+                        return sample;
+                    })
+                    .toList();
+            sampleService.saveAll(samples);
         }
 
-        AppointmentDTO dto = toDTO(savedAppointment);
-        dto.setCaseCode(caseFile.getCaseCode());
-        dto.setParticipants(request.getParticipants().stream().map(this::toParticipantDTO).toList());
-        dto.setSamples(request.getSamples().stream().map(this::toSampleDTO).toList());
+        // 6. Build Response
+        AppointmentDTO responseDto = toDTO(savedAppointment);
+        responseDto.setCaseCode(caseFile.getCaseCode());
+        responseDto.setParticipants(savedParticipants.stream().map(this::toParticipantDTO).toList());
 
-        return new AppointmentResponse<>("Tạo lịch hẹn thành công!", dto);
+        if(sampleDTOs != null && !sampleDTOs.isEmpty()){
+            responseDto.setSamples(request.getSamples().stream().map(this::toSampleDTO).toList());
+        }
+
+
+        return new AppointmentResponse<>("Tạo lịch hẹn thành công!", responseDto);
     }
+
 
     private ParticipantDTO toParticipantDTO(Participant p) {
         return new ParticipantDTO(p.getParticipantId(), p.getName(), p.getRelationship(), p.getCitizenId(),
@@ -150,7 +245,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     private SampleDTO toSampleDTO(SampleDTO s) {
         return new SampleDTO(s.getSampleId(), s.getParticipantId(), s.getParticipantCitizenId(),
-                s.getParticipantName(), s.getSampleType(), s.getCollectionDateTime(),
+                s.getParticipantName(),s.getGender() ,s.getSampleType(), s.getCollectionDateTime(),
                 s.getQuality(), s.getStatus(), s.getResult(), s.getNotes());
     }
 
@@ -202,18 +297,40 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .toList();
     }
 
-    @Override
-    public void cancelAppointment(Long id) {
-        Appointment appointment = appointmentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Lịch hẹn không tồn tại"));
-
-        if (!appointment.getAppointmentDate().isAfter(LocalDate.now())) {
-            throw new IllegalArgumentException("Chỉ được phép hủy lịch trước ít nhất 1 ngày.");
+    public ApiMessResponse cancelAppointment(Long id) {
+        Optional<Appointment> optionalAppointment = appointmentRepository.findById(id);
+        if (optionalAppointment.isEmpty()) {
+            return new ApiMessResponse(false, "Không tìm thấy lịch hẹn.");
         }
 
+        Appointment appointment = optionalAppointment.get();
+
+        if (appointment.getStatus() == Appointment.AppointmentStatus.CANCELLED) {
+            return new ApiMessResponse(false, "Lịch hẹn đã bị hủy trước đó.");
+        }
+
+        if (appointment.getStatus() != Appointment.AppointmentStatus.COMPLETED
+                && appointment.getStatus() != Appointment.AppointmentStatus.SCHEDULED) {
+            return new ApiMessResponse(false, "Chỉ có thể hủy lịch hẹn đã xác nhận (COMPLETED) hoặc đang chờ (SCHEDULED).");
+        }
+
+
+        // Kiểm tra ngày hiện tại cách ngày hẹn < 2 ngày
+        LocalDate appointmentDate = appointment.getAppointmentDate(); // Giả sử kiểu LocalDate
+        LocalDate today = LocalDate.now();
+        long daysBetween = ChronoUnit.DAYS.between(today, appointmentDate);
+
+        if (daysBetween < 2) {
+            return new ApiMessResponse(false, "Không thể hủy lịch hẹn trước 2 ngày.");
+        }
+
+        // Hủy thành công
         appointment.setStatus(Appointment.AppointmentStatus.CANCELLED);
         appointmentRepository.save(appointment);
+        return new ApiMessResponse(true, "Hủy lịch hẹn thành công.");
     }
+
+
 
     @Override
     public List<AppointmentDTO> filterAppointment(Appointment.AppointmentStatus status,
@@ -226,12 +343,39 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public AppointmentDTO updateAppointmentProgress(Long id, Appointment.AppointmentStatus status) {
+    public AppointmentDTO updateAppointmentProgress(Long id, Appointment.AppointmentStatus status, Appointment.CollectionStatus collectionStatus) {
         Appointment appointment = appointmentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Lịch hẹn không tồn tại!"));
 
         appointment.setStatus(status);
+        appointment.setCollectionStatus(collectionStatus);
         return toDTO(appointmentRepository.save(appointment));
+    }
+
+
+    @Override
+    public void updateAppointment(AppointmentDTO appointmentDTO, Long appointmentId) {
+        // Lấy thông tin lịch hẹn hiện tại
+        Appointment appointment = appointmentRepository.getAppointmentsByAppointmentId(appointmentId);
+
+        // Cập nhật các trường từ DTO
+        if (appointmentDTO.getAppointmentDate() != null)
+            appointment.setAppointmentDate(appointmentDTO.getAppointmentDate());
+
+        if (appointmentDTO.getAppointmentTime() != null)
+            appointment.setAppointmentTime(appointmentDTO.getAppointmentTime());
+
+        if (appointmentDTO.getAppointmentNote() != null)
+            appointment.setAppointmentNote(appointmentDTO.getAppointmentNote());
+
+        if (appointmentDTO.getCollectionAddress() != null)
+            appointment.setCollectionAddress(appointmentDTO.getCollectionAddress());
+
+        if (appointmentDTO.getDeliveryMethod() != null)
+            appointment.setDeliveryMethod(Appointment.DeliveryMethod.valueOf(appointmentDTO.getDeliveryMethod()));
+
+        // Lưu lại
+        appointmentRepository.save(appointment);
     }
 
     public AppointmentDTO toDTO(Appointment appointment) {

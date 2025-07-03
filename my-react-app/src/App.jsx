@@ -63,8 +63,10 @@ import UserDashboard from './components/dashboards/UserDashboard';
 import AppointmentBooking from './components/htmltest/tracking_customer/tracking_user/appointmentBooking';
 import StaffAppointments from './components/staffappointments/StaffAppointments';
 import CreateAppointment from './components/staffappointments/CreateAppointment';
+import CustomerAppointmentList from './components/htmltest/tracking_customer/tracking_user/CustomerApointmentList';
+import RevenueManagement from './page/manager/revenue/RevenueManagement'
 import ServiceList from './components/role/ServiceList';
-import BlogForm from './components/role/BlogForm';
+import BlogForm from './components/allpost/BlogForm';
 import BlogList from './components/allpost/BlogList';
 
 function App() {
@@ -84,9 +86,12 @@ function App() {
         <Route path="/tracking_user" element={<AppointmentBooking />} />
         <Route path="/staff/appointment" element={<StaffAppointments />} />
         <Route path="/staff/appointment/create" element={<CreateAppointment />} />
+        <Route path="/CustomerApointmentList" element={<CustomerAppointmentList/>}/>
+        <Route path="/RevenueManagerment" element ={<RevenueManagement/>}/>
         <Route path="/admin/service/list" element={<ServiceList />} />
         <Route path="/admin/blog/create" element={<BlogForm />} />
-        <Route path="/blogs" element={<BlogList />} />
+        <Route path="/blog" element={<BlogList />} />
+      
         {/* Thêm các route khác nếu cần */}
       </Routes>
     </BrowserRouter>

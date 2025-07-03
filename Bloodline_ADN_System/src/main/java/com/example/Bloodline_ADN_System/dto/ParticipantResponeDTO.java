@@ -15,4 +15,5 @@ public class ParticipantResponeDTO {
     private String address;
     private LocalDate birthDate;
     private Long appointmentId;
+    private SampleDTO sampleDTO;
 }

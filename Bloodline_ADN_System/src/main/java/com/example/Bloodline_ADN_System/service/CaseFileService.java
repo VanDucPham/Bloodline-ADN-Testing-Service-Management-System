@@ -2,11 +2,21 @@ package com.example.Bloodline_ADN_System.service;
 
 import com.example.Bloodline_ADN_System.Entity.CaseFile;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.caseFileDTO;
-import com.example.Bloodline_ADN_System.dto.managerCaseFile.caseFileResponse;
+
+import java.util.List;
 
 public interface CaseFileService {
-    void save(caseFileDTO request);
-    caseFileResponse getById(Long id);
+
+    CaseFile  createCaseFile(caseFileDTO req);
+
+
+
+
+    List<CaseFile> findAll() ;
+    CaseFile findById(Long customerId);
+
+    List<CaseFile> findByFileName(String fileName);
+    List<CaseFile> findByFileType(String fileType);
     public String generateCaseCode(String type) ;
-    boolean existCaseCode(String caseCode);
+
 }

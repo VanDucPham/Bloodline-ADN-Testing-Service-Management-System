@@ -19,6 +19,14 @@ const STATUS_OPTIONS = [
   { value: 'CANCELLED', label: 'Đã hủy' },
 ];
 
+const COLLECTION_STATUS_OPTIONS = [
+  { value: 'ASSIGNED', label: 'Đã phân công' },
+  { value: 'TRAVELING', label: 'Đang di chuyển' },
+  { value: 'ARRIVED', label: 'Đã đến nơi' },
+  { value: 'COLLECTING', label: 'Đang thu mẫu' },
+  { value: 'COMPLETED', label: 'Hoàn thành thu mẫu' },
+];
+
 function CreateAppointment() {
   const [form, setForm] = useState({
     userId: '',
@@ -28,6 +36,7 @@ function CreateAppointment() {
     appointmentTime: '',
     deliveryMethod: '',
     appointmentStatus: 'SCHEDULED',
+    collectionStatus: 'ASSIGNED',
     appointmentNote: '',
   });
   const [services, setServices] = useState([]);
@@ -149,9 +158,15 @@ function CreateAppointment() {
           </select>
         </div>
         <div>
-          <label>Trạng thái:</label>
+          <label>Trạng thái lịch hẹn:</label>
           <select name="appointmentStatus" value={form.appointmentStatus} onChange={handleChange} required>
             {STATUS_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+          </select>
+        </div>
+        <div>
+          <label>Trạng thái thu mẫu:</label>
+          <select name="collectionStatus" value={form.collectionStatus} onChange={handleChange} required>
+            {COLLECTION_STATUS_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
           </select>
         </div>
         <div>

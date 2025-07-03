@@ -1,9 +1,7 @@
 package com.example.Bloodline_ADN_System.Entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -11,7 +9,9 @@ import java.util.List;
 
 @Entity
 @Table(name = "users")
-@Data
+
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
@@ -63,7 +63,9 @@ public class User {
         @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
         private List<Notification> notifications = new ArrayList<>();
 
-        public enum UserRole {
+
+
+    public enum UserRole {
                 ADMIN, CUSTOMER, STAFF, MANAGER
         }
 

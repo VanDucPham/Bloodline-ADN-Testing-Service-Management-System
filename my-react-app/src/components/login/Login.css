@@ -1,111 +1,91 @@
-/* Copyright (c) 2024 by Patricia Ciurescu (https://codepen.io/patriciaa11/pen/RwOzeWb) */
-@import url('https://fonts.googleapis.com/css2?family=Quicksand&display=swap');
-*,
-:before,
-:after {
-    margin:0;
-    padding:0;
-    box-sizing: border-box;
-    font-family: inherit;
-}
-.body
-.custom-login-bg {
-     font-family: 'Quicksand', sans-serif;
-    background-image: url('/images/DNA-login.jpeg');
-    background-repeat: no-repeat;
-    background-size: cover;         
-    min-height: 100vh;              
-    width: 100vw;                   
-    position: fixed;                
-    top: 0;                         
-    left: 0;                        
-    
+/* Nền chung */
+.login-bg {
+  height: 100vh;
+  background: linear-gradient(to right, #f0f8ff, #cceeff);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Segoe UI', sans-serif;
 }
 
-.custom-login-form {
-    height: 590px;
-    width:450px;
-    background-color: rgba(255, 255, 255,0.13);
-    position: absolute;
-    transform: translate(-50%,-50%);
-    top: 50%;
-    left: 50%;
-    border-radius: 17px;
-    backdrop-filter: blur(5px);
-    border: 5px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 0 40px rgba(3, 138, 172, 0.6);
-    padding: 20px;
+/* Form đăng nhập */
+.login-form {
+  background-color: #ffffff;
+  padding: 36px 32px;
+  border-radius: 12px;
+  box-shadow: 0 4px 25px rgba(0, 123, 255, 0.2);
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
 }
 
-.custom-login-form *{
-    font-family: 'Quicksand', sans-serif;
-    color:#ffffff;
-    letter-spacing: 1px;
-    outline: none;
-    border: none;
-}
-.custom-login-form h3 {
-    font-size: 40px;
-    font-weight: 600;
-    line-height: 50px;
-    text-align: center;
+.login-form h3 {
+  text-align: center;
+  color: #0077b6;
+  margin-bottom: 24px;
 }
 
-.custom-login-form label {
-    display: block;
-    margin-top: 30px;
-    font-size: 25px;
-    font-weight: 800;
+/* Label và input */
+.login-form label {
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #023e8a;
 }
 
-.custom-login-form input {
-    margin-top: 10px;
-    margin-bottom: 15px;
-    padding: 11px 15px;
-    font-size: 14px;
-    font-weight: 300;
-    background: rgba(0, 0, 0, 0.22);
-    border: 2px solid #38363654;
-    border-radius: 5px;
-    width: 100%;
+.login-form input {
+  padding: 10px;
+  margin-bottom: 14px;
+  border: 1px solid #90e0ef;
+  border-radius: 6px;
+  background-color: #f1fcff;
+  transition: border-color 0.3s ease;
 }
 
-.custom-login-form input:focus {
-    box-shadow: 0px 2px 2px #0000002b, 0px 5px 10px #00000036;
-    background: #685e5e;        
+.login-form input:focus {
+  border-color: #0077b6;
+  outline: none;
+  background-color: #ffffff;
 }
 
-.custom-login-form input:hover {
-    background: #685e5e;
-    transition: all 0.50s ease;
+/* Nút đăng nhập */
+.login-form button {
+  padding: 12px;
+  background-color: #0077b6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background-color 0.3s ease;
 }
 
-
-
-.custom-login-form ::placeholder {     
-    color: #e5e5e5;
+.login-form button:hover {
+  background-color: #023e8a;
 }
 
-.custom-login-btn {
-    margin-top: 40px;
-    margin-bottom: 15px;
-    width: 100%;    
-    background: rgba(0, 0, 0, 0.22);
-    border: 2px solid #38363654;
-    border-radius: 5px;
-    color: #e1e1e1;
-    padding: 8px 15px;
-    font-size: 18px;    
-    font-weight: 600;
-    cursor: pointer;
-} 
- 
-.button-login-btn:hover {
-    background: #037997;
-    transition: all 0.50s ease;
+/* Liên kết đăng ký */
+.register-link {
+  margin-top: 16px;
+  text-align: center;
+  color: #555;
 }
 
-.button-login-btn:focus {
-    box-shadow: 0px 0px 0px 2px rgba(103, 110, 103, 0.71);
-    background: #037997;
-}           
+.register-link a {
+  color: #0077b6;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.register-link a:hover {
+  text-decoration: underline;
+}
+
+/* Lỗi */
+.error {
+  color: red;
+  font-size: 14px;
+  margin-bottom: 10px;
+  text-align: center;
+}
