@@ -28,6 +28,8 @@ public class Service {
     @Column(name ="service_description")
     private String serviceDescription;
 
+    @Column(name = "limit_people")
+    private int limitPeople;
     @Column(name = "service_price")
     private Double servicePrice;
     @OneToMany(mappedBy = "service", cascade = CascadeType.ALL , fetch = FetchType.LAZY)

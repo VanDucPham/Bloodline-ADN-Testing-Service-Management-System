@@ -69,7 +69,7 @@ public class BlogServiceImpl implements BlogService {
         dto.setContent(blog.getContent());
         dto.setImageUrl(blog.getImageUrl());
         dto.setCreatedAt(blog.getCreatedAt());
-        dto.setUpdatedAt(blog.getUpdatedAt());
+
         dto.setStatus(blog.getStatus() != null ? blog.getStatus().name() : null);
         return dto;
     }
@@ -82,7 +82,7 @@ public class BlogServiceImpl implements BlogService {
         blog.setContent(dto.getContent());
         blog.setImageUrl(dto.getImageUrl());
         blog.setCreatedAt(dto.getCreatedAt());
-        blog.setUpdatedAt(dto.getUpdatedAt());
+
         blog.setStatus(dto.getStatus() != null ? Blog.BlogStatus.valueOf(dto.getStatus()) : null);
         return blog;
     }
