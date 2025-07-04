@@ -46,7 +46,7 @@ public class AppointmentDTO {
 
     private String caseCode;
     private Appointment.CollectionStatus collectionStatus;
-
+    private String kit_status ;
 
     // Danh sách người tham gia
     private List<ParticipantDTO> participants;

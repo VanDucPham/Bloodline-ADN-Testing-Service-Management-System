@@ -53,8 +53,14 @@ const [showEditModal, setShowEditModal] = useState(false);
   const getStatusClass = (status) => {
     switch (status) {
       case "SCHEDULED": return "status-pending";
-      case "COMPLETED": return "status-confirmed";
+      case "COMPLETED": return "status-done";
       case "CANCELLED": return "status-cancelled";
+       case "CONFIRMED": return "status-confirmed";
+      case "IN_PROGRESS": return "status-inprocess";
+      case"HOME_DELIVERY": return "status-delivery" ;
+      case"HOME_COLLECTION": return "status-collection";
+      case "SELF_DROP_OFF": return "status-off" ;
+      
       default: return "";
     }
   };
@@ -66,6 +72,11 @@ const [showEditModal, setShowEditModal] = useState(false);
       case "CANCELLED": return "Đã hủy";
       case "CONFIRMED": return "Đã xác nhận";
       case "IN_PROGRESS": return "Đang xử lý";
+      case"HOME_DELIVERY": return "Nhân viên đến lấy mẫu" ;
+      case"HOME_COLLECTION": return "Tự lấy mẫu";
+      case "SELF_DROP_OFF": return "Gửi mẫu tại cơ sở" ;
+      
+
       default: return "";
     }
 
@@ -179,10 +190,15 @@ const openEditParticipantModal = (participant) => {
         {appointments.map((appointment) => (
           <div className="appointment-card" key={appointment.appointmentId}>
             <div className="card-header">
+              <div>
               <div className="card-title">{appointment.serviceName}</div>
               <span className={`card-status ${getStatusClass(appointment.statusAppointment)}`}>
                 {getStatusText(appointment.statusAppointment)}
-              </span>
+              </span> </div>
+              <div>
+  <span>{getStatusText(appointment.delivery_method)} </span> 
+              </div>
+            
             </div>
             <div className="card-detail">
               <div><FontAwesomeIcon icon={faCalendarDay} /> {appointment.date}</div>
@@ -192,13 +208,16 @@ const openEditParticipantModal = (participant) => {
               <button className="card-btn view" onClick={() => openModal(appointment)}>
                 <FontAwesomeIcon icon={faEye} /> Xem
               </button>
-              
+              {appointment.statusAppointment === "SCHEDULED" && (
               <button
                 className="card-btn cancel"
                 onClick={() => handleCancelAppointment(appointment.appointmentId)}
               >
                 <FontAwesomeIcon icon={faTimes} /> Hủy
               </button>
+
+              )}
+              
 
             </div>
           </div>
@@ -224,7 +243,16 @@ const openEditParticipantModal = (participant) => {
                   <tr><td>Dịch vụ</td><td>{selectedAppointment.serviceName}</td></tr>
                   <tr><td>Ngày hẹn</td><td>{selectedAppointment.date}</td></tr>
                   <tr><td>Giờ hẹn</td><td>{selectedAppointment.time}</td></tr>
-                  <tr><td>Trạng thái</td><td>{getStatusText(selectedAppointment.statusAppointment)}</td></tr>
+                  <tr><td>Trạng thái lịch hẹn</td><td>{getStatusText(selectedAppointment.statusAppointment)}</td></tr>
+                  {selectedAppointment.delivery_method === "HOME_DELIVERY" &&  (
+
+                      <tr><td>Trạng thái lấy mẫu tại nhà:</td> Nhân viên đang đến </tr>
+                  )}
+                 {selectedAppointment.delivery_method === "HOME_COLLECTION" && (
+
+                    <tr><td>Trạng thái kit:</td>Kit đã được đang được gửi đến</tr>
+                 )}
+                  
                   <tr><td>Mã hồ sơ</td><td>{selectedAppointment.caseCode}</td></tr>
                 </tbody>
               </table>
@@ -331,6 +359,8 @@ const openEditParticipantModal = (participant) => {
       />
 
       <div className="modal-actions">
+
+
         <button onClick={() => setShowEditModal(false)}>Hủy</button>
         <button onClick={handleSaveParticipant}>Lưu</button>
       </div>

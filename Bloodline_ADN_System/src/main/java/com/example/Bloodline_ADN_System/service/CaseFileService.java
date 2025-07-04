@@ -4,6 +4,7 @@ import com.example.Bloodline_ADN_System.Entity.CaseFile;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.caseFileDTO;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CaseFileService {
 
@@ -19,4 +20,7 @@ public interface CaseFileService {
     List<CaseFile> findByFileType(String fileType);
     public String generateCaseCode(String type) ;
 
+    <Optional> CaseFile findByCaseCode(String caseCode);
+
+    Optional<CaseFile> findByCaseCode(Long caseId);
 }

@@ -135,7 +135,6 @@
   font-size: 0.85rem;
   font-weight: bold;
 }
-
 .status-confirmed {
   background-color: #d1f2eb;
   color: #1abc9c;
@@ -149,6 +148,32 @@
 .status-cancelled {
   background-color: #fdecea;
   color: #e74c3c;
+}
+
+.status-done {
+  background-color: #e8f6f3;
+  color: #27ae60;
+}
+
+
+.status-inprocess {
+  background-color: #e8f0fe;
+  color: #3366cc;
+}
+
+.status-delivery {
+  background-color: #eaf2f8;
+  color: #2e86de;
+}
+
+.status-collection {
+  background-color: #fef9e7;
+  color: #d4ac0d;
+}
+
+.status-off {
+  background-color: #f4f6f7;
+  color: #566573;
 }
 
 .card-detail {

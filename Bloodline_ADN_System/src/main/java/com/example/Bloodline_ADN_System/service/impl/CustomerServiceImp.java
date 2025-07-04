@@ -43,17 +43,22 @@ public class CustomerServiceImp implements CustomerService {
     public List<AppointmentResponseDTO> getAllAppointments(Long customerId) {
         List<AppointmentResponseDTO> newList = new ArrayList<>();
         List<AppointmentDTO> appointmentList = appointmentService.getAppointmentByUserId(customerId);
-        CaseFile caseFile = caseFileService.findById(customerId);
-
-        String caseCode = caseFile != null ? caseFile.getCaseCode() : "";
-        String caseType = caseFile != null ? String.valueOf(caseFile.getCaseType()) : "";
+//        CaseFile caseFile = caseFileService.findById(customerId);
+//
+//        String caseCode = caseFile != null ? caseFile.getCaseCode() : "";
+//        String caseType = caseFile != null ? String.valueOf(caseFile.getCaseType()) : "";
 
         for (AppointmentDTO appointment : appointmentList) {
             AppointmentResponseDTO dto = new AppointmentResponseDTO();
             dto.setAppointmentId(String.valueOf(appointment.getAppointmentId()));
             dto.setDate(appointment.getAppointmentDate());
             dto.setTime(appointment.getAppointmentTime());
-
+            dto.setDelivery_method(appointment.getDeliveryMethod());
+            dto.setCollection_Status(String.valueOf(appointment.getCollectionStatus()));
+            dto.setKit_status(appointment.getKit_status());
+            CaseFile caseFile = caseFileService.findById(appointmentService.findCaseIdByAppointmentId(appointment.getAppointmentId()));
+            String caseCode = caseFile != null ? caseFile.getCaseCode() : "";
+            String caseType = caseFile != null ? String.valueOf(caseFile.getCaseType()) : "";
             Optional<Service> optionalService = serviceimp.findServiceById(appointment.getServiceId());
             dto.setServiceName(optionalService.map(Service::getServiceName).orElse("Không rõ"));
             dto.setCaseCode(caseCode);

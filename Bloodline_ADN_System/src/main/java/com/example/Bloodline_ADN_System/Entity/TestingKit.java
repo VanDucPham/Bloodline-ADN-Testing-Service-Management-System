@@ -19,9 +19,6 @@ public class TestingKit {
     private String kitCode;        // Mã kit
     private String kitType;        // Loại kit (BLOOD, SALIVA, HAIR)
 
-    @Enumerated(EnumType.STRING)
-    private KitStatus status;      // Trạng thái kit
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "appointment_id")
     private Appointment appointment; // Liên kết với lịch hẹn
@@ -40,10 +37,4 @@ public class TestingKit {
         }
     }
 
-    public enum KitStatus {
-        AVAILABLE,    // Sẵn sàng
-        SENT,         // Đã gửi cho khách hàng
-        RETURNED,     // Đã nhận lại từ khách hàng
-        USED          // Đã sử dụng
-    }
 }

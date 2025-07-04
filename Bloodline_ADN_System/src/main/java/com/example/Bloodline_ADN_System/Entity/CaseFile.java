@@ -26,9 +26,6 @@ public class CaseFile {
     @Enumerated(EnumType.STRING)
     private CaseType caseType;
 
-    @Column(name = "status")
-    @Enumerated(EnumType.STRING)
-    private CaseStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -51,8 +48,6 @@ public class CaseFile {
         ADMINISTRATIVE, CIVIL
     }
 
-    public enum CaseStatus {
-        OPEN, IN_PROGRESS, COMPLETED, ARCHIVED
-    }
+
 }
 

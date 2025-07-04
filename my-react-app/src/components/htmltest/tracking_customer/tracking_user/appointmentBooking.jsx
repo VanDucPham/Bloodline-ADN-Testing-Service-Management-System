@@ -549,7 +549,7 @@ const payLoad = {
                                 <p><strong>Số người tham gia:</strong> {participants.length}</p>
                                 <p><strong>Loại mẫu:</strong> {samples.map(s => s.sampleType).join(', ')}</p>
                                 <p><strong>Ngày hẹn:</strong> {appointment.appointmentDate}</p>
-                                <p><strong>Tổng chi phí:</strong> <span style={{ color: '#e74c3c', fontSize: '18px', fontWeight: 'bold' }}>2.500.000đ</span></p>
+                                <p><strong>Tổng chi phí:</strong> <span style={{ color: '#e74c3c', fontSize: '18px', fontWeight: 'bold' }}>{service.}</span></p>
                             </div>
 
                             <label>Phương thức thanh toán:</label>
