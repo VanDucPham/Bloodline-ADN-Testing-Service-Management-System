@@ -41,7 +41,7 @@ public class Blog {
         createdAt = LocalDateTime.now();
     }
 
-
+    private String BlogType ;
 
     public enum BlogStatus { DRAFT, PUBLISHED, ARCHIVED }
 }
