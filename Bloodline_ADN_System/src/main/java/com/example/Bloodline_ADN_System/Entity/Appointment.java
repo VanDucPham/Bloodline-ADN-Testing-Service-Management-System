@@ -62,7 +62,6 @@ public class Appointment {
     @Enumerated(EnumType.STRING)
     private CollectionStatus collectionStatus; // Trạng thái thu mẫu
 
-    private LocalDateTime estimatedArrivalTime; // Thời gian dự kiến đến
 
 
     @Column(columnDefinition = "TEXT")
@@ -81,6 +80,10 @@ public class Appointment {
     @OneToOne(mappedBy = "appointment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private QRCode qrCode;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "kit_status")
+    private KitStatus kitStatus;
+
     @PrePersist
     protected void onCreate() {
         createdTime = LocalDateTime.now();
@@ -88,9 +91,15 @@ public class Appointment {
             collectionStatus = CollectionStatus.ASSIGNED;
         }
     }
+    public enum KitStatus {
+        NOT_REQUIRED, // Trường hợp không dùng kit
+        KIT_SENT,
+        USER_COLLECTED,
+        RETURNED
+    }
 
     public enum AppointmentType { ADMINISTRATIVE, CIVIL }
-    public enum DeliveryMethod { HOME_COLLECTION, SELF_DROP_OFF }
+    public enum DeliveryMethod { HOME_COLLECTION, SELF_DROP_OFF , HOME_DELIVERY }
     public enum AppointmentStatus { SCHEDULED, CONFIRMED, IN_PROGRESS, COMPLETED, CANCELLED }
     public enum CollectionStatus {
         ASSIGNED,      // Đã phân công nhân viên

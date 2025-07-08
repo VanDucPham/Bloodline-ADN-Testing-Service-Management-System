@@ -57,9 +57,10 @@ function Login() {
 
 localStorage.setItem('userInfo', JSON.stringify(response));
 
-         
+        
             // Nếu login thành công thì chuyển trang
             navigate('/');
+
         } catch (error) {
             console.error('Login failed', error);
 

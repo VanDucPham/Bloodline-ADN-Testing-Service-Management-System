@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Data
 public class SampleStaffDTO {
     private Long participantId;
-    private Sample.SampleType sampleType;
+    private String sampleType;
     private LocalDateTime collectionDateTime;
     private Sample.SampleQuality quality;
     private Sample.SampleStatus status;

@@ -10,6 +10,14 @@ const STATUS_OPTIONS = [
   'CANCELLED',
 ];
 
+const COLLECTION_STATUS_OPTIONS = [
+  'ASSIGNED',
+  'TRAVELING',
+  'ARRIVED',
+  'COLLECTING',
+  'COMPLETED',
+];
+
 function StaffAppointments() {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -68,12 +76,27 @@ function StaffAppointments() {
     }
   };
 
-  const handleStatusChange = async (appointmentId, newStatus) => {
+  
+  const handleStatusOrCollectionChange = async (appointmentId, field, newValue) => {
     setUpdatingId(appointmentId);
     try {
-      await apiService.staff.updateAppointmentStatus(appointmentId, newStatus);
-      // Sau khi cập nhật, loại bỏ lịch hẹn khỏi danh sách (ẩn đi)
-      setAppointments((prev) => prev.filter(item => item.appointmentId !== appointmentId));
+      // Lấy trạng thái hiện tại của appointment
+      const appointment = appointments.find(item => item.appointmentId === appointmentId);
+      if (!appointment) throw new Error('Không tìm thấy lịch hẹn');
+      // Xác định giá trị gửi lên
+      const appointmentStatus = field === 'appointmentStatus' ? newValue : appointment.appointmentStatus;
+      const collectionStatus = field === 'collectionStatus' ? newValue : appointment.collectionStatus;
+      // Gọi API với tham số đúng
+      await apiService.staff.updateAppointmentStatusAndCollectionStatus(
+        appointmentId,
+        appointmentStatus,
+        collectionStatus
+      );
+      setAppointments((prev) => prev.map(item =>
+        item.appointmentId === appointmentId
+          ? { ...item, appointmentStatus, collectionStatus }
+          : item
+      ));
     } catch (error) {
       alert('Cập nhật trạng thái thất bại!');
     } finally {
@@ -291,6 +314,7 @@ function StaffAppointments() {
                 <th>Ngày</th>
                 <th>Giờ</th>
                 <th>Trạng thái</th>
+                <th>Trạng thái thu mẫu</th>
                 <th>Dịch vụ</th>
                 <th>Phương thức lấy mẫu</th>
                 <th>Loại lịch hẹn</th>
@@ -307,9 +331,20 @@ function StaffAppointments() {
                     <select
                       value={item.appointmentStatus}
                       disabled={updatingId === item.appointmentId}
-                      onChange={e => handleStatusChange(item.appointmentId, e.target.value)}
+                      onChange={e => handleStatusOrCollectionChange(item.appointmentId, 'appointmentStatus', e.target.value)}
                     >
                       {STATUS_OPTIONS.map(status => (
+                        <option key={status} value={status}>{status}</option>
+                      ))}
+                    </select>
+                  </td>
+                  <td onClick={e => e.stopPropagation()}>
+                    <select
+                      value={item.collectionStatus || 'ASSIGNED'}
+                      disabled={updatingId === item.appointmentId}
+                      onChange={e => handleStatusOrCollectionChange(item.appointmentId, 'collectionStatus', e.target.value)}
+                    >
+                      {COLLECTION_STATUS_OPTIONS.map(status => (
                         <option key={status} value={status}>{status}</option>
                       ))}
                     </select>

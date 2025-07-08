@@ -1,6 +1,7 @@
 package com.example.Bloodline_ADN_System.controller;
 
 import com.example.Bloodline_ADN_System.Entity.Appointment;
+import com.example.Bloodline_ADN_System.dto.ApiMessResponse;
 import com.example.Bloodline_ADN_System.dto.AppointmentCheckRequest;
 import com.example.Bloodline_ADN_System.dto.ServiceDTO;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentDTO;
@@ -10,6 +11,7 @@ import com.example.Bloodline_ADN_System.service.AppointmentService;
 import com.example.Bloodline_ADN_System.service.impl.ServiceImpl;
 import com.example.Bloodline_ADN_System.service.impl.Time_slot_limit_Impl;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -78,10 +80,21 @@ public class AppointmentController {
      * Hủy lịch hẹn
      */
     @PutMapping("/{id}/cancel")
-    public ResponseEntity<String> cancelAppointment(@PathVariable Long id) {
-        appointmentService.cancelAppointment(id);
-        return ResponseEntity.ok("Hủy lịch hẹn thành công.");
+    public ResponseEntity<ApiMessResponse> cancelAppointment(@PathVariable Long id) {
+        ApiMessResponse result = appointmentService.cancelAppointment(id);
+
+        // Nếu thành công, trả HTTP 200
+        if (result.isSuccess()) {
+            return ResponseEntity.ok(result);
+        }
+
+        // ❗ Nếu thất bại logic, vẫn trả HTTP 200 (để FE không bị catch)
+        // return ResponseEntity.badRequest().body(result); ❌ → gây lỗi FE
+        return ResponseEntity.ok(result); // ✅
     }
+
+
+
 
     /**
      * Lọc lịch hẹn theo trạng thái, loại và ngày
@@ -98,10 +111,9 @@ public class AppointmentController {
      * Cập nhật trạng thái lịch hẹn
      */
     @PutMapping("/{id}/status")
-    public ResponseEntity<AppointmentDTO> updateStatus(@PathVariable Long id,
-                                                       @RequestParam Appointment.AppointmentStatus status) {
-        AppointmentDTO updated = appointmentService.updateAppointmentProgress(id, status);
-        return ResponseEntity.ok(updated);
+    public ResponseEntity<AppointmentDTO> updateAppointment(@PathVariable Long id, @RequestParam("status") Appointment.AppointmentStatus status,
+                                                            @RequestParam("collectionStatus") Appointment.CollectionStatus collectionStatus) {
+        return ResponseEntity.ok(appointmentService.updateAppointmentProgress(id, status, collectionStatus));
     }
 
     /**
