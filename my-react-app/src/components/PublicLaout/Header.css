@@ -12,15 +12,15 @@
 html, body {
   margin: 0;
   padding: 0;
-  
+  max-width: none;
   min-height: 100vh;
   box-sizing: border-box;
 }
 
 /* Đảm bảo phần header chiếm toàn bộ chiều ngang */
 .main-header {
-  width: 100%;
   max-width: none;
+
   border-radius: 0 0 24px 24px;
   box-shadow: 0 6px 32px rgba(52, 93, 167, 0.14);
 }

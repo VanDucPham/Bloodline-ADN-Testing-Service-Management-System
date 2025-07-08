@@ -1,8 +1,8 @@
-// src/pages/StaffManagement.jsx
+
 import React, { useEffect, useState } from 'react';
 
 import apiService from "../../service/api";
-
+import './ManagerStaff.css'
 export default function ManagerStaff() {
   const [staffs, setStaffs] = useState([]);
   const [loading, setLoading] = useState(true);

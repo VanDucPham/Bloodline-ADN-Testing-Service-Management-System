@@ -2,6 +2,7 @@ package com.example.Bloodline_ADN_System.controller;
 
 import com.example.Bloodline_ADN_System.Entity.Appointment;
 import com.example.Bloodline_ADN_System.dto.*;
+import com.example.Bloodline_ADN_System.dto.ManagerService.ServiceManagerDTO;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentDTO;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentRequest;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentResponse;
@@ -71,7 +72,7 @@ public class StaffCaseFileController {
     }
 
     @GetMapping("/services")
-    public List<ServiceDTO> getAllService() {
+    public List<ServiceManagerDTO> getAllService() {
         return serviceList.getAllServices();
     }
 

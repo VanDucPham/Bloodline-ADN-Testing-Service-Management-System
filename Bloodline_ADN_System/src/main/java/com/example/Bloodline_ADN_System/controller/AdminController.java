@@ -3,6 +3,7 @@ package com.example.Bloodline_ADN_System.controller;
 import com.example.Bloodline_ADN_System.Entity.Blog;
 import com.example.Bloodline_ADN_System.Entity.User;
 import com.example.Bloodline_ADN_System.dto.*;
+import com.example.Bloodline_ADN_System.dto.ManagerService.ServiceManagerDTO;
 import com.example.Bloodline_ADN_System.repository.UserRepository;
 import com.example.Bloodline_ADN_System.service.BlogService;
 import com.example.Bloodline_ADN_System.service.ServiceList;
@@ -76,24 +77,25 @@ public class AdminController {
     }
 
     @GetMapping("/service/get")
-    public ResponseEntity<List<ServiceDTO>> getAllServices() {
-        List<ServiceDTO> service = serviceList.getAllServices();
+    public ResponseEntity<List<ServiceManagerDTO>> getAllServices() {
+        List<ServiceManagerDTO> service = serviceList.getAllServices();
         return ResponseEntity.ok(service);
     }
 
     @GetMapping("/service/get/{id}")
-    public ResponseEntity<ServiceDTO> getServiceById(@PathVariable Long id) {
-        ServiceDTO service = serviceList.getServiceById(id);
+    public ResponseEntity<ServiceManagerDTO> getServiceById(@PathVariable Long id) {
+        ServiceManagerDTO service = serviceList.getServiceById(id);
         return ResponseEntity.ok(service);
     }
 
     @PostMapping("/service/add")
-    public ResponseEntity<ServiceDTO> addService(@RequestBody ServiceDTO serviceDTO) {
+    public ResponseEntity<ServiceManagerDTO> addService(@RequestBody ServiceManagerDTO serviceDTO) {
         return ResponseEntity.ok(serviceList.createService(serviceDTO));
     }
 
     @PutMapping("/service/update/{id}")
-    public ResponseEntity<ServiceDTO> updateService(@PathVariable Long id,@RequestBody ServiceDTO serviceDTO){
+    public ResponseEntity<ServiceManagerDTO> updateService(@PathVariable Long id,@RequestBody ServiceManagerDTO serviceDTO){
+        System.out.println("dang update");
         return ResponseEntity.ok(serviceList.updateService(id,serviceDTO));
     }
 

@@ -19,7 +19,7 @@ const menuItems = [
   {
     name: 'KIẾN THỨC',
     submenu: [
-      { name: 'Tất cả bài viết', path: '/blog' },
+      { name: 'Tất cả bài viết', path: '/post' },
       { name: 'Xét nghiệm ADN' }
     ]
   },
@@ -57,7 +57,7 @@ function Header() {
     <header className="main-header">
       <div className="header-top">
         <div className="header-logo-group">
-          <img src="public/images/logo.jpg" alt="Vietcare Logo" className="logo" />
+          <img src="Component/images/logo.jpg" alt="Vietcare Logo" className="logo" />
           <div className="brand-title">
             <span className="brand-main">Vietcare Lab</span>
             <span className="brand-sub">Xét nghiệm ADN - Chính xác & Bảo mật</span>

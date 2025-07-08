@@ -31,17 +31,24 @@ public class Blog {
     private String imageUrl;
 
     private LocalDateTime createdAt;
-
+    private LocalDateTime updatedAt;
+    private LocalDateTime publishDate;
 
     @Enumerated(EnumType.STRING)
     private BlogStatus status;
+
+    @Enumerated(EnumType.STRING)
+    private BlogType blogType;
 
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
     }
-
-    private String BlogType ;
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 
     public enum BlogStatus { DRAFT, PUBLISHED, ARCHIVED }
+    public enum BlogType { NEWS, GUIDE, POLICY, PROMOTION, OTHER }
 }

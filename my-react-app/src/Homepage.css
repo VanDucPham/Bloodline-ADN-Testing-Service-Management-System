@@ -122,8 +122,8 @@ body {
 .about {
   margin: auto;
   padding: 60px 20px;
-  max-width: 1280px;
-  width: 100%;
+  max-width: 100%;
+  
   box-sizing: border-box;
 }
 
@@ -274,9 +274,183 @@ body {
   transform: translateY(-2px);
 }
 
+/* Consultation Section */
+.consultation-section {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  padding: 80px 0;
+  margin-top: 60px;
+}
 
+.consultation-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.consultation-content {
+  display: flex;
+  align-items: center;
+  gap: 60px;
+  flex-wrap: wrap;
+}
+
+.consultation-text {
+  flex: 1;
+  min-width: 300px;
+}
+
+.consultation-text h2 {
+  color: #1e40af;
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  line-height: 1.2;
+}
+
+.consultation-text p {
+  font-size: 1.125rem;
+  color: #4b5563;
+  margin-bottom: 32px;
+  line-height: 1.6;
+}
+
+.benefits-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.benefit-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1rem;
+  color: #1f2937;
+  font-weight: 500;
+}
+
+.benefit-item svg {
+  color: #f59e0b;
+  font-size: 1.1rem;
+}
+
+.consultation-form-container {
+  flex: 1;
+  min-width: 400px;
+  background: white;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+}
+
+.consultation-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 16px;
+  font-size: 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  background-color: #fafafa;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #1e40af;
+  background-color: white;
+  box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+  transform: translateY(-1px);
+}
+
+.form-group select {
+  cursor: pointer;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.consultation-btn {
+  background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+  color: white;
+  border: none;
+  padding: 18px 32px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px;
+  margin-top: 10px;
+}
+
+.consultation-btn:hover {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(30, 64, 175, 0.3);
+}
+
+.form-note {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: #059669;
+  font-weight: 500;
+  text-align: center;
+  justify-content: center;
+}
+
+.form-note svg {
+  color: #059669;
+}
 
 @media (max-width: 768px) {
+  .consultation-section {
+    padding: 60px 0;
+  }
+  
+  .consultation-content {
+    flex-direction: column;
+    gap: 40px;
+  }
+  
+  .consultation-text {
+    text-align: center;
+  }
+  
+  .consultation-text h2 {
+    font-size: 1.875rem;
+  }
+  
+  .consultation-form-container {
+    min-width: unset;
+    padding: 30px;
+  }
+  
+  .benefits-list {
+    align-items: center;
+  }
+}
+
+
+
+@media (max-width: none) {
   .input-field {
     background-color: rgb(255, 255, 255);
     color: #1d1c1c;

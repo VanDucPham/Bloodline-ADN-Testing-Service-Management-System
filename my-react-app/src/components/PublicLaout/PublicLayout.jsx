@@ -5,7 +5,10 @@ import { Outlet } from 'react-router-dom';
 export default function PublicLayout() {
   return (
     <>
-      <Header />
+      <div>
+<Header />
+      </div>
+      
       <main style={{ minHeight: '80vh', padding: '20px' }}>
         <Outlet />
       </main>

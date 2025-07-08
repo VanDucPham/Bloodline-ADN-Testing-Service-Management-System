@@ -1,30 +1,42 @@
 // src/pages/ServiceManager.jsx
-import React, { useState } from "react";
-import { Table, Button, Modal, Form, Input, Space, Popconfirm, message } from "antd";
-
-const initialServices = [
-  {
-    id: 1,
-    name: "Xét nghiệm ADN cha con",
-    price: 2500000,
-    description: "Dịch vụ xác định quan hệ huyết thống cha - con.",
-  },
-  {
-    id: 2,
-    name: "Xét nghiệm ADN mẹ con",
-    price: 2500000,
-    description: "Dịch vụ xác định quan hệ huyết thống mẹ - con.",
-  },
-];
+import React, { useState, useEffect } from "react";
+import {
+  Table,
+  Button,
+  Modal,
+  Form,
+  Input,
+  Space,
+  Popconfirm,
+  message,
+} from "antd";
+import apiService from "../../service/api"; // sửa lại đúng path nếu khác
 
 const ServiceManager = () => {
-  const [services, setServices] = useState(initialServices);
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingService, setEditingService] = useState(null);
-
   const [form] = Form.useForm();
 
-  // Mở modal tạo mới hoặc chỉnh sửa
+  // Fetch tất cả service từ API
+  const fetchServices = async () => {
+    setLoading(true);
+    try {
+      const data = await apiService.admin.getAllService();
+      setServices(data);
+    } catch (error) {
+      console.error("Lỗi khi tải dịch vụ:", error);
+      message.error("Không thể tải danh sách dịch vụ.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchServices();
+  }, []);
+
   const openModal = (service = null) => {
     setEditingService(service);
     setIsModalOpen(true);
@@ -35,51 +47,90 @@ const ServiceManager = () => {
     }
   };
 
-  // Đóng modal
   const closeModal = () => {
     setIsModalOpen(false);
     setEditingService(null);
     form.resetFields();
   };
 
-  // Lưu dịch vụ (thêm mới hoặc cập nhật)
-  const handleSave = () => {
-    form.validateFields().then(values => {
+  const handleSave = async () => {
+    try {
+      const values = await form.validateFields();
       if (editingService) {
-        setServices(services.map(s => (s.id === editingService.id ? { ...editingService, ...values } : s)));
+        await apiService.admin.updateService(editingService.serviceId, values);
         message.success("Đã cập nhật dịch vụ!");
       } else {
-        const newService = { ...values, id: Date.now() };
-        setServices([newService, ...services]);
+        await apiService.admin.createService(values);
         message.success("Đã thêm dịch vụ mới!");
       }
       closeModal();
-    });
+      fetchServices();
+    } catch (error) {
+      console.error("Lỗi khi lưu:", error);
+      message.error("Thao tác không thành công.");
+    }
   };
 
-  // Xóa dịch vụ
-  const handleDelete = (id) => {
-    setServices(services.filter(s => s.id !== id));
-    message.success("Đã xóa dịch vụ!");
+  const handleDelete = async (id) => {
+    try {
+      await apiService.admin.deleteService(id);
+      message.success("Đã xóa dịch vụ!");
+      fetchServices();
+    } catch (error) {
+      console.error("Lỗi khi xóa:", error);
+      message.error("Không thể xóa dịch vụ.");
+    }
   };
 
   const columns = [
-    { title: "Tên dịch vụ", dataIndex: "name", key: "name" },
-    { title: "Giá (VNĐ)", dataIndex: "price", key: "price", render: (v) => v.toLocaleString() },
-    { title: "Mô tả", dataIndex: "description", key: "description", ellipsis: true },
+    { title: "Tên dịch vụ", dataIndex: "serviceName", key: "serviceName" },
+    {
+      title: "Giá (VNĐ)",
+      dataIndex: "servicePrice",
+      key: "servicePrice",
+      render: (v) => v.toLocaleString(),
+    },
+    {
+      title: "Mô tả",
+      dataIndex: "serviceDescription",
+      key: "serviceDescription",
+      ellipsis: true,
+    },
+    {
+      title: "Hình ảnh",
+      dataIndex: "imageUrl",
+      key: "imageUrl",
+      render: (url) => (
+        <img
+          src={url}
+          alt="Dịch vụ"
+          width={60}
+          style={{ borderRadius: 4, objectFit: "cover" }}
+        />
+      ),
+    },
+    {
+      title: "Số người",
+      dataIndex: "limitPeople",
+      key: "limitPeople",
+    },
     {
       title: "Hành động",
       key: "action",
       render: (_, record) => (
         <Space>
-          <Button type="link" onClick={() => openModal(record)}>Sửa</Button>
+          <Button type="link" onClick={() => openModal(record)}>
+            Sửa
+          </Button>
           <Popconfirm
             title="Bạn chắc chắn muốn xóa dịch vụ này?"
-            onConfirm={() => handleDelete(record.id)}
+            onConfirm={() => handleDelete(record.serviceId)}
             okText="Xóa"
             cancelText="Hủy"
           >
-            <Button type="link" danger>Xóa</Button>
+            <Button type="link" danger>
+              Xóa
+            </Button>
           </Popconfirm>
         </Space>
       ),
@@ -90,13 +141,18 @@ const ServiceManager = () => {
     <div style={{ background: "#fff", padding: 24, borderRadius: 8 }}>
       <h2>Quản lý Dịch vụ</h2>
       <p>Thêm, sửa, xóa các dịch vụ xét nghiệm ADN.</p>
-      <Button type="primary" onClick={() => openModal()} style={{ marginBottom: 16 }}>
+      <Button
+        type="primary"
+        onClick={() => openModal()}
+        style={{ marginBottom: 16 }}
+      >
         + Thêm dịch vụ
       </Button>
       <Table
         dataSource={services}
         columns={columns}
-        rowKey="id"
+        rowKey="serviceId"
+        loading={loading}
         pagination={{ pageSize: 5 }}
       />
 
@@ -112,27 +168,58 @@ const ServiceManager = () => {
         <Form form={form} layout="vertical">
           <Form.Item
             label="Tên dịch vụ"
-            name="name"
+            name="serviceName"
             rules={[{ required: true, message: "Vui lòng nhập tên dịch vụ!" }]}
           >
             <Input />
           </Form.Item>
+
           <Form.Item
             label="Giá (VNĐ)"
-            name="price"
+            name="servicePrice"
             rules={[
               { required: true, message: "Vui lòng nhập giá!" },
-              { type: "number", min: 0, message: "Giá phải là số dương!", transform: v => Number(v) }
+              {
+                type: "number",
+                min: 0,
+                message: "Giá phải là số dương!",
+                transform: (v) => Number(v),
+              },
             ]}
           >
             <Input type="number" />
           </Form.Item>
+
           <Form.Item
             label="Mô tả"
-            name="description"
+            name="serviceDescription"
             rules={[{ required: true, message: "Vui lòng nhập mô tả!" }]}
           >
             <Input.TextArea rows={3} />
+          </Form.Item>
+
+          <Form.Item
+            label="Hình ảnh (URL)"
+            name="imageUrl"
+            rules={[{ required: true, message: "Vui lòng nhập URL hình ảnh!" }]}
+          >
+            <Input placeholder="https://example.com/image.jpg" />
+          </Form.Item>
+
+          <Form.Item
+            label="Số lượng người tham gia"
+            name="limitPeople"
+            rules={[
+              { required: true, message: "Vui lòng nhập số lượng người!" },
+              {
+                type: "number",
+                min: 1,
+                message: "Số lượng phải >= 1",
+                transform: (v) => Number(v),
+              },
+            ]}
+          >
+            <Input type="number" />
           </Form.Item>
         </Form>
       </Modal>

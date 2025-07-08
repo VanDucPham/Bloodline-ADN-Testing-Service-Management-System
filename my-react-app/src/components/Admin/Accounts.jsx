@@ -208,7 +208,7 @@ export default function Accounts() {
 
   return (
     <div className="account-page">
-      <main className="main-content">
+      <div className="main-content">
         <div className="topbar">
           <div className="title">Quản lý người dùng</div>
           <button className="add-btn" onClick={handleOpenModalAdd}>+ Thêm người dùng</button>
@@ -263,7 +263,7 @@ export default function Accounts() {
             </tbody>
           </table>
         )}
-      </main>
+      </div>
 
       {isOpenModal && (
         <div className="modal">
