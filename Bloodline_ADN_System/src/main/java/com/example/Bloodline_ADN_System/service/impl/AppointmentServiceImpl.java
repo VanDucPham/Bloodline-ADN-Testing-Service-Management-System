@@ -368,6 +368,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         dto.setAppointmentStatus(appointment.getStatus());
         dto.setDeliveryMethod(String.valueOf(appointment.getDeliveryMethod()));
         dto.setAppointmentNote(appointment.getAppointmentNote());
+        dto.setCollectionStatus(appointment.getCollectionStatus());
         return dto;
     }
 }

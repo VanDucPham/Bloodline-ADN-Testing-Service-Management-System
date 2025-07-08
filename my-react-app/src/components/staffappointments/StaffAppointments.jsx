@@ -39,7 +39,7 @@ function StaffAppointments() {
 
   // Modal participant 
   const [participantModalOpen, setParticipantModalOpen] = useState(false);
-   // Modal quản lý nhập/hiển thị kết quả
+  // Modal quản lý nhập/hiển thị kết quả
   const [resultModalOpen, setResultModalOpen] = useState(false);
   const [selectedAppointmentForResult, setSelectedAppointmentForResult] = useState(null);
   const [existingResult, setExistingResult] = useState(null);
@@ -77,6 +77,8 @@ function StaffAppointments() {
       if (statusFilter) params.status = statusFilter;
       if (dateFilter) params.appointmentDate = dateFilter.format('YYYY-MM-DD');
       const response = await apiService.staff.getAppointment(params);
+      console.log('Dữ liệu lịch hẹn:', response);
+
       setAppointments(response);
     } catch (error) {
       console.error('Lỗi khi lấy danh sách lịch hẹn:', error);
@@ -92,19 +94,26 @@ function StaffAppointments() {
       if (!appointment) throw new Error('Không tìm thấy lịch hẹn');
       const appointmentStatus = field === 'appointmentStatus' ? newValue : appointment.appointmentStatus;
       const collectionStatus = field === 'collectionStatus' ? newValue : appointment.collectionStatus;
+
       await apiService.staff.updateAppointmentStatusAndCollectionStatus(
         appointmentId,
         appointmentStatus,
         collectionStatus
       );
-      setAppointments((prev) => prev.map(item =>
-        item.appointmentId === appointmentId
-          ? { ...item, appointmentStatus, collectionStatus }
-          : item
-      ));
+      // Cập nhật lại danh sách hoặc cập nhật state
+      await fetchAppointments();
     } catch (error) {
-      alert('Cập nhật trạng thái thất bại!');
-    } finally {
+      console.error('Lỗi cập nhật trạng thái chi tiết:', error);
+      if (error.response && error.response.data && error.response.data.message) {
+        alert('Lỗi khi cập nhật trạng thái: ' + error.response.data.message);
+      } else if (error.message) {
+        alert('Lỗi khi cập nhật trạng thái: ' + error.message);
+      } else {
+        alert('Cập nhật trạng thái thất bại!');
+      }
+    }
+
+    finally {
       setUpdatingId(null);
     }
   };
@@ -260,11 +269,11 @@ function StaffAppointments() {
   // Hàm lưu result
   const handleSaveResult = async (resultData) => {
     try {
-          const payload = {
-      appointmentId: selectedAppointmentForResult.appointmentId, // phải có giá trị hợp lệ
-      resultValue: resultData.resultValue,
-      notes: resultData.notes,
-    };
+      const payload = {
+        appointmentId: selectedAppointmentForResult.appointmentId, // phải có giá trị hợp lệ
+        resultValue: resultData.resultValue,
+        notes: resultData.notes,
+      };
       await apiService.staff.createResult(payload);
       alert('Lưu kết quả thành công!');
       handleCloseResultModal();
@@ -273,169 +282,172 @@ function StaffAppointments() {
       if (error.response && error.response.status === 400) {
         const message = error.response.data.message || 'Lỗi nghiệp vụ';
         alert(message);  // Hiển thị lỗi chi tiết từ backend
-        
+
       } else {
         alert('Lỗi khi lưu kết quả: ' + (error.message || 'Không rõ lỗi'));
         throw error;
       }
-    }};
+    }
+  };
 
 
-    const onShowCreateSampleForm = () => setShowCreateSample(true);
-    const onCancelCreateSample = () => setShowCreateSample(false);
-    const onEditSample = (sample) => setEditingSample(sample);
-    const onCancelEditSample = () => setEditingSample(null);
+  const onShowCreateSampleForm = () => setShowCreateSample(true);
+  const onCancelCreateSample = () => setShowCreateSample(false);
+  const onEditSample = (sample) => setEditingSample(sample);
+  const onCancelEditSample = () => setEditingSample(null);
 
-    // Lọc dữ liệu theo status, ngày và mã lịch hẹn
-    const filteredAppointments = appointments.filter(item => {
-      const matchStatus = statusFilter ? item.appointmentStatus === statusFilter : true;
-      // Khai báo itemDate đúng vị trí
-      const itemDate = moment(item.appointmentDate, 'YYYY-MM-DD').startOf('day');
-      const filterDate = dateFilter ? dateFilter.clone().startOf('day') : null;
-      const matchDate = filterDate
-        ? itemDate.format('YYYY-MM-DD') === filterDate.format('YYYY-MM-DD')
-        : true;
+  // Lọc dữ liệu theo status, ngày và mã lịch hẹn
+  const filteredAppointments = appointments.filter(item => {
+    const matchStatus = statusFilter ? item.appointmentStatus === statusFilter : true;
+    // Khai báo itemDate đúng vị trí
+    const itemDate = moment(item.appointmentDate, 'YYYY-MM-DD').startOf('day');
+    const filterDate = dateFilter ? dateFilter.clone().startOf('day') : null;
+    const matchDate = filterDate
+      ? itemDate.format('YYYY-MM-DD') === filterDate.format('YYYY-MM-DD')
+      : true;
 
-      const matchId = searchId ? String(item.appointmentId) === searchId : true;
-      return matchStatus && matchDate && matchId;
-    });
+    const matchId = searchId ? String(item.appointmentId) === searchId : true;
+    return matchStatus && matchDate && matchId;
+  });
 
-    return (
-      <div className="staff-appointments-container">
-        <h2>📅 Danh sách lịch hẹn</h2>
-        <div style={{ display: 'flex', gap: 16, marginBottom: 16, alignItems: 'center' }}>
-          <div>
-            <label>Lọc trạng thái: </label>
-            <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
-              <option value="">Tất cả</option>
-              {STATUS_OPTIONS.map(opt => (
-                <option key={opt} value={opt}>{opt}</option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label>Lọc theo ngày: </label>
-            <DatePicker
-              value={dateFilter}
-              onChange={date => {
-                if (date && date.isValid()) {
-                  setDateFilter(date);
-                }
-              }}
-              format="DD/MM/YYYY"
-              allowClear={false}
-            />
-          </div>
-
-          <div>
-            <label>Tìm theo mã lịch hẹn: </label>
-            <input
-              type="text"
-              value={searchId}
-              onChange={e => setSearchId(e.target.value)}
-              placeholder="Nhập mã lịch hẹn"
-              style={{ width: 120 }}
-            />
-          </div>
+  return (
+    <div className="staff-appointments-container">
+      <h2>📅 Danh sách lịch hẹn</h2>
+      <div style={{ display: 'flex', gap: 16, marginBottom: 16, alignItems: 'center' }}>
+        <div>
+          <label>Lọc trạng thái: </label>
+          <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
+            <option value="">Tất cả</option>
+            {STATUS_OPTIONS.map(opt => (
+              <option key={opt} value={opt}>{opt}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label>Lọc theo ngày: </label>
+          <DatePicker
+            value={dateFilter}
+            onChange={date => {
+              if (date && date.isValid()) {
+                setDateFilter(date);
+              }
+            }}
+            format="DD/MM/YYYY"
+            allowClear={false}
+          />
         </div>
 
-        {loading ? (
-          <p>Đang tải dữ liệu...</p>
-        ) : filteredAppointments.length > 0 ? (
-          <div className="staff-appointments-table-wrapper">
-            <table className="staff-appointments-table">
-              <thead>
-                <tr>
-                  <th>Mã lịch hẹn</th>
-                  <th>Người dùng</th>
-                  <th>Ngày</th>
-                  <th>Giờ</th>
-                  <th>Trạng thái</th>
-                  <th>Trạng thái thu mẫu</th>
-                  <th>Dịch vụ</th>
-                  <th>Phương thức lấy mẫu</th>
-                  <th>Loại lịch hẹn</th>
-                  <th>Hành động</th>
-                  <th>Hành động</th>
+        <div>
+          <label>Tìm theo mã lịch hẹn: </label>
+          <input
+            type="text"
+            value={searchId}
+            onChange={e => setSearchId(e.target.value)}
+            placeholder="Nhập mã lịch hẹn"
+            style={{ width: 120 }}
+          />
+        </div>
+      </div>
+
+      {loading ? (
+        <p>Đang tải dữ liệu...</p>
+      ) : filteredAppointments.length > 0 ? (
+        <div className="staff-appointments-table-wrapper">
+          <table className="staff-appointments-table">
+            <thead>
+              <tr>
+                <th>Mã lịch hẹn</th>
+                <th>Người dùng</th>
+                <th>Ngày</th>
+                <th>Giờ</th>
+                <th>Trạng thái</th>
+                <th>Trạng thái thu mẫu</th>
+                <th>Dịch vụ</th>
+                <th>Phương thức lấy mẫu</th>
+                <th>Loại lịch hẹn</th>
+                <th>Hành động</th>
+                <th>Hành động</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredAppointments.map((item, idx) => (
+                <tr key={idx} className="staff-appointment-row">
+                  <td>{item.appointmentId}</td>
+                  <td>{item.userId}</td>
+                  <td>{item.appointmentDate}</td>
+                  <td>{item.appointmentTime}</td>
+                  <td onClick={e => e.stopPropagation()}>
+                    <select
+                      value={item.appointmentStatus || ''}
+                      disabled={updatingId === item.appointmentId}
+                      onChange={e => handleStatusOrCollectionChange(item.appointmentId, 'appointmentStatus', e.target.value)}
+                    >
+                      <option value="">-- Chọn trạng thái --</option>
+                      {STATUS_OPTIONS.map(status => (
+                        <option key={status} value={status}>{status}</option>
+                      ))}
+                    </select>
+                  </td>
+                  <td onClick={e => e.stopPropagation()}>
+                    <select
+                      value={item.collectionStatus || ''}
+                      disabled={updatingId === item.appointmentId}
+                      onChange={e => handleStatusOrCollectionChange(item.appointmentId, 'collectionStatus', e.target.value)}
+                    >
+                      <option value="">-- Chọn trạng thái --</option>
+                      {COLLECTION_STATUS_OPTIONS.map(status => (
+                        <option key={status} value={status}>{status}</option>
+                      ))}
+                    </select>
+                  </td>
+                  <td>{item.serviceId}</td>
+                  <td>{item.deliveryMethod}</td>
+                  <td>{item.appointmentType}</td>
+                  <td>
+                    <button onClick={() => handleShowParticipants(item.appointmentId)}>Xem participant</button>
+                  </td>
+                  <td>
+                    <button onClick={() => handleOpenResultModal(item)}>Kết quả</button>
+                  </td>
+
                 </tr>
-              </thead>
-              <tbody>
-                {filteredAppointments.map((item, idx) => (
-                  <tr key={idx} className="staff-appointment-row">
-                    <td>{item.appointmentId}</td>
-                    <td>{item.userId}</td>
-                    <td>{item.appointmentDate}</td>
-                    <td>{item.appointmentTime}</td>
-                    <td onClick={e => e.stopPropagation()}>
-                      <select
-                        value={item.appointmentStatus}
-                        disabled={updatingId === item.appointmentId}
-                        onChange={e => handleStatusOrCollectionChange(item.appointmentId, 'appointmentStatus', e.target.value)}
-                      >
-                        {STATUS_OPTIONS.map(status => (
-                          <option key={status} value={status}>{status}</option>
-                        ))}
-                      </select>
-                    </td>
-                    <td onClick={e => e.stopPropagation()}>
-                      <select
-                        value={item.collectionStatus || 'ASSIGNED'}
-                        disabled={updatingId === item.appointmentId}
-                        onChange={e => handleStatusOrCollectionChange(item.appointmentId, 'collectionStatus', e.target.value)}
-                      >
-                        {COLLECTION_STATUS_OPTIONS.map(status => (
-                          <option key={status} value={status}>{status}</option>
-                        ))}
-                      </select>
-                    </td>
-                    <td>{item.serviceId}</td>
-                    <td>{item.deliveryMethod}</td>
-                    <td>{item.appointmentType}</td>
-                    <td>
-                      <button onClick={() => handleShowParticipants(item.appointmentId)}>Xem participant</button>
-                    </td>
-                    <td>
-                      <button onClick={() => handleOpenResultModal(item)}>Kết quả</button>
-                    </td>
+              ))}
+            </tbody>
+          </table>
+          {participantLoading && <p>Đang tải participant...</p>}
+          {participantError && <p style={{ color: 'red' }}>{participantError}</p>}
+        </div>
+      ) : (
+        <p>Không có lịch hẹn nào!</p>
+      )}
 
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            {participantLoading && <p>Đang tải participant...</p>}
-            {participantError && <p style={{ color: 'red' }}>{participantError}</p>}
-          </div>
-        ) : (
-          <p>Không có lịch hẹn nào!</p>
-        )}
-
-        <ParticipantModal
-          open={participantModalOpen}
-          onClose={handleCloseParticipantModal}
-          participants={selectedParticipants?.data || []}
-          onShowSample={handleShowSample}
-          sampleLoading={sampleLoading}
-          sampleError={sampleError}
-          selectedSample={selectedSample}
-          onAddParticipant={onAddParticipant}
-          onCreateSample={onCreateSample}
-          onUpdateSample={onUpdateSample}
-          editingSample={editingSample}
-          onEditSample={onEditSample}
-          onCancelEditSample={onCancelEditSample}
-          showCreateSample={showCreateSample}
-          onShowCreateSampleForm={onShowCreateSampleForm}
-          onCancelCreateSample={onCancelCreateSample}
-          createSampleLoading={createSampleLoading}
-          createSampleError={createSampleError}
-          createSampleSuccess={createSampleSuccess}
-          showAddParticipantForm={showAddParticipantForm}
-          onShowAddParticipantForm={toggleAddParticipantForm}
-          addParticipantLoading={addParticipantLoading}
-          addParticipantError={addParticipantError}
-          addParticipantSuccess={addParticipantSuccess}
-        />
-        <ResultModal
+      <ParticipantModal
+        open={participantModalOpen}
+        onClose={handleCloseParticipantModal}
+        participants={selectedParticipants?.data || []}
+        onShowSample={handleShowSample}
+        sampleLoading={sampleLoading}
+        sampleError={sampleError}
+        selectedSample={selectedSample}
+        onAddParticipant={onAddParticipant}
+        onCreateSample={onCreateSample}
+        onUpdateSample={onUpdateSample}
+        editingSample={editingSample}
+        onEditSample={onEditSample}
+        onCancelEditSample={onCancelEditSample}
+        showCreateSample={showCreateSample}
+        onShowCreateSampleForm={onShowCreateSampleForm}
+        onCancelCreateSample={onCancelCreateSample}
+        createSampleLoading={createSampleLoading}
+        createSampleError={createSampleError}
+        createSampleSuccess={createSampleSuccess}
+        showAddParticipantForm={showAddParticipantForm}
+        onShowAddParticipantForm={toggleAddParticipantForm}
+        addParticipantLoading={addParticipantLoading}
+        addParticipantError={addParticipantError}
+        addParticipantSuccess={addParticipantSuccess}
+      />
+      <ResultModal
         open={resultModalOpen}
         onClose={handleCloseResultModal}
         appointment={selectedAppointmentForResult}
@@ -443,8 +455,8 @@ function StaffAppointments() {
         onSaveResult={handleSaveResult}
       />
 
-      </div>
-    );
-  }
+    </div>
+  );
+}
 
-  export default StaffAppointments;
+export default StaffAppointments;

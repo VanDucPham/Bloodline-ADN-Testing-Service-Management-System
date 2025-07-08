@@ -33,8 +33,6 @@ public class StaffCaseFileController {
             @RequestParam(required = false) Appointment.AppointmentType type,
             @RequestParam(name = "appointmentDate",required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
     ) {
-        System.out.println("Received date: " + date);
-
         List<AppointmentDTO> appointments = appointmentService.filterAppointment(status, type, date);
         return ResponseEntity.ok(appointments);
     }
@@ -56,8 +54,8 @@ public class StaffCaseFileController {
     }
 
     @PutMapping("/apointment/update/{id}")
-    public ResponseEntity<AppointmentDTO> updateAppointment(@PathVariable Long id, @RequestParam("status") Appointment.AppointmentStatus status,
-                                                            @RequestParam("collectionStatus") Appointment.CollectionStatus collectionStatus) {
+    public ResponseEntity<AppointmentDTO> updateAppointment(@PathVariable Long id, @RequestParam(value = "status", required = false) Appointment.AppointmentStatus status,
+                                                            @RequestParam(value = "collectionStatus", required = false) Appointment.CollectionStatus collectionStatus) {
         return ResponseEntity.ok(appointmentService.updateAppointmentProgress(id, status, collectionStatus));
     }
 
