@@ -19,8 +19,8 @@ public class Result {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long resultId;
 
-    @Enumerated(EnumType.STRING)
-    private TestType testType;
+//    @Enumerated(EnumType.STRING)
+//    private TestType testType;
 
     @Column(columnDefinition = "TEXT")
     private String resultValue;
@@ -37,6 +37,6 @@ public class Result {
     @JoinColumn(name = "appointment_id")
     private Appointment appointment;
 
-    public enum TestType { DNA_PATERNITY, DNA_MATERNITY, DNA_SIBLINGSHIP, DNA_GRANDPARENTAGE }
+//    public enum TestType { DNA_PATERNITY, DNA_MATERNITY, DNA_SIBLINGSHIP, DNA_GRANDPARENTAGE }
     public enum ResultStatus { PENDING, IN_PROGRESS, COMPLETED, REVIEWED }
 }

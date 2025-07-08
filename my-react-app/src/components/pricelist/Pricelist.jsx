@@ -37,7 +37,7 @@ function Pricelist() {
     const navigate = useNavigate();
     return (
         <>
-            <Header />
+            {/* <Header /> */}
             <div className='pricelist-section'>
                 <div className='pricelist-header'>
                     <span>HOME &gt; BẢNG GIÁ XÉT NGHIỆM ADN</span>

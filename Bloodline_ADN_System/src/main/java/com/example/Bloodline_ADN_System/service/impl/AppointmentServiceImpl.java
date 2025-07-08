@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
@@ -33,27 +34,6 @@ public class AppointmentServiceImpl implements AppointmentService {
     // ---------------------CREATE APPOINTMENT FOR CASEFILE---------------------
     @Override
     public AppointmentResponse<AppointmentDTO> createAppointmentCaseFile(AppointmentDTO dto) {
-//        // 1. Save Case File
-//        caseFileDTO caseFiledto = request.getCaseFile();
-//        System.out.println(request.getCaseFile().getUserId());
-//        System.out.println(caseFiledto.getUserId());
-//        userRepository.findAll().forEach(System.out::println);
-//        System.out.println("userId: " + caseFiledto.getUserId() + ", type: " + caseFiledto.getUserId().getClass());
-//        Optional<User> test = userRepository.findById(6L);
-//        System.out.println("Found? " + test.isPresent());
-//
-//        String caseCodegen = caseFileService.generateCaseCode(String.valueOf(caseFiledto.getCaseType())) ;
-//        caseFiledto.setCaseCode(caseCodegen);
-//        CaseFile caseFile = new CaseFile();
-//        caseFile  = caseFileService.createCaseFile(caseFiledto);
-//
-//
-//        // 2. Validate
-//        AppointmentDTO dto = request.getAppointment();
-        validateAppointmentDate(dto.getAppointmentDate());
-        validateSlotAvailability(dto.getAppointmentDate(), dto.getAppointmentTime());
-
-
         User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
 
@@ -92,12 +72,10 @@ public class AppointmentServiceImpl implements AppointmentService {
         CaseFile caseFile = new CaseFile();
         caseFile  = caseFileService.createCaseFile(caseFiledto);
 
-
         // 2. Validate
         AppointmentDTO dto = request.getAppointment();
-        validateAppointmentDate(dto.getAppointmentDate());
+//        validateAppointmentDate(dto.getAppointmentDate());
         validateSlotAvailability(dto.getAppointmentDate(), dto.getAppointmentTime());
-
 
         User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
@@ -110,12 +88,13 @@ public class AppointmentServiceImpl implements AppointmentService {
         appointment.setUser(user);
         appointment.setService(service);
         appointment.setType(dto.getAppointmentType());
-        appointment.setAppointmentDate(dto.getAppointmentDate());
-        appointment.setAppointmentTime(dto.getAppointmentTime());
+        appointment.setAppointmentDate(LocalDate.now());
+        appointment.setAppointmentTime(LocalTime.now());
         appointment.setDeliveryMethod(Appointment.DeliveryMethod.valueOf(dto.getDeliveryMethod()));
         appointment.setAppointmentNote(dto.getAppointmentNote());
         appointment.setStatus(Appointment.AppointmentStatus.SCHEDULED);
         appointment.setCollectionStatus(Appointment.CollectionStatus.ASSIGNED);
+        appointment.setCaseFile(caseFile);
 
         Appointment saved = appointmentRepository.save(appointment);
         return new AppointmentResponse<>("Đặt lịch thành công", toDTO(saved));

@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import apiService from '../../service/api';
 import './StaffAppointments.css';
+import moment from 'moment';
+import ParticipantModal from './ParticipantModal';
+import { DatePicker } from 'antd';
+import ResultModal from './ResultModal';
+
 
 const STATUS_OPTIONS = [
   'SCHEDULED',
@@ -19,54 +24,58 @@ const COLLECTION_STATUS_OPTIONS = [
 ];
 
 function StaffAppointments() {
+
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [updatingId, setUpdatingId] = useState(null);
+
+  // Participant & Sample states
   const [selectedParticipants, setSelectedParticipants] = useState(null);
   const [participantLoading, setParticipantLoading] = useState(false);
   const [participantError, setParticipantError] = useState(null);
   const [selectedSample, setSelectedSample] = useState(null);
   const [sampleLoading, setSampleLoading] = useState(false);
   const [sampleError, setSampleError] = useState(null);
+
+  // Modal participant 
+  const [participantModalOpen, setParticipantModalOpen] = useState(false);
+   // Modal quản lý nhập/hiển thị kết quả
+  const [resultModalOpen, setResultModalOpen] = useState(false);
+  const [selectedAppointmentForResult, setSelectedAppointmentForResult] = useState(null);
+  const [existingResult, setExistingResult] = useState(null);
+
+  // Form states for sample editing
   const [editingSample, setEditingSample] = useState(null);
-  const [sampleUpdateValue, setSampleUpdateValue] = useState("");
 
-  // Thêm các state cho form cập nhật sample
-  const [sampleQuality, setSampleQuality] = useState("");
-  const [sampleResult, setSampleResult] = useState("");
-  const [sampleNotes, setSampleNotes] = useState("");
-
-  // State cho form thêm participant mới
-  const [newParticipants, setNewParticipants] = useState([
-    { name: '', relationship: '', gender: '', citizenId: '', address: '', birthDate: '' }
-  ]);
+  // Form states for adding participants
+  const [showAddParticipantForm, setShowAddParticipantForm] = useState(false);
+  const [addParticipantLoading, setAddParticipantLoading] = useState(false);
   const [addParticipantError, setAddParticipantError] = useState('');
   const [addParticipantSuccess, setAddParticipantSuccess] = useState('');
 
-  // State cho việc tạo sample mới
+  // Form states for creating sample
   const [showCreateSample, setShowCreateSample] = useState(false);
-  const [createSampleData, setCreateSampleData] = useState({
-    sampleType: '',
-    collectionDateTime: '',
-    quality: '',
-    notes: '',
-  });
+  const [createSampleLoading, setCreateSampleLoading] = useState(false);
   const [createSampleError, setCreateSampleError] = useState('');
   const [createSampleSuccess, setCreateSampleSuccess] = useState('');
 
-  // Thêm state cho bộ lọc trạng thái và tìm kiếm theo ID
+  // Filters
   const [statusFilter, setStatusFilter] = useState('');
+  // const [dateFilter, setDateFilter] = useState(moment()); // Mặc định ngày hôm nay
+  const [dateFilter, setDateFilter] = useState(() => moment());
+
   const [searchId, setSearchId] = useState('');
 
   useEffect(() => {
     fetchAppointments();
-  }, [statusFilter]); // Gọi lại khi statusFilter thay đổi
+  }, [statusFilter, dateFilter]);
 
   const fetchAppointments = async () => {
     setLoading(true);
     try {
-      // Nếu có statusFilter thì truyền vào, không thì lấy tất cả
-      const params = statusFilter ? { status: statusFilter } : {};
+      const params = {};
+      if (statusFilter) params.status = statusFilter;
+      if (dateFilter) params.appointmentDate = dateFilter.format('YYYY-MM-DD');
       const response = await apiService.staff.getAppointment(params);
       setAppointments(response);
     } catch (error) {
@@ -76,17 +85,13 @@ function StaffAppointments() {
     }
   };
 
-  
   const handleStatusOrCollectionChange = async (appointmentId, field, newValue) => {
     setUpdatingId(appointmentId);
     try {
-      // Lấy trạng thái hiện tại của appointment
       const appointment = appointments.find(item => item.appointmentId === appointmentId);
       if (!appointment) throw new Error('Không tìm thấy lịch hẹn');
-      // Xác định giá trị gửi lên
       const appointmentStatus = field === 'appointmentStatus' ? newValue : appointment.appointmentStatus;
       const collectionStatus = field === 'collectionStatus' ? newValue : appointment.collectionStatus;
-      // Gọi API với tham số đúng
       await apiService.staff.updateAppointmentStatusAndCollectionStatus(
         appointmentId,
         appointmentStatus,
@@ -108,16 +113,18 @@ function StaffAppointments() {
     setParticipantLoading(true);
     setParticipantError(null);
     setSelectedParticipants(null);
-    setSelectedSample(null); // reset sample khi chọn lịch hẹn khác
-    setEditingSample(null);  // reset form sửa sample
-    setShowCreateSample(false); // reset form tạo sample
+    setSelectedSample(null);
+    setSampleError(null);
+    setEditingSample(null);
+    setShowCreateSample(false);
     setAddParticipantError('');
-    setAddParticipantSuccess(''); // reset thông báo khi chuyển lịch hẹn
+    setAddParticipantSuccess('');
     setCreateSampleError('');
     setCreateSampleSuccess('');
     try {
       const data = await apiService.staff.getParticipantsByAppointmentId(appointmentId);
       setSelectedParticipants({ appointmentId, data });
+      setParticipantModalOpen(true);
     } catch (error) {
       setParticipantError('Không thể tải thông tin participant!');
     } finally {
@@ -125,21 +132,34 @@ function StaffAppointments() {
     }
   };
 
+  const handleCloseParticipantModal = () => {
+    setParticipantModalOpen(false);
+    setSelectedParticipants(null);
+    setSelectedSample(null);
+    setParticipantError(null);
+    setSampleError(null);
+    setEditingSample(null);
+    setShowCreateSample(false);
+    setAddParticipantError('');
+    setAddParticipantSuccess('');
+    setCreateSampleError('');
+    setCreateSampleSuccess('');
+  };
+
   const handleShowSample = async (participantId) => {
     setSampleLoading(true);
     setSampleError(null);
     setSelectedSample(null);
+    setEditingSample(null);
+    setShowCreateSample(false);
     try {
       const data = await apiService.staff.getSampleByParticipantId(participantId);
-      // Nếu không có sample, backend có thể trả về null hoặc 404
       if (!data || Object.keys(data).length === 0) {
-        setSelectedSample({ participantId, data: {} }); // Chưa có sample
+        setSelectedSample({ participantId, data: {} });
       } else {
         setSelectedSample({ participantId, data });
-        setSampleUpdateValue(data?.sampleValue || "");
       }
     } catch (error) {
-      // Nếu lỗi là 404 hoặc không có sample thì không báo lỗi, chỉ coi là chưa có sample
       if (error?.response?.status === 404) {
         setSelectedSample({ participantId, data: {} });
       } else {
@@ -150,367 +170,281 @@ function StaffAppointments() {
     }
   };
 
-  const handleEditSample = (sample) => {
-    setEditingSample(sample);
-    setSampleQuality(sample.quality || "");
-    setSampleResult(sample.result || "");
-    setSampleNotes(sample.notes || "");
-  };
-
-  const handleUpdateSample = async () => {
-    if (!editingSample) return;
-    setSampleLoading(true);
-    setSampleError(null);
+  // Mở popup kết quả, lấy kết quả nếu có
+  const handleOpenResultModal = async (appointment) => {
     try {
-      await apiService.staff.updateSample({
-        sampleId: editingSample.sampleId,
-        quality: sampleQuality,
-        result: sampleResult,
-        notes: sampleNotes,
-      });
-      setSelectedSample((prev) => ({
-        ...prev,
-        data: {
-          ...prev.data,
-          quality: sampleQuality,
-          result: sampleResult,
-          notes: sampleNotes,
-        },
-      }));
-      setEditingSample(null);
+      const result = await apiService.staff.getResultByAppointmentId(appointment.appointmentId);
+      setExistingResult(result); // null nếu chưa có kết quả
+      setSelectedAppointmentForResult(appointment);
+      setResultModalOpen(true);
     } catch (error) {
-      setSampleError("Cập nhật sample thất bại!");
-    } finally {
-      setSampleLoading(false);
+      alert('Lỗi khi lấy kết quả');
     }
   };
 
-  const handleNewParticipantChange = (idx, e) => {
-    const updated = [...newParticipants];
-    updated[idx][e.target.name] = e.target.value;
-    setNewParticipants(updated);
-  };
-  const addNewParticipantRow = () => {
-    setNewParticipants([...newParticipants, { name: '', relationship: '', gender: '', citizenId: '', address: '', birthDate: '' }]);
-  };
-  const removeNewParticipantRow = idx => {
-    if (newParticipants.length === 1) return;
-    setNewParticipants(newParticipants.filter((_, i) => i !== idx));
+  const handleCloseResultModal = () => {
+    setSelectedAppointmentForResult(null);
+    setExistingResult(null);
+    setResultModalOpen(false);
   };
 
-  const handleAddParticipants = async (e) => {
-    e.preventDefault();
-    setAddParticipantError('');
-    setAddParticipantSuccess('');
+
+  const onAddParticipant = async (values) => {
     if (!selectedParticipants?.appointmentId) {
       setAddParticipantError('Không xác định được lịch hẹn!');
       return;
     }
-    for (const p of newParticipants) {
-      if (!p.name || !p.relationship || !p.gender || !p.citizenId || !p.address || !p.birthDate) {
-        setAddParticipantError('Vui lòng nhập đầy đủ thông tin cho tất cả người tham gia!');
-        return;
-      }
-    }
-    const payload = newParticipants.map(p => ({ ...p, appointmentId: selectedParticipants.appointmentId }));
+    setAddParticipantLoading(true);
+    setAddParticipantError('');
+    setAddParticipantSuccess('');
     try {
+      const payload = [{ ...values, appointmentId: selectedParticipants.appointmentId, birthDate: values.birthDate.format('YYYY-MM-DD') }];
       await apiService.staff.addParticipants(payload);
       setAddParticipantSuccess('Thêm người tham gia thành công!');
-      setNewParticipants([{ name: '', relationship: '', gender: '', citizenId: '', address: '', birthDate: '' }]);
-      // Reload lại participant
-      handleShowParticipants(selectedParticipants.appointmentId);
-      // Ẩn thông báo sau 2s
-      setTimeout(() => setAddParticipantSuccess(''), 2000);
+      await handleShowParticipants(selectedParticipants.appointmentId);
+      setShowAddParticipantForm(false);
     } catch (err) {
       const msg = err?.response?.data?.message || err?.message;
       setAddParticipantError(msg || 'Thêm người tham gia thất bại!');
+    } finally {
+      setAddParticipantLoading(false);
     }
   };
 
-  const handleShowCreateSample = () => {
-    setShowCreateSample(true);
-  };
-
-  const handleCancelCreateSample = () => {
-    setShowCreateSample(false);
-    setCreateSampleData({
-      sampleType: '',
-      collectionDateTime: '',
-      quality: '',
-      status: '', // reset trường status
-      notes: '',
-    });
-    setCreateSampleError('');
-    setCreateSampleSuccess('');
-  };
-
-  const handleCreateSampleChange = (e) => {
-    const { name, value } = e.target;
-    setCreateSampleData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleCreateSample = async (participantId) => {
+  const onCreateSample = async (values) => {
+    if (!selectedSample?.participantId) return;
+    setCreateSampleLoading(true);
     setCreateSampleError('');
     setCreateSampleSuccess('');
     try {
-      await apiService.staff.createSample({
-        participantId,
-        ...createSampleData,
-      });
+      const payload = {
+        participantId: selectedSample.participantId,
+        sampleType: values.sampleType,
+        notes: values.notes,
+      };
+      await apiService.staff.createSample(payload);
       setCreateSampleSuccess('Tạo sample thành công!');
+      await handleShowSample(selectedSample.participantId);
       setShowCreateSample(false);
-      // Reload lại sample
-      handleShowSample(participantId);
     } catch (err) {
       const msg = err?.response?.data?.message || err?.message;
       setCreateSampleError(msg || 'Tạo sample thất bại!');
+    } finally {
+      setCreateSampleLoading(false);
     }
   };
 
-  // Lọc dữ liệu theo trạng thái và mã lịch hẹn
-  const filteredAppointments = appointments.filter(item => {
-    const matchStatus = statusFilter ? item.appointmentStatus === statusFilter : true;
-    const matchId = searchId ? String(item.appointmentId) === searchId : true;
-    return matchStatus && matchId;
-  });
+  const onUpdateSample = async (values) => {
+    if (!editingSample) return;
+    try {
+      await apiService.staff.updateSample({
+        sampleId: editingSample.sampleId,
+        status: values.status,
+        quality: values.quality,
+        result: values.result,
+        notes: values.notes,
+      });
+      await handleShowSample(editingSample.participantId);
+      setEditingSample(null);
+    } catch {
+      setSampleError('Cập nhật sample thất bại!');
+    }
+  };
 
-  return (
-    <div className="staff-appointments-container">
-      <h2>📅 Danh sách lịch hẹn</h2>
-      {/* Bộ lọc trạng thái và tìm kiếm theo mã lịch hẹn */}
-      <div style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
-        <div>
-          <label>Lọc trạng thái: </label>
-          <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
-            <option value="">Tất cả</option>
-            {STATUS_OPTIONS.map(opt => (
-              <option key={opt} value={opt}>{opt}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label>Tìm theo mã lịch hẹn: </label>
-          <input
-            type="text"
-            value={searchId}
-            onChange={e => setSearchId(e.target.value)}
-            placeholder="Nhập mã lịch hẹn"
-            style={{ width: 120 }}
-          />
-        </div>
-      </div>
-      {loading ? (
-        <p>Đang tải dữ liệu...</p>
-      ) : filteredAppointments.length > 0 ? (
-        <div className="staff-appointments-table-wrapper">
-          <table className="staff-appointments-table">
-            <thead>
-              <tr>
-                <th>Mã lịch hẹn</th>
-                <th>Người dùng</th>
-                <th>Ngày</th>
-                <th>Giờ</th>
-                <th>Trạng thái</th>
-                <th>Trạng thái thu mẫu</th>
-                <th>Dịch vụ</th>
-                <th>Phương thức lấy mẫu</th>
-                <th>Loại lịch hẹn</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredAppointments.map((item, idx) => (
-                <tr key={idx} className="staff-appointment-row" style={{ cursor: 'pointer' }} onClick={() => handleShowParticipants(item.appointmentId)}>
-                  <td>{item.appointmentId}</td>
-                  <td>{item.userId}</td>
-                  <td>{item.appointmentDate}</td>
-                  <td>{item.appointmentTime}</td>
-                  <td onClick={e => e.stopPropagation()}>
-                    <select
-                      value={item.appointmentStatus}
-                      disabled={updatingId === item.appointmentId}
-                      onChange={e => handleStatusOrCollectionChange(item.appointmentId, 'appointmentStatus', e.target.value)}
-                    >
-                      {STATUS_OPTIONS.map(status => (
-                        <option key={status} value={status}>{status}</option>
-                      ))}
-                    </select>
-                  </td>
-                  <td onClick={e => e.stopPropagation()}>
-                    <select
-                      value={item.collectionStatus || 'ASSIGNED'}
-                      disabled={updatingId === item.appointmentId}
-                      onChange={e => handleStatusOrCollectionChange(item.appointmentId, 'collectionStatus', e.target.value)}
-                    >
-                      {COLLECTION_STATUS_OPTIONS.map(status => (
-                        <option key={status} value={status}>{status}</option>
-                      ))}
-                    </select>
-                  </td>
-                  <td>{item.serviceId}</td>
-                  <td>{item.deliveryMethod}</td>
-                  <td>{item.appointmentType}</td>
-                </tr>
+  const toggleAddParticipantForm = () => {
+    setShowAddParticipantForm(prev => !prev);
+    setAddParticipantError('');
+    setAddParticipantSuccess('');
+  };
+
+  // Hàm lưu result
+  const handleSaveResult = async (resultData) => {
+    try {
+          const payload = {
+      appointmentId: selectedAppointmentForResult.appointmentId, // phải có giá trị hợp lệ
+      resultValue: resultData.resultValue,
+      notes: resultData.notes,
+    };
+      await apiService.staff.createResult(payload);
+      alert('Lưu kết quả thành công!');
+      handleCloseResultModal();
+      fetchAppointments(); // Tải lại danh sách lịch hẹn để cập nhật nếu cần
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        const message = error.response.data.message || 'Lỗi nghiệp vụ';
+        alert(message);  // Hiển thị lỗi chi tiết từ backend
+        
+      } else {
+        alert('Lỗi khi lưu kết quả: ' + (error.message || 'Không rõ lỗi'));
+        throw error;
+      }
+    }};
+
+
+    const onShowCreateSampleForm = () => setShowCreateSample(true);
+    const onCancelCreateSample = () => setShowCreateSample(false);
+    const onEditSample = (sample) => setEditingSample(sample);
+    const onCancelEditSample = () => setEditingSample(null);
+
+    // Lọc dữ liệu theo status, ngày và mã lịch hẹn
+    const filteredAppointments = appointments.filter(item => {
+      const matchStatus = statusFilter ? item.appointmentStatus === statusFilter : true;
+      // Khai báo itemDate đúng vị trí
+      const itemDate = moment(item.appointmentDate, 'YYYY-MM-DD').startOf('day');
+      const filterDate = dateFilter ? dateFilter.clone().startOf('day') : null;
+      const matchDate = filterDate
+        ? itemDate.format('YYYY-MM-DD') === filterDate.format('YYYY-MM-DD')
+        : true;
+
+      const matchId = searchId ? String(item.appointmentId) === searchId : true;
+      return matchStatus && matchDate && matchId;
+    });
+
+    return (
+      <div className="staff-appointments-container">
+        <h2>📅 Danh sách lịch hẹn</h2>
+        <div style={{ display: 'flex', gap: 16, marginBottom: 16, alignItems: 'center' }}>
+          <div>
+            <label>Lọc trạng thái: </label>
+            <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
+              <option value="">Tất cả</option>
+              {STATUS_OPTIONS.map(opt => (
+                <option key={opt} value={opt}>{opt}</option>
               ))}
-            </tbody>
-          </table>
-          {participantLoading && <p>Đang tải participant...</p>}
-          {participantError && <p style={{color:'red'}}>{participantError}</p>}
-          {selectedParticipants && (
-            <div className="staff-participant-info">
-              <h3>👥 Participant của lịch hẹn {selectedParticipants.appointmentId}</h3>
-              {Array.isArray(selectedParticipants.data) && selectedParticipants.data.length > 0 ? (
-                <ul>
-                  {selectedParticipants.data.map((p, i) => (
-                    <li key={i} style={{cursor:'pointer'}} onClick={() => handleShowSample(p.participantId)}>
-                      <strong>ID:</strong> {p.participantId} |
-                      <strong>Tên:</strong> {p.name} |
-                      <strong>Quan hệ:</strong> {p.relationship} |
-                      <strong>Địa chỉ:</strong> {p.address} |
-                      <strong>Ngày sinh:</strong> {p.birthDate} |
-                      <strong>Giới tính:</strong> {p.gender} |
-                      <strong>CCCD:</strong> {p.citizenId}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <div>
-                  <p>Không có participant nào! Hãy thêm participant</p>
-                  <form onSubmit={handleAddParticipants} className="participant-form">
-                    {newParticipants.map((p, idx) => (
-                      <div key={idx} className="participant-row">
-                        <input name="name" placeholder="Họ tên" value={p.name} onChange={e => handleNewParticipantChange(idx, e)} required />
-                        <input name="relationship" placeholder="Quan hệ" value={p.relationship} onChange={e => handleNewParticipantChange(idx, e)} required />
-                        <select name="gender" value={p.gender} onChange={e => handleNewParticipantChange(idx, e)} required>
-                          <option value="">Giới tính</option>
-                          <option value="MALE">Nam</option>
-                          <option value="FEMALE">Nữ</option>
-                          <option value="OTHER">Khác</option>
-                        </select>
-                        <input name="citizenId" placeholder="CMND/CCCD" value={p.citizenId} onChange={e => handleNewParticipantChange(idx, e)} required />
-                        <input name="address" placeholder="Địa chỉ" value={p.address} onChange={e => handleNewParticipantChange(idx, e)} required />
-                        <input name="birthDate" type="date" placeholder="Ngày sinh" value={p.birthDate} onChange={e => handleNewParticipantChange(idx, e)} required />
-                        <button type="button" onClick={() => removeNewParticipantRow(idx)} disabled={newParticipants.length === 1}>-</button>
-                        {idx === newParticipants.length - 1 && (
-                          <button type="button" onClick={addNewParticipantRow}>+</button>
-                        )}
-                      </div>
-                    ))}
-                    <button type="submit">Lưu người tham gia</button>
-                    {addParticipantError && <p className="error-msg">{addParticipantError}</p>}
-                    {addParticipantSuccess && <p className="success-msg">{addParticipantSuccess}</p>}
-                  </form>
-                </div>
-              )}
-              {sampleLoading && <p>Đang tải sample...</p>}
-              {sampleError && <p style={{color:'red'}}>{sampleError}</p>}
-              {selectedSample && (
-                <div className="staff-sample-info">
-                  <h4>🧪 Sample của participant {selectedSample.participantId}</h4>
-                  {(!selectedSample.data || !selectedSample.data.sampleId) ? (
-                    <div>
-                      <p>Chưa có sample cho participant này.</p>
-                      {!showCreateSample ? (
-                        <button onClick={handleShowCreateSample}>Tạo sample</button>
-                      ) : (
-                        <form onSubmit={e => { e.preventDefault(); handleCreateSample(selectedSample.participantId); }} className="sample-create-form">
-                          <div>
-                            <label>Loại mẫu:</label>
-                            <select name="sampleType" value={createSampleData.sampleType} onChange={handleCreateSampleChange} required>
-                              <option value="">--Chọn--</option>
-                              <option value="BLOOD">Máu (BLOOD)</option>
-                              <option value="SALIVA">Nước bọt (SALIVA)</option>
-                              <option value="HAIR">Tóc (HAIR)</option>
-                              <option value="OTHER">Khác (OTHER)</option>
-                            </select>
-                          </div>
-                          <div>
-                            <label>Thời gian lấy mẫu:</label>
-                            <input name="collectionDateTime" type="datetime-local" value={createSampleData.collectionDateTime} onChange={handleCreateSampleChange} required />
-                          </div>
-                          <div>
-                            <label>Chất lượng:</label>
-                            <select name="quality" value={createSampleData.quality} onChange={handleCreateSampleChange} required>
-                              <option value="">--Chọn--</option>
-                              <option value="EXCELLENT">EXCELLENT</option>
-                              <option value="GOOD">GOOD</option>
-                              <option value="FAIR">FAIR</option>
-                              <option value="POOR">POOR</option>
-                            </select>
-                          </div>
-                          <div>
-                            <label>Ghi chú:</label>
-                            <textarea name="notes" value={createSampleData.notes} onChange={handleCreateSampleChange} />
-                          </div>
-                          <button type="submit">Lưu sample</button>
-                          <button type="button" onClick={handleCancelCreateSample}>Hủy</button>
-                          {createSampleError && <p className="error-msg">{createSampleError}</p>}
-                          {createSampleSuccess && <p className="success-msg">{createSampleSuccess}</p>}
-                        </form>
-                      )}
-                    </div>
-                  ) : (
-                    <>
-                      <p>
-                        <strong>ID:</strong> {selectedSample.data.sampleId} |
-                        <strong>Participant Id:</strong> {selectedSample.data.participantId} |
-                        <strong>Loại:</strong> {selectedSample.data.sampleType} |
-                        <strong>Thời gian:</strong> {selectedSample.data.collectionDateTime} |
-                        <strong>Chất lượng:</strong> {selectedSample.data.quality} |
-                        <strong>Trạng thái:</strong> {selectedSample.data.status} |
-                        <strong>Kết quả:</strong> {selectedSample.data.result} |
-                        <strong>Ghi chú:</strong> {selectedSample.data.notes}
-                      </p>
-                      {editingSample && editingSample.sampleId === selectedSample.data.sampleId ? (
-                        <div className="sample-edit-form">
-                          <div>
-                            <label>Chất lượng:</label>
-                            <select value={sampleQuality} onChange={e => setSampleQuality(e.target.value)}>
-                              <option value="">--Chọn--</option>
-                              <option value="POOR">POOR</option>
-                              <option value="FAIR">FAIR</option>
-                              <option value="GOOD">GOOD</option>
-                              <option value="EXCELLENT">EXCELLENT</option>
-                            </select>
-                          </div>
-                          <div>
-                            <label>Trạng thái:</label>
-                            <select value={selectedSample.data.status || ''} onChange={e => setSelectedSample(prev => ({ ...prev, data: { ...prev.data, status: e.target.value } }))}>
-                              <option value="">--Chọn--</option>
-                              <option value="COLLECTED">COLLECTED</option>
-                              <option value="PROCESSING">PROCESSING</option>
-                              <option value="ANALYZED">ANALYZED</option>
-                              <option value="COMPLETED">COMPLETED</option>
-                            </select>
-                          </div>
-                          <div>
-                            <label>Kết quả:</label>
-                            <input value={sampleResult} onChange={e => setSampleResult(e.target.value)} />
-                          </div>
-                          <div>
-                            <label>Ghi chú:</label>
-                            <input value={sampleNotes} onChange={e => setSampleNotes(e.target.value)} />
-                          </div>
-                          <button onClick={handleUpdateSample}>Lưu</button>
-                          <button onClick={() => setEditingSample(null)}>Hủy</button>
-                        </div>
-                      ) : (
-                        <button onClick={() => handleEditSample(selectedSample.data)}>Sửa sample</button>
-                      )}
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      ) : (
-        <p>Không có lịch hẹn nào!</p>
-      )}
-    </div>
-  );
-}
+            </select>
+          </div>
+          <div>
+            <label>Lọc theo ngày: </label>
+            <DatePicker
+              value={dateFilter}
+              onChange={date => {
+                if (date && date.isValid()) {
+                  setDateFilter(date);
+                }
+              }}
+              format="DD/MM/YYYY"
+              allowClear={false}
+            />
+          </div>
 
-export default StaffAppointments;
+          <div>
+            <label>Tìm theo mã lịch hẹn: </label>
+            <input
+              type="text"
+              value={searchId}
+              onChange={e => setSearchId(e.target.value)}
+              placeholder="Nhập mã lịch hẹn"
+              style={{ width: 120 }}
+            />
+          </div>
+        </div>
+
+        {loading ? (
+          <p>Đang tải dữ liệu...</p>
+        ) : filteredAppointments.length > 0 ? (
+          <div className="staff-appointments-table-wrapper">
+            <table className="staff-appointments-table">
+              <thead>
+                <tr>
+                  <th>Mã lịch hẹn</th>
+                  <th>Người dùng</th>
+                  <th>Ngày</th>
+                  <th>Giờ</th>
+                  <th>Trạng thái</th>
+                  <th>Trạng thái thu mẫu</th>
+                  <th>Dịch vụ</th>
+                  <th>Phương thức lấy mẫu</th>
+                  <th>Loại lịch hẹn</th>
+                  <th>Hành động</th>
+                  <th>Hành động</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredAppointments.map((item, idx) => (
+                  <tr key={idx} className="staff-appointment-row">
+                    <td>{item.appointmentId}</td>
+                    <td>{item.userId}</td>
+                    <td>{item.appointmentDate}</td>
+                    <td>{item.appointmentTime}</td>
+                    <td onClick={e => e.stopPropagation()}>
+                      <select
+                        value={item.appointmentStatus}
+                        disabled={updatingId === item.appointmentId}
+                        onChange={e => handleStatusOrCollectionChange(item.appointmentId, 'appointmentStatus', e.target.value)}
+                      >
+                        {STATUS_OPTIONS.map(status => (
+                          <option key={status} value={status}>{status}</option>
+                        ))}
+                      </select>
+                    </td>
+                    <td onClick={e => e.stopPropagation()}>
+                      <select
+                        value={item.collectionStatus || 'ASSIGNED'}
+                        disabled={updatingId === item.appointmentId}
+                        onChange={e => handleStatusOrCollectionChange(item.appointmentId, 'collectionStatus', e.target.value)}
+                      >
+                        {COLLECTION_STATUS_OPTIONS.map(status => (
+                          <option key={status} value={status}>{status}</option>
+                        ))}
+                      </select>
+                    </td>
+                    <td>{item.serviceId}</td>
+                    <td>{item.deliveryMethod}</td>
+                    <td>{item.appointmentType}</td>
+                    <td>
+                      <button onClick={() => handleShowParticipants(item.appointmentId)}>Xem participant</button>
+                    </td>
+                    <td>
+                      <button onClick={() => handleOpenResultModal(item)}>Kết quả</button>
+                    </td>
+
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {participantLoading && <p>Đang tải participant...</p>}
+            {participantError && <p style={{ color: 'red' }}>{participantError}</p>}
+          </div>
+        ) : (
+          <p>Không có lịch hẹn nào!</p>
+        )}
+
+        <ParticipantModal
+          open={participantModalOpen}
+          onClose={handleCloseParticipantModal}
+          participants={selectedParticipants?.data || []}
+          onShowSample={handleShowSample}
+          sampleLoading={sampleLoading}
+          sampleError={sampleError}
+          selectedSample={selectedSample}
+          onAddParticipant={onAddParticipant}
+          onCreateSample={onCreateSample}
+          onUpdateSample={onUpdateSample}
+          editingSample={editingSample}
+          onEditSample={onEditSample}
+          onCancelEditSample={onCancelEditSample}
+          showCreateSample={showCreateSample}
+          onShowCreateSampleForm={onShowCreateSampleForm}
+          onCancelCreateSample={onCancelCreateSample}
+          createSampleLoading={createSampleLoading}
+          createSampleError={createSampleError}
+          createSampleSuccess={createSampleSuccess}
+          showAddParticipantForm={showAddParticipantForm}
+          onShowAddParticipantForm={toggleAddParticipantForm}
+          addParticipantLoading={addParticipantLoading}
+          addParticipantError={addParticipantError}
+          addParticipantSuccess={addParticipantSuccess}
+        />
+        <ResultModal
+        open={resultModalOpen}
+        onClose={handleCloseResultModal}
+        appointment={selectedAppointmentForResult}
+        existingResult={existingResult}
+        onSaveResult={handleSaveResult}
+      />
+
+      </div>
+    );
+  }
+
+  export default StaffAppointments;

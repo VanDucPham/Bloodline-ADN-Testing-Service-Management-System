@@ -1,10 +1,10 @@
 package com.example.Bloodline_ADN_System.Entity;
 
 import com.example.Bloodline_ADN_System.dto.SampleDTO;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import java.time.LocalDateTime;
 
 // ========================
@@ -12,7 +12,8 @@ import java.time.LocalDateTime;
 // ========================
 @Entity
 @Table(name = "samples")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Sample {
@@ -43,5 +44,8 @@ public class Sample {
 
 
     public enum SampleQuality { EXCELLENT, GOOD, FAIR, POOR }
-    public enum SampleStatus { COLLECTED, PROCESSING, ANALYZED, COMPLETED }
+    public enum SampleStatus {
+        COLLECTED, PROCESSING, ANALYZED, COMPLETED
+    }
+
 }

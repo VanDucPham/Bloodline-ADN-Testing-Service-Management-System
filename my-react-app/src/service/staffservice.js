@@ -47,6 +47,14 @@ class StaffService extends BaseApiService {
     async createSample(sampleData) {
         return this.post('/staff/sample/offline', [sampleData]);
     }
+
+    async createResult(resultData) {
+        return this.post('/staff/result/create', resultData);
+    }
+
+    async getResultByAppointmentId(appointmentId) {
+        return this.get(`/staff/result/get/${appointmentId}`);
+    }
 }
 
 export default StaffService;

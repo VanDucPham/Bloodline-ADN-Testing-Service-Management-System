@@ -1,11 +1,13 @@
 package com.example.Bloodline_ADN_System.dto;
 
 import com.example.Bloodline_ADN_System.Entity.Sample;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Data
+@AllArgsConstructor
 public class SampleStaffDTO {
     private Long participantId;
     private String sampleType;

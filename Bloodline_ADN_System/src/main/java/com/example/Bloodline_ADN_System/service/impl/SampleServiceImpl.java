@@ -9,9 +9,12 @@ import com.example.Bloodline_ADN_System.dto.SampleUpdateDTO;
 import com.example.Bloodline_ADN_System.repository.ParticipantRepository;
 import com.example.Bloodline_ADN_System.repository.SampleRepository;
 import com.example.Bloodline_ADN_System.service.SampleService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -55,9 +58,8 @@ public class SampleServiceImpl implements SampleService {
             Sample sample = new Sample();
             sample.setParticipant(participant);
             sample.setSampleType(dto.getSampleType());
-            sample.setCollectionDateTime(dto.getCollectionDateTime());
+            sample.setCollectionDateTime(LocalDateTime.now());
             sample.setStatus(Sample.SampleStatus.COLLECTED);
-            sample.setQuality(dto.getQuality());
             sample.setResult(dto.getResult());
             sample.setNotes(dto.getNotes());
 
@@ -68,15 +70,26 @@ public class SampleServiceImpl implements SampleService {
 
     //Nhân viên điền thêm thông tin cho sample sau khi nhận được mẫu dành cho dịch vụ tự lấy mẫu
     @Transactional
-    public SampleDTO updateSampleInfo(SampleUpdateDTO dto) {
+    public SampleDTO updateSampleInfo(SampleUpdateDTO dto) throws JsonProcessingException {
         Sample sample = sampleRepository.findById(dto.getSampleId())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy mẫu"));
-        sample.setQuality(dto.getQuality());
-        sample.setStatus(dto.getStatus());
-        sample.setResult(dto.getResult());
+        if (dto.getQuality() != null) {
+            sample.setQuality(dto.getQuality());
+            sample.setStatus(Sample.SampleStatus.ANALYZED);
+
+        }
+
+        // Cập nhật result nếu có
+        if (dto.getResult() != null && !dto.getResult().trim().isEmpty()) {
+            sample.setResult(dto.getResult());
+            // Khi có kết quả, trạng thái chuyển thành COMPLETED
+            sample.setStatus(Sample.SampleStatus.COMPLETED);
+        }
         sample.setNotes(dto.getNotes());
         return toDTO(sampleRepository.save(sample));
     }
+
+
 
     public SampleDTO getSampleByParticipantId(Long participantId) {
         Sample sample = sampleRepository.findByParticipant_ParticipantId(participantId);

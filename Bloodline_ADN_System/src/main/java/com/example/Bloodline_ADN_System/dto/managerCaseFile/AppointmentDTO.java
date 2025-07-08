@@ -1,10 +1,8 @@
 package com.example.Bloodline_ADN_System.dto.managerCaseFile;
 
 import com.example.Bloodline_ADN_System.Entity.Appointment;
-import com.example.Bloodline_ADN_System.Entity.CaseFile;
-import com.example.Bloodline_ADN_System.Entity.Participant;
-import com.example.Bloodline_ADN_System.Entity.Sample;
 import com.example.Bloodline_ADN_System.dto.SampleDTO;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -31,6 +29,8 @@ public class AppointmentDTO {
 
     // Ngày và giờ
     private LocalDate appointmentDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
+
     private LocalTime appointmentTime;
 
     // Trạng thái (SCHEDULED, CANCELLED, COMPLETED...)
