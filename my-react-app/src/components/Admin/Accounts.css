@@ -1,33 +1,12 @@
 /* Global container and layout */
-.container {
-  display: flex;
-  font-family: 'Inter', 'Segoe UI', sans-serif;
-  min-height: 100vh;
-  background-color: #f4f6f9;
-}
-
-.back { 
-  position: absolute;
-  top: 30px;
-  left: 150px;
-  font-size: 1.2rem;
-  color: #000103;
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
-
-/* Sidebar styling */
-.sidebar {
-  width: 260px;
-  background: #ffffff;
+.account-page {
   padding: 24px;
-  border-right: 1px solid #e5e7eb;
-  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  transition: width 0.3s ease;
+  background-color: #f4f6f9;
+  min-height: calc(100vh - 64px); /* Trừ phần Header */
 }
+
+
+
 
 .sidebar h2 {
   font-size: 1.5rem;

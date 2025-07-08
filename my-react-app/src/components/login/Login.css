@@ -45,7 +45,7 @@
 .login-form input:focus {
   border-color: #0077b6;
   outline: none;
-  background-color: #ffffff;
+  background-color: #26b2dd;
 }
 
 /* Nút đăng nhập */

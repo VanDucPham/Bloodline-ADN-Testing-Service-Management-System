@@ -113,12 +113,6 @@ public class AppointmentServiceImpl implements AppointmentService {
     public AppointmentResponse<AppointmentDTO> createAppointment(AppointmentRequest request) {
         // 1. Save Case File
         caseFileDTO caseFiledto = request.getCaseFile();
-        System.out.println(request.getCaseFile().getUserId());
-        System.out.println(caseFiledto.getUserId());
-        userRepository.findAll().forEach(System.out::println);
-        System.out.println("userId: " + caseFiledto.getUserId() + ", type: " + caseFiledto.getUserId().getClass());
-        Optional<User> test = userRepository.findById(6L);
-        System.out.println("Found? " + test.isPresent());
 
         String caseCodegen = caseFileService.generateCaseCode(String.valueOf(caseFiledto.getCaseType())) ;
         caseFiledto.setCaseCode(caseCodegen);
@@ -128,8 +122,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         // 2. Validate
         AppointmentDTO dto = request.getAppointment();
-        validateAppointmentDate(dto.getAppointmentDate());
-        validateSlotAvailability(dto.getAppointmentDate(), dto.getAppointmentTime());
+
+        if (dto.getAppointmentDate() != null) {
+            validateAppointmentDate(dto.getAppointmentDate());
+            validateSlotAvailability(dto.getAppointmentDate(), dto.getAppointmentTime());
+        }
+
+
 
         // 3. Create & Save Appointment
 
@@ -165,14 +164,16 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         // ✅ Tạo lại map từ danh sách đã lưu, có ID đầy đủ
         Map<String, Participant> participantMap = savedParticipants.stream()
-                .collect(Collectors.toMap(Participant::getCitizenId, p -> p));
+                .collect(Collectors.toMap(p -> p.getCitizenId().trim(), p -> p));
+
         // 5. Save Samples
         List<SampleDTO> sampleDTOs = request.getSamples();
-
+        System.out.println(sampleDTOs);
         if (sampleDTOs != null ) {
             List<Sample> samples = sampleDTOs.stream()
                     .map(sampleDto -> {
-                        Participant participant = participantMap.get(sampleDto.getParticipantCitizenId());
+                        Participant participant = participantMap.get(sampleDto.getParticipantCitizenId().trim());
+
                         if (participant == null) {
                             throw new RuntimeException("Không tìm thấy participant với CCCD: " + sampleDto.getParticipantCitizenId());
                         }
@@ -185,9 +186,12 @@ public class AppointmentServiceImpl implements AppointmentService {
                         sample.setStatus(sampleDto.getStatus());
                         sample.setResult(sampleDto.getResult());
                         sample.setNotes(sampleDto.getNotes());
+                        System.out.println(sample);
                         return sample;
                     })
                     .toList();
+
+            System.out.println(sampleDTOs);
             sampleService.saveAll(samples);
         }
 

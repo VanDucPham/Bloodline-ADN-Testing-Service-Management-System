@@ -8,6 +8,7 @@ import com.example.Bloodline_ADN_System.dto.SampleStaffDTO;
 import com.example.Bloodline_ADN_System.dto.SampleUpdateDTO;
 import com.example.Bloodline_ADN_System.repository.ParticipantRepository;
 import com.example.Bloodline_ADN_System.repository.SampleRepository;
+import com.example.Bloodline_ADN_System.repository.ServiceRepository;
 import com.example.Bloodline_ADN_System.service.SampleService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -20,12 +21,13 @@ import java.util.stream.Collectors;
 public class SampleServiceImpl implements SampleService {
     private final SampleRepository sampleRepository;
     private final ParticipantRepository participantRepository;
+    private final ServiceRepository serviceRepository;
 
 
-    public SampleServiceImpl(SampleRepository samppleRepository, ParticipantRepository participantRepository) {
+    public SampleServiceImpl(SampleRepository samppleRepository, ParticipantRepository participantRepository, ServiceRepository serviceRepository) {
         this.sampleRepository = samppleRepository;
         this.participantRepository = participantRepository;
-
+        this.serviceRepository = serviceRepository;
     }
 
     //Khách hàng điền sample với dịch vụ tự lấy mẫu tại nhà
@@ -136,6 +138,7 @@ public class SampleServiceImpl implements SampleService {
 
     @Override
     public void saveAll(List<Sample> samples) {
+        sampleRepository.saveAll(samples) ;
 
     }
 

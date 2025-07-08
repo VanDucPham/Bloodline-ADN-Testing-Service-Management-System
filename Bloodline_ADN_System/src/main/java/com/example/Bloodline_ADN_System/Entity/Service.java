@@ -29,7 +29,7 @@ public class Service {
     private String serviceDescription;
 
     @Column(name = "limit_people")
-    private int limitPeople;
+    private Integer limitPeople;
     @Column(name = "service_price")
     private Double servicePrice;
     @OneToMany(mappedBy = "service", cascade = CascadeType.ALL , fetch = FetchType.LAZY)

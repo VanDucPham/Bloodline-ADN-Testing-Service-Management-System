@@ -3,7 +3,7 @@ import './Header.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleUser, faMoneyBill } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
-import apiService from '../service/api';
+import apiService from '../../service/api';
 
 const menuItems = [
   { name: 'TRANG CHỦ', path: '/' },
@@ -57,7 +57,7 @@ function Header() {
     <header className="main-header">
       <div className="header-top">
         <div className="header-logo-group">
-          <img src="public/images/freepik__a-stylized-test-tube-containing-a-swirling-colorfu__21054.jpeg" alt="Vietcare Logo" className="logo" />
+          <img src="public/images/logo.jpg" alt="Vietcare Logo" className="logo" />
           <div className="brand-title">
             <span className="brand-main">Vietcare Lab</span>
             <span className="brand-sub">Xét nghiệm ADN - Chính xác & Bảo mật</span>
@@ -134,6 +134,13 @@ function Header() {
                 <li>
                   <button className="btn" onClick={() => navigate('/CustomerApointmentList')}>
                     <FontAwesomeIcon icon={faMoneyBill} /> Lịch hẹn
+                  </button>
+                </li>
+              )}
+              {role === 'MANAGER' && (
+                <li>
+                  <button className="btn" onClick={() => navigate('/manager')}>
+                    <FontAwesomeIcon icon={faMoneyBill} /> Quản lý
                   </button>
                 </li>
               )}
