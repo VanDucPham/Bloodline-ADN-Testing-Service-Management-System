@@ -1,7 +1,7 @@
 import './App.css';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faCoffee, faHome, faBars, faCheck } from '@fortawesome/free-solid-svg-icons';
+//import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+//import { faUser, faCoffee, faHome, faBars, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
 
 
@@ -65,7 +65,9 @@ function App() {
          <Route path="/tracking_user" element={<AppointmentBooking />} />
           <Route path="/CustomerApointmentList" element={<CustomerAppointmentList />} />
           <Route path="/post" element={<AllPost />} />
+          <Route path="/allpost" element={<AllPost />} />
           <Route path="/post-detail/:section/:id" element={<BlogDetail />} />
+          <Route path="/post-detail/:id" element={<BlogDetail />} />
           <Route path="/dna" element={<DnaPost />} />
           <Route path="/blogList" element={<BlogList />} />
 

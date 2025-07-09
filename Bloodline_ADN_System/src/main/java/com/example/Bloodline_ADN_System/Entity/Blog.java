@@ -40,6 +40,13 @@ public class Blog {
     @Enumerated(EnumType.STRING)
     private BlogType blogType;
 
+    public BlogType getBlogType() {
+        return blogType;
+    }
+    public void setBlogType(BlogType blogType) {
+        this.blogType = blogType;
+    }
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

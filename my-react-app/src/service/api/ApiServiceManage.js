@@ -208,6 +208,42 @@ class ApiServiceManager {
   delete(url) {
     return this.request('delete', url);
   }
+
+  // BLOG PUBLIC
+  async getPublicBlogsPage(page = 0, size = 10) {
+    return this.get('/blog/page', { page, size });
+  }
+  async getPublicBlogById(id) {
+    return this.get(`/blog/${id}`);
+  }
+
+  // BLOG ADMIN
+  async getAdminBlogsPage(params) {
+    return this.get('/admin/blog/page', params);
+  }
+  async createAdminBlog(data) {
+    return this.post('/admin/blog/create', data);
+  }
+  async updateAdminBlog(id, data) {
+    return this.put(`/admin/blog/update/${id}`, data);
+  }
+  async deleteAdminBlog(id) {
+    return this.delete(`/admin/blog/delete/${id}`);
+  }
+  async updateAdminBlogStatus(id, status) {
+    return this.put(`/admin/blog/status/${id}?status=${status}`);
+  }
+  async uploadBlogImage(file) {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.apiClient.post('/admin/blog/upload-image', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+  }
+  // Lấy số lượng blog theo từng loại từ BE
+  async getBlogCategoryCount() {
+    return this.get('/admin/blog/category-count');
+  }
 }
 
 export default ApiServiceManager;

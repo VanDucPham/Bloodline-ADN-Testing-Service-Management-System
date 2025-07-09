@@ -1,134 +1,112 @@
 
 import './BlogDetail.css';
+import { useParams, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import apiService from '../../service/api';
 
-import mockPost from '../../mockPost.json';
-import mockDnaTesting from '../../dna-testing.json';
-import { useParams } from 'react-router-dom';
 const BlogDetail = () => {
-  const { id, section } = useParams();
-  let post;
-  if (section === 'post') {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [blog, setBlog] = useState(null);
+  const [error, setError] = useState("");
+  const [relatedBlogs, setRelatedBlogs] = useState([]);
 
-    post = mockPost.find(item => item.id === parseInt(id));
-  }
-  else if (section === 'dna') {
-    post = mockDnaTesting.find(item => item.id === parseInt(id));
+  useEffect(() => {
+    const fetchBlog = async () => {
+      try {
+        setError("");
+        const res = await apiService.get(`/blog/${id}`);
+        setBlog(res.data);
+      } catch (e) {
+        setBlog(null);
+        setError(e?.response?.data?.message || "Bài viết không tồn tại hoặc chưa được xuất bản");
+      }
+    };
+    fetchBlog();
+  }, [id]);
 
-  }
-  if (!post) {
-    return <div>Bài viết không tồn tại.</div>;
-  }
-  const {
-    title,
-    date,
-    author,
-    comments,
-    intro,
-    featured_image,
-    table_of_contents,
-    content_sections,
-    tags,
-    related_posts
-  } = post;
+  // Gọi API lấy bài viết liên quan
+  useEffect(() => {
+    if (id) {
+      apiService.get('/blog/related', { blogId: id, limit: 4 })
+        .then(res => setRelatedBlogs(res.data || []))
+        .catch(() => setRelatedBlogs([]));
+    }
+  }, [id]);
+
+  if (error) return <div className="blog-detail-error">{error}</div>;
+  if (!blog) return <div>Đang tải bài viết...</div>;
+
   return (
     <div className="blog-detail">
-      {/* Header */}
-
-
-      {/* Main Content */}
       <main className="main-content">
         <div className="container">
+          {/* Nút quay lại */}
+          <button
+            style={{
+              margin: '16px 0',
+              padding: '8px 20px',
+              background: '#2563eb',
+              color: '#fff',
+              border: 'none',
+              borderRadius: 6,
+              fontWeight: 600,
+              fontSize: 16,
+              cursor: 'pointer',
+              boxShadow: '0 2px 8px rgba(0,32,96,0.07)'
+            }}
+            onClick={() => navigate('/allpost')}
+          >
+            ← Quay lại tất cả bài viết
+          </button>
           <article className="article">
             <header className="article-header">
-              <h1 className="article-title">{title}</h1>
+              <h1 className="article-title">{blog.title}</h1>
               <div className="article-meta">
-                <span>{date}</span>
+                <span>{blog.createdAt ? new Date(blog.createdAt).toLocaleDateString('vi-VN') : ''}</span>
                 <span>•</span>
-                <span>{author}</span>
-                <span>•</span>
-                <span>{comments} Comments</span>
+                <span>{blog.authorName || 'Vietcare'}</span>
+                {/* Hiển thị trạng thái */}
+                <span style={{ background: blog.status === 'DRAFT' ? '#faad14' : blog.status === 'PUBLISHED' ? '#52c41a' : blog.status === 'ARCHIVED' ? '#bfbfbf' : '#d9d9d9', color: '#fff', borderRadius: 4, padding: '2px 8px', marginLeft: 8, fontSize: 12 }}>
+                  {blog.status === 'DRAFT' ? 'Nháp' : blog.status === 'PUBLISHED' ? 'Xuất bản' : blog.status === 'ARCHIVED' ? 'Lưu trữ' : blog.status}
+                </span>
               </div>
             </header>
-
             <div className="article-content">
-              {/* Intro */}
               <div className="intro-text">
-                <p dangerouslySetInnerHTML={{ __html: intro }} />
+                <p>{blog.content}</p>
               </div>
-
-              {/* Ảnh chính */}
-              <div className="featured-image">
-                <img src={featured_image.src} alt={featured_image.alt} className="image" />
-                <p className="image-caption">{featured_image.caption}</p>
-              </div>
-
-              {/* Mục lục */}
-              <div className="table-of-contents">
-                <h3 className="toc-title">Nội dung chính</h3>
-                <ol className="toc-list">
-                  {table_of_contents.map((item, idx) => (
-                    <li key={idx} className="toc-item">
-                      {item.title}
-                      {item.sub_items.length > 0 && (
-                        <ol className="toc-sub-list">
-                          {item.sub_items.map((sub, i) => (
-                            <li key={i} className="toc-sub-item">{sub}</li>
-                          ))}
-                        </ol>
-                      )}
-                    </li>
-                  ))}
-                </ol>
-              </div>
-
-              {/* Nội dung */}
-              {content_sections.map((section, idx) => (
-                <section key={idx} className="content-section">
-                  <h2 className="section-title">{section.title}</h2>
-                  {section.sub_sections?.map((sub, i) => (
-                    <div key={i}>
-                      {sub.subtitle && <h3 className="section-subtitle">{sub.subtitle}</h3>}
-                      <p className="paragraph" dangerouslySetInnerHTML={{ __html: sub.content }} />
-                    </div>
-                  ))}
-                  {section.images?.map((img, i) => (
-                    <div key={i} className="content-image">
-                      <img src={img.src} alt={img.alt} className="image" />
-                      <p className="image-caption">{img.caption}</p>
-                    </div>
-                  ))}
-                </section>
-              ))}
-
-              {/* Bài viết liên quan */}
-              <section className="content-section">
-                <h3 className="related-title">Bài viết liên quan:</h3>
-                <ul className="related-list">
-                  {related_posts.map((post, idx) => (
-                    <li key={idx} className="list-item">
-                      <a href={`/post-detail/${section}/${post.id}`} className="related-link">{post.title}</a>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-
-              {/* Tags */}
-              <div className="article-footer">
-                <div className="footer-section">
-                  <span className="footer-label">Tags:</span>
-                  <div className="tags-container">
-                    {tags.map((tag, idx) => (
-                      <a key={idx} href="#" className="tag">{tag}</a>
-                    ))}
-                  </div>
+              {blog.imageUrl && (
+                <div className="featured-image">
+                  <img src={blog.imageUrl} alt={blog.title} className="image" />
                 </div>
-              </div>
+              )}
             </div>
           </article>
+
+          {/* Bài viết liên quan */}
+          <section className="related-blogs-section" style={{ marginTop: 40 }}>
+            <h3 style={{ fontWeight: 600, fontSize: 20, marginBottom: 16 }}>Bài viết liên quan</h3>
+            {relatedBlogs.length === 0 ? (
+              <div style={{ color: '#888' }}>Không có bài viết liên quan.</div>
+            ) : (
+              <ul style={{ listStyle: 'none', padding: 0 }}>
+                {relatedBlogs.map(rb => (
+                  <li key={rb.blogId} style={{ marginBottom: 12 }}>
+                    <span
+                      style={{ color: '#1677ff', fontWeight: 500, textDecoration: 'none', cursor: 'pointer' }}
+                      onClick={() => navigate(`/post-detail/${rb.blogId}`)}
+                    >
+                      {rb.title}
+                    </span>
+                    <span style={{ marginLeft: 8, color: '#888', fontSize: 13 }}>{rb.createdAt ? new Date(rb.createdAt).toLocaleDateString('vi-VN') : ''}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
         </div>
       </main>
-
-
     </div>
   );
 };

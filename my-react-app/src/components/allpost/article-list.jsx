@@ -29,67 +29,64 @@ export default function ArticleList({ articles }) {
           <p>Thử tìm kiếm với từ khóa khác hoặc xem tất cả bài viết</p>
         </div>
       ) : (
-        articles.map((article, index) => (
+        articles.map((article) => (
           <article key={article.id} className="blog-card">
-            {/* Card Image */}
-            <div className="card-image-wrapper">
-              <img 
-                src={article.image} 
-                alt={article.title}
-                className="card-image"
-                onError={(e) => {
-                  e.target.src = 'https://via.placeholder.com/400x250/f1f5f9/64748b?text=No+Image';
-                }}
-              />
-              <div className="card-overlay">
-                <div className="card-category-badge">
-                  {article.tags[0]}
-                </div>
-              </div>
-            </div>
+  {/* Card Image */}
+  <div className="card-image-wrapper">
+    <img 
+      src={article.image} 
+      alt={article.title}
+      className="card-image"
+      onError={(e) => {
+        e.target.src = 'https://via.placeholder.com/400x250/f1f5f9/64748b?text=No+Image';
+      }}
+    />
+    <div className="card-overlay">
+      <div className="card-category-badge">
+        {article.tags[0]}
+      </div>
+    </div>
+  </div>
 
-            {/* Card Content */}
-            <div className="card-content">
-              {/* Meta Info */}
-              <div className="card-meta">
-                <div className="meta-item">
-                  <span className="meta-date">{formatDate(article.publishDate)}</span>
-                </div>
-                <div className="meta-item">
-                  <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                  </svg>
-                  <span>{article.author}</span>
-                </div>
-                <div className="meta-item">
-                  <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
-                  </svg>
-                  <span>{article.comments} Comments</span>
-                </div>
-              </div>
-
-              {/* Title */}
-              <h3 className="card-title">
-                {article.title}
-              </h3>
-
-              {/* Description */}
-              <p className="card-description">
-                {truncateText(article.shortDescription, 150)}
-              </p>
-
-              {/* Action Button */}
-              <div className="card-actions">
-                <button onClick={()=>navigate(`/post-detail/post/${article.id}`)} className="detail-button">
-                  <span >CHI TIẾT</span>
-                  <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </article>
+  {/* Card Content */}
+  <div className="card-content">
+    {/* Meta Info */}
+    <div className="card-meta">
+      <div className="meta-item">
+        <span className="meta-date">{formatDate(article.publishDate)}</span>
+      </div>
+      <div className="meta-item">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+        </svg>
+        <span>{article.author}</span>
+      </div>
+      <div className="meta-item">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+        </svg>
+        <span>{article.comments} Comments</span>
+      </div>
+    </div>
+    {/* Title */}
+    <h3 className="card-title">
+      {article.title}
+    </h3>
+    {/* Description */}
+    <p className="card-description">
+      {truncateText(article.shortDescription, 150)}
+    </p>
+    {/* Action Button */}
+    <div className="card-actions">
+      <button onClick={()=>navigate(`/post-detail/${article.id}`)} className="detail-button">
+        <span>CHI TIẾT</span>
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+    </div>
+  </div>
+</article>
         ))
       )}
     </div>
