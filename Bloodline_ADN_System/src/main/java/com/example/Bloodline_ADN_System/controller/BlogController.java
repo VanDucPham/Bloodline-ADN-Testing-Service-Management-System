@@ -21,10 +21,15 @@ public class BlogController {
 
     // Lấy tất cả blog đã xuất bản
     @GetMapping("/all")
-    public List<BlogDTO> getAllPublishedBlogs() {
-        return blogService.getAllBlogDTO().stream()
-                .filter(b -> "PUBLISHED".equals(b.getStatus()))
-                .toList();
+    public ResponseEntity<?> getAllPublishedBlogs() {
+        try {
+            List<BlogDTO> blogs = blogService.getAllBlogDTO().stream()
+                    .filter(b -> "PUBLISHED".equals(b.getStatus()))
+                    .toList();
+            return ResponseEntity.ok(blogs);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Lỗi khi lấy danh sách blog: " + e.getMessage());
+        }
     }
 
     // Lấy các blog liên quan (ĐẶT TRƯỚC endpoint /{id} để tránh mapping nhầm)
@@ -33,17 +38,35 @@ public class BlogController {
         @RequestParam Long blogId,
         @RequestParam(defaultValue = "4") int limit
     ) {
-        return ResponseEntity.ok(blogService.getRelatedBlogs(blogId, limit));
+        try {
+            if (blogId == null || blogId <= 0) {
+                return ResponseEntity.badRequest().body("BlogId không hợp lệ");
+            }
+            if (limit <= 0 || limit > 20) {
+                return ResponseEntity.badRequest().body("Limit phải từ 1-20");
+            }
+            return ResponseEntity.ok(blogService.getRelatedBlogs(blogId, limit));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Lỗi khi lấy blog liên quan: " + e.getMessage());
+        }
     }
 
     // Lấy chi tiết blog đã xuất bản
     @GetMapping("/{id}")
     public ResponseEntity<?> getPublishedBlogById(@PathVariable Long id) {
-        Optional<BlogDTO> blogOpt = blogService.getBlogById(id);
-        if (blogOpt.isPresent() && "PUBLISHED".equals(blogOpt.get().getStatus())) {
-            return ResponseEntity.ok(blogOpt.get());
-        } else {
-            return ResponseEntity.status(404).body("Blog không tồn tại hoặc chưa được xuất bản");
+        try {
+            if (id == null || id <= 0) {
+                return ResponseEntity.badRequest().body("ID blog không hợp lệ");
+            }
+            
+            Optional<BlogDTO> blogOpt = blogService.getBlogById(id);
+            if (blogOpt.isPresent() && "PUBLISHED".equals(blogOpt.get().getStatus())) {
+                return ResponseEntity.ok(blogOpt.get());
+            } else {
+                return ResponseEntity.status(404).body("Blog không tồn tại hoặc chưa được xuất bản");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Lỗi khi lấy chi tiết blog: " + e.getMessage());
         }
     }
 
@@ -53,8 +76,29 @@ public class BlogController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<BlogDTO> all = blogService.getBlogsPage(pageable, "PUBLISHED", null, null);
-        return ResponseEntity.ok(all);
+        try {
+            if (page < 0) {
+                return ResponseEntity.badRequest().body("Số trang phải >= 0");
+            }
+            if (size <= 0 || size > 100) {
+                return ResponseEntity.badRequest().body("Kích thước trang phải từ 1-100");
+            }
+            
+            Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+            Page<BlogDTO> all = blogService.getBlogsPage(pageable, "PUBLISHED", null, null);
+            return ResponseEntity.ok(all);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Lỗi khi lấy danh sách blog phân trang: " + e.getMessage());
+        }
+    }
+
+    // Lấy số lượng blog theo loại (public)
+    @GetMapping("/category-count")
+    public ResponseEntity<?> getBlogCategoryCount() {
+        try {
+            return ResponseEntity.ok(blogService.getBlogCategoryCount());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Lỗi khi lấy số lượng blog theo danh mục: " + e.getMessage());
+        }
     }
 } 

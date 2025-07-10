@@ -8,5 +8,5 @@ import java.util.Optional;
 
 public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
     Optional<Feedback> findByAppointment_AppointmentId(Long appointmentId);
-
+    List<Feedback> findByUser_UserId(Long userId);
 }

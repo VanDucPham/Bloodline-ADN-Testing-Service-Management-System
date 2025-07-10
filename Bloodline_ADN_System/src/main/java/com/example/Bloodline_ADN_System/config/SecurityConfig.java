@@ -31,6 +31,10 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/blog/**").permitAll()
+                        .requestMatchers("/api/feedback/create").hasRole("CUSTOMER")
+                        .requestMatchers("/api/feedback/my-feedback/**").hasRole("CUSTOMER")
+                        .requestMatchers("/api/feedback/**").hasAnyRole("ADMIN", "MANAGER", "STAFF")
                         .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "MANAGER")
                         .requestMatchers("/api/staff/**").hasAnyRole("STAFF", "ADMIN")
                         .requestMatchers("/api/manager/**").hasAnyRole("MANAGER", "ADMIN")

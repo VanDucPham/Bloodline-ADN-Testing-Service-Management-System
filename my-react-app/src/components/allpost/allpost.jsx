@@ -5,229 +5,9 @@ import Pagination from "./pagination.jsx";
 import "./allpost.css";
 
 import Footer from "../Footer.jsx";
+import apiService from "../../service/api";
 
 
-
-  // ...rest giữ nguyên...
-
-// Mock data
-const mockArticles = [
-  {
-    id: 1,
-    title: "5 Điều Bất Ngờ ADN Có Thể Tiết Lộ Về Bạn",
-    shortDescription:
-      "Trong thời đại mà công nghệ gen đang mở ra những khám phá không ngờ về chính chúng ta, xét nghiệm ADN đã trở thành một công cụ vô cùng mạnh mẽ giúp 'đọc' thông tin di truyền của mỗi cá nhân. Không chỉ cho biết nguồn gốc, cội nguồn hay xác minh quan hệ huyết thống, ADN còn hé lộ những điều bất ngờ về bản thân bạn – từ tính cách, sở thích, khả năng thể thao, nguy cơ bệnh lý cho đến tiềm năng trí tuệ. Bài viết này sẽ đưa bạn khám phá 5 điều bất ngờ mà kết quả xét nghiệm ADN có thể tiết lộ, giúp bạn hiểu rõ hơn về bản thân và từ đó có những quyết định chăm sóc sức khỏe cũng như phát triển cá nhân phù hợp.",
-    image:
-      "https://vietcarelab.vn/wp-content/smush-webp/2025/02/5-Dieu-Bat-Ngo-ADN-Co-The-Tiet-Lo-Ve-Ban-thumb.jpg.webp",
-    publishDate: "2025-06-27",
-    author: "Vietcare",
-    comments: 0,
-    tags: [
-      "Xét nghiệm ADN",
-      "Sức khỏe",
-      "Di truyền",
-      "Y học cá nhân",
-      "Vietcare"
-    ],
-  },
-  {
-    id: 2,
-    title: "Làm Thế Nào ADN Ảnh Hưởng Đến Chế Độ Ăn Của Bạn?",
-    shortDescription:
-      "Chế độ ăn uống phù hợp không chỉ dựa vào sở thích hay xu hướng, mà còn chịu ảnh hưởng mạnh mẽ bởi yếu tố di truyền. Các xét nghiệm ADN ngày nay có thể chỉ ra cách cơ thể bạn chuyển hóa chất béo, đường, caffeine hay gluten – từ đó giúp cá nhân hóa dinh dưỡng để sống khỏe mạnh hơn.",
-    image:
-      "https://cdn.nhathuoclongchau.com.vn/unsafe/800x0/https://cms-prod.s3-sgn09.fptcloud.com/che_do_an_kieng_dna_la_gi_2_ab941cecb8.png",
-    publishDate: "2025-06-27",
-    author: "Vietcare",
-    comments: 0,
-    tags: [
-      "ADN",
-      "Dinh dưỡng",
-      "Chế độ ăn",
-      "Sức khỏe",
-      "Y học cá nhân"
-    ],
-  },
-  {
-    id: 3,
-    title: "Khám Phá Nguồn Gốc Tổ Tiên Qua Xét Nghiệm ADN",
-    shortDescription:
-      "Bạn có bao giờ tự hỏi mình đến từ đâu? Dòng máu của bạn mang trong mình những dấu tích di truyền nào? Với công nghệ phân tích ADN hiện đại, bạn có thể khám phá lịch sử tổ tiên hàng trăm năm trước, từ đó hiểu hơn về cội nguồn và bản sắc của chính mình.",
-    image:
-      "https://genplus.vn/wp-content/uploads/2022/11/xet-nghiem-adn-quang-binh-7.jpg",
-    publishDate: "2025-06-27",
-    author: "Vietcare",
-    comments: 0,
-    tags: [
-      "Nguồn gốc",
-      "Tổ tiên",
-      "Xét nghiệm ADN",
-      "Bản đồ di truyền",
-      "Haplogroup"
-    ],
-  },
-  {
-    id: 4,
-    title: "Xét Nghiệm ADN Cho Trẻ Em  Nền Tảng Phát Triển Toàn Diện",
-    shortDescription:
-      "Xét nghiệm ADN cho trẻ em mở ra cánh cửa hiểu biết sâu sắc về tiềm năng và đặc điểm bẩm sinh của con bạn. Từ việc phát hiện tài năng thiên bẩm, đánh giá nguy cơ sức khỏe đến thiết kế chương trình giáo dục phù hợp...",
-    image:
-      "https://api.genetica.asia/storage/xet-nghiem-gene-dinh-huong-phat-trien-cho-tre-55-1635327429wi8GH.jpg?width=680",
-    publishDate: "2025-06-27",
-    author: "Vietcare",
-    comments: 0,
-    tags: ["ADN trẻ em", "Tài năng bẩm sinh", "Giáo dục cá nhân hóa", "Sức khỏe trẻ em", "Phát triển trẻ em"],
-  },
-  {
-    id: 5,
-    title: "ADN Và Khả Năng Đề Kháng - Di Truyền Quyết Định Sức Mạnh Của Hệ Miễn Dịch",
-    shortDescription:
-      "Bạn có bao giờ tự hỏi tại sao một số người có khả năng miễn dịch tốt hơn hoặc ít bị bệnh hơn so với những người khác? Câu trả lời nằm ở hệ miễn dịch và ADN. ADN không chỉ quy định đặc điểm hình thái mà còn tác động mạnh mẽ đến cách cơ thể chúng ta chống lại bệnh tật. Trong bài viết này, chúng ta sẽ cùng khám phá vai trò của ADN trong hệ miễn dịch, cách di truyền ảnh hưởng đến khả năng phòng bệnh, và cách công nghệ phân tích ADN đang mở ra những cơ hội mới trong y học.",
-    image:
-      "https://vpgdadnnghean.com/wp-content/uploads/2018/01/xet-nghiem-adn-nghe-an.jpg",
-    publishDate: "2025-06-27",
-    author: "Vietcare",
-    comments: 0,
-    tags: ["Hệ miễn dịch",
-      "Gene HLA",
-      "Sức khỏe cá nhân",
-      "Vaccine",
-      "Phòng bệnh"
-    ],
-  },
-  {
-    id: 6,
-    title: "Xét Nghiệm ADN Trong Thể Thao - Khám Phá Tiềm Năng Vận Động Của Bạn",
-    shortDescription:
-      "Không có chế độ ăn nào phù hợp với tất cả mọi người. Xét nghiệm ADN dinh dưỡng giúp bạn hiểu cách cơ thể chuyển hóa các chất dinh dưỡng, phản ứng với thực phẩm và nhu cầu vitamin cá nhân...",
-    image:
-      "https://vietcarelab.vn/wp-content/smush-webp/2024/12/xet-nghiem-adn-trong-the-thao-phat-hien-gen-nang-khieu.jpg.webp",
-    publishDate: "2025-06-27",
-    author: "Vietcare",
-    comments: 0,
-    tags: ["Thể thao di truyền",
-      "Gene ACTN3",
-      "Phát triển thể lực",
-      "Tối ưu tập luyện",
-      "Thể hình cá nhân hóa"],
-  },
-  {
-    id: 7,
-    title: "ADN Và Giấc Ngủ - Vì Sao Có Người Dễ Ngủ Và Người Thức Trắng?",
-    shortDescription:
-      "Mỗi người phản ứng khác nhau với cùng một loại thuốc do sự khác biệt về gene. Xét nghiệm ADN dược phẩm (pharmacogenomics) giúp dự đoán hiệu quả và tác dụng phụ của thuốc trước khi sử dụng...",
-    image:
-      "https://www.prudential.com.vn/export/sites/prudential-vn/vi/.thu-vien/hinh-anh/pulse-nhip-song-khoe/song-khoe/2020/suc-khoe-tinh-than/bai-viet-10-bi-quyet-vang-de-co-giac-ngu-sau-desktop-1366x560.png",
-    publishDate: "2025-06-27",
-    author: "Vietcare",
-    comments: 0,
-    tags: [  "Giấc ngủ",
-            "Gene CLOCK",
-            "Mất ngủ",
-            "Sức khỏe tinh thần",
-            "Chronotype"],
-  },
-  {
-    id: 8,
-    title: "Xét Nghiệm ADN Trong Dinh Dưỡng – Ăn Theo Gen Để Khỏe Mạnh Hơn",
-    shortDescription:
-      "Tâm lý và hành vi của chúng ta không chỉ được hình thành bởi môi trường mà còn chịu ảnh hưởng mạnh mẽ từ yếu tố di truyền. Xét nghiệm ADN tâm lý giúp bạn hiểu rõ về đặc điểm tính cách bẩm sinh, khả năng quản lý cảm xúc...",
-    image:
-      "https://genplus.vn/wp-content/uploads/2022/07/xet-nghiem-adn-bang-nuoc-bot-4.jpg",
-    publishDate: "2025-06-27",
-    author: "Vietcare",
-    comments: 0,
-    tags: [  "Dinh dưỡng cá nhân hóa",
-            "Gene và thực phẩm",
-            "Ăn theo ADN",
-            "Sức khỏe tiêu hóa",
-            "Vitamin và gen"],
-  },
-  {
-    id: 9,
-    title: "ADN Và Thuốc  Liệu Trình Cá Nhân Hóa Dựa Trên Gene",
-    shortDescription:
-      "Giấc ngủ chất lượng là nền tảng của sức khỏe tổng thể, nhưng không phải ai cũng có thể ngủ ngon tự nhiên. Xét nghiệm ADN giấc ngủ giúp bạn hiểu rõ đồng hồ sinh học cá nhân, khuynh hướng chronotype và các yếu tố di truyền ảnh hưởng đến chất lượng giấc ngủ...",
-    image:
-      "https://trungtamadn.com/wp-content/uploads/2024/05/Giai-trinh-tu-gen-4.jpg",
-    publishDate: "2025-06-27",
-    author: "Vietcare",
-    comments: 0,
-    tags: [  "ADN và thuốc",
-            "Cá nhân hóa điều trị",
-            "Dược di truyền",
-            "Tác dụng phụ thuốc",
-            "CYP gene"],
-  },
-  {
-    id: 10,
-    title: "ADN Và Tâm Lý – Hiểu Bản Thân Từ Di Truyền Cảm Xúc",
-    shortDescription:
-      "Quá trình lão hóa không chỉ phụ thuộc vào thời gian mà còn bị ảnh hưởng mạnh mẽ bởi yếu tố di truyền. Xét nghiệm ADN lão hóa giúp bạn hiểu rõ tốc độ lão hóa cá nhân, khả năng chống oxy hóa, độ dài telomere và các yếu tố di truyền khác ảnh hưởng đến tuổi thọ...",
-    image:
-      "https://th.bing.com/th/id/OIP.7OOnsGlwLRKYNKMpL3BAIQHaGJ?r=0&o=7rm=3&rs=1&pid=ImgDetMain&cb=idpwebp2&o=7&rm=3",
-    publishDate: "2025-06-27",
-    author: "Vietcare",
-    comments: 0,
-    tags: [    "Sức khỏe tinh thần",
-            "Gen tâm lý",
-            "Trầm cảm di truyền",
-            "Tính cách di truyền",
-            "Stress và ADN"],
-  }
-
-];
-
-
-
-const relatedArticles = [
-  {
-    id: 7,
-    title: "5 Điều Bất Ngờ ADN Có Thể Tiết Lộ Về Bạn",
-    image:
-      "https://vietcarelab.vn/wp-content/smush-webp/2025/02/5-Dieu-Bat-Ngo-ADN-Co-The-Tiet-Lo-Ve-Ban-thumb-80x80.jpg.webp",
-    publishDate: "2024-01-14",
-  },
-  {
-    id: 8,
-    title: "Top 5 Loại Xét Nghiệm ADN Thú Cưng Đang Được Yêu Thích",
-    image:
-      "https://vietcarelab.vn/wp-content/smush-webp/2025/02/Top-5-Loai-Xet-Nghiem-ADN-Thu-Cung-Dang-Duoc-Yeu-Thich-80x80.jpg.webp",
-    publishDate: "2024-01-13",
-  },
-  {
-    id: 9,
-    title: "10 Lời Khuyên Sống Khỏe Dựa Trên Kết Quả Xét Nghiệm ADN",
-    image:
-      "https://vietcarelab.vn/wp-content/smush-webp/2025/02/10-Loi-Khuyen-Song-Khoe-Dua-Tren-Ket-Qua-Xet-Nghiem-ADN-thumb-80x80.jpg.webp",
-    publishDate: "2024-01-11",
-  },
-  {
-    id: 10,
-    title: "5 Sai Lầm Thường Gặp Khi Chọn Trung Tâm Xét Nghiệm ADN",
-    image:
-      "https://vietcarelab.vn/wp-content/smush-webp/2025/02/5-Sai-Lam-Thuong-Gap-Khi-Chon-Trung-Tam-Xet-Nghiem-ADN-thumb-80x80.jpg.webp",
-    publishDate: "2024-01-09",
-  },
-];
-
-const allTags = [
-  "ADN",
-  "Di truyền",
-  "Sức khỏe",
-  "Xét nghiệm",
-  "Công nghệ",
-  "Khám phá",
-  "Thú cưng",
-  "Tính cách",
-  "Hướng dẫn",
-  "So sánh",
-  "Dinh dưỡng",
-  "Bảo mật",
-  "Quyền riêng tư",
-  "Phòng ngừa",
-  "Quản lý",
-];
 
 export default function AllPost() {
   const [articles, setArticles] = useState([]);
@@ -240,17 +20,25 @@ export default function AllPost() {
 
   // Lấy số lượng blog từng loại từ BE
   const fetchCategoryCounts = () => {
-    apiService.getBlogCategoryCount && apiService.getBlogCategoryCount().then(res => {
-      setCategoryCounts(res.data || {});
-    });
+    apiService.get("/blog/category-count")
+      .then(res => {
+        setCategoryCounts(res.data || {});
+      })
+      .catch(error => {
+        console.error("Lỗi khi lấy số lượng blog theo danh mục:", error);
+        setCategoryCounts({});
+      });
   };
+  
   useEffect(() => {
     fetchCategoryCounts();
   }, []);
 
   // Gọi lại khi articles thay đổi (sau khi thêm/xóa/cập nhật blog)
   useEffect(() => {
-    fetchCategoryCounts();
+    if (articles.length > 0) {
+      fetchCategoryCounts();
+    }
   }, [articles]);
 
   const categories = [
@@ -281,7 +69,8 @@ export default function AllPost() {
         setArticles(mapped);
         setLoading(false);
       })
-      .catch(() => {
+      .catch(error => {
+        console.error("Lỗi khi lấy danh sách blog:", error);
         setArticles([]);
         setLoading(false);
       });
