@@ -1,6 +1,8 @@
 package com.example.Bloodline_ADN_System.repository;
 
 import com.example.Bloodline_ADN_System.Entity.Appointment;
+import com.example.Bloodline_ADN_System.Entity.CaseFile;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,8 +22,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     // Đếm số lượng lịch hẹn trong một khung giờ cụ thể trong ngày
     int countByAppointmentDateAndAppointmentTimeBetween(LocalDate date, LocalTime startTime, LocalTime endTime);
 
-    // Tìm lịch hẹn theo ngày, giờ và phương thức lấy mẫu
-    Optional<Appointment> findByAppointmentDateAndAppointmentTimeAndDeliveryMethod(LocalDate date, LocalTime time, String method);
+
 
     // Kiểm tra xem user đã có lịch hẹn trong khoảng thời gian đó chưa
     boolean existsByUser_UserIdAndAppointmentDateAndAppointmentTimeBetween(
@@ -41,5 +42,19 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 
     Appointment getAppointmentsByAppointmentId(Long appointmentId);
 
-    Optional<Object> findAppointmentByAppointmentId(Long appointmentId);
+
+    @Query("SELECT a.caseFile.caseId FROM Appointment a WHERE a.appointmentId = :appointmentId")
+    Long findCaseIdByAppointmentId(@Param("appointmentId") Long appointmentId);
+
+    Optional<Appointment> findByCaseFile_CaseCode(String caseCode);
+
+    @EntityGraph(attributePaths = {
+            "caseFile",         // 👈 Lỗi chính ở đây
+            "user",
+            "assignedStaff",
+            "participants.sample", // nested relation
+            "result"
+    })
+    List<Appointment> findAll();
+
 }

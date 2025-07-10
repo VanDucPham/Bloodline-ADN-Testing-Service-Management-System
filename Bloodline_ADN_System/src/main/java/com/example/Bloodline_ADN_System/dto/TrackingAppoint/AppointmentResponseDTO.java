@@ -22,6 +22,9 @@ public class AppointmentResponseDTO {
     private LocalDate Date ;
     private LocalTime Time ;
     private String StatusAppointment ;
+    private  String delivery_method ;
+    private String collection_Status ;
+    private String kit_status ;
     List<ParticipantResponeDTO> participantResponseDTOS ;
     Payment Payment ;
 

@@ -32,19 +32,30 @@ public class Blog {
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private LocalDateTime publishDate;
 
     @Enumerated(EnumType.STRING)
     private BlogStatus status;
 
-    @PrePersist
-    protected void onCreate() {
-        createdAt = updatedAt = LocalDateTime.now();
+    @Enumerated(EnumType.STRING)
+    private BlogType blogType;
+
+    public BlogType getBlogType() {
+        return blogType;
+    }
+    public void setBlogType(BlogType blogType) {
+        this.blogType = blogType;
     }
 
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
 
     public enum BlogStatus { DRAFT, PUBLISHED, ARCHIVED }
+    public enum BlogType { NEWS, GUIDE, POLICY, PROMOTION, OTHER }
 }

@@ -1,6 +1,7 @@
 package com.example.Bloodline_ADN_System.service.impl;
 
 import com.example.Bloodline_ADN_System.Entity.Service;
+import com.example.Bloodline_ADN_System.dto.ManagerService.ServiceManagerDTO;
 import com.example.Bloodline_ADN_System.dto.ServiceDTO;
 import com.example.Bloodline_ADN_System.repository.ServiceRepository;
 import com.example.Bloodline_ADN_System.service.ServiceList;
@@ -17,21 +18,28 @@ public class ServiceListImpl implements ServiceList {
         this.serviceRepository = serviceRepository;
     }
 
-    public List<ServiceDTO> getAllServices() {
+    public List<ServiceManagerDTO> getAllServices() {
         return serviceRepository.findAll().stream().map(this::toDTO).collect(Collectors.toList());
     }
 
-    public ServiceDTO getServiceById(Long id) {
+    public ServiceManagerDTO getServiceById(Long id) {
         return toDTO(serviceRepository.findById(id).orElseThrow(() -> new RuntimeException("Dịch vụ không tồn tại")));
     }
 
-    public ServiceDTO createService(ServiceDTO dto) {
-        Service service = toEntity(dto);
+    public ServiceManagerDTO createService(ServiceManagerDTO dto) {
+        Service service = new Service();
+        service.setServiceDescription(dto.getServiceDescription());
+        service.setServiceName(dto.getServiceName());
+        service.setServicePrice(dto.getServicePrice());
+        service.setImageUrl(dto.getImageUrl());
+        service.setLimitPeople(dto.getLimitPeople());
         return toDTO(serviceRepository.save(service));
     }
 
-    public ServiceDTO updateService(Long id, ServiceDTO updateDTO) {
+    public ServiceManagerDTO updateService(Long id, ServiceManagerDTO updateDTO) {
         Service service = serviceRepository.findById(id).orElseThrow(() -> new RuntimeException("Dịch vụ không tồn tại"));
+        service.setLimitPeople(updateDTO.getLimitPeople());
+        service.setImageUrl(updateDTO.getImageUrl());
         service.setServiceName(updateDTO.getServiceName());
         service.setServiceDescription(updateDTO.getServiceDescription());
         service.setServicePrice(updateDTO.getServicePrice());
@@ -44,12 +52,14 @@ public class ServiceListImpl implements ServiceList {
     }
 
     // Mapping methods
-    public ServiceDTO toDTO(Service service) {
-        return new ServiceDTO(
+    public ServiceManagerDTO toDTO(Service service) {
+        return new ServiceManagerDTO(
                 service.getServiceId(),
                 service.getServiceName(),
                 service.getServiceDescription(),
-                service.getServicePrice()
+                service.getLimitPeople(),
+                service.getServicePrice(),
+                service.getImageUrl()
         );
     }
     public Service toEntity(ServiceDTO dto) {

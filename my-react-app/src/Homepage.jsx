@@ -1,5 +1,5 @@
 import './Homepage.css';
-import Header from './components/Header';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faCoffee, faHome, faBars, faCheck } from '@fortawesome/free-solid-svg-icons';
 import Register from './components/register/Register';
@@ -60,16 +60,77 @@ const navigate = useNavigate();
           </div>
 
         </div>
-
-        <div className="booking-section">
-          <div className="booking-form-container">
-            <h2>Đăng ký ngay để nhận <strong>ưu đãi 25% giá xét nghiệm</strong></h2>
-            <p>Ưu đãi chỉ áp dụng cho 100 khách hàng đầu tiên trong tháng</p>
-            
-              <button className="login-btn" onClick={() => navigate('/register')} >
-                ĐĂNG KÝ
-              </button>
+        
+        {/* Form tư vấn */}
+        <div className="consultation-section">
+          <div className="consultation-container">
+            <div className="consultation-content">
+              <div className="consultation-text">
+                <h2>ĐĂNG KÝ TƯ VẤN MIỄN PHÍ</h2>
+                <p>Nhận tư vấn chuyên sâu từ các chuyên gia hàng đầu về xét nghiệm ADN huyết thống</p>
+                <div className="benefits-list">
+                  <div className="benefit-item">
+                    <FontAwesomeIcon icon={faCheck} />
+                    <span>Tư vấn 24/7 hoàn toàn miễn phí</span>
+                  </div>
+                  <div className="benefit-item">
+                    <FontAwesomeIcon icon={faCheck} />
+                    <span>Ưu đãi 25% cho khách hàng đầu tiên</span>
+                  </div>
+                  <div className="benefit-item">
+                    <FontAwesomeIcon icon={faCheck} />
+                    <span>Bảo mật thông tin tuyệt đối</span>
+                  </div>
+                </div>
+              </div>
               
+              <div className="consultation-form-container">
+                <form className="consultation-form">
+                  <div className="form-group">
+                    <input 
+                      type="text" 
+                      placeholder="Họ và tên *" 
+                      required 
+                    />
+                  </div>
+                  <div className="form-group">
+                    <input 
+                      type="tel" 
+                      placeholder="Số điện thoại *" 
+                      required 
+                    />
+                  </div>
+                  <div className="form-group">
+                    <input 
+                      type="email" 
+                      placeholder="Email" 
+                    />
+                  </div>
+                  <div className="form-group">
+                    <select required>
+                      <option value="">Chọn dịch vụ quan tâm *</option>
+                      <option value="adn-huyetthong">Xét nghiệm ADN huyết thống</option>
+                      <option value="adn-baternty">Xét nghiệm ADN xác định cha con</option>
+                      <option value="adn-maternity">Xét nghiệm ADN xác định mẹ con</option>
+                      <option value="adn-family">Xét nghiệm ADN gia đình</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <textarea 
+                      placeholder="Mô tả chi tiết về tình hình của bạn (tùy chọn)" 
+                      rows="4"
+                    ></textarea>
+                  </div>
+                  <button type="submit" className="consultation-btn">
+                    ĐĂNG KÝ TƯ VẤN NGAY
+                  </button>
+                </form>
+                <p className="form-note">
+                  <FontAwesomeIcon icon={faCheck} />
+                  Chúng tôi sẽ liên hệ với bạn trong vòng 30 phút
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 

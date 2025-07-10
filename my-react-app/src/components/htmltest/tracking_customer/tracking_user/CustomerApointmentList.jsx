@@ -1,15 +1,12 @@
-// AppointmentList.jsx
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faCalendarCheck, faMoon, faSun, faPlus, faSearch,
-  faCalendarDay, faClock, faEye, faEdit, faTimes,
+  faCalendarCheck, faMoon, faSun, faPlus, faCalendarDay, faClock, faEye, faTimes,
   faCheckCircle, faExclamationCircle, faTimesCircle
 } from '@fortawesome/free-solid-svg-icons';
 import './CustomerApointment.css';
 import { useNavigate } from 'react-router-dom';
 import apiService from '../../../../service/api';
-
 
 const AppointmentList = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -18,20 +15,24 @@ const AppointmentList = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [appointments, setAppointments] = useState([]);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [editingParticipant, setEditingParticipant] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [filterStatus, setFilterStatus] = useState("ALL");
+
   const navigate = useNavigate();
 
   useEffect(() => {
+    
     const fetchService = async () => {
       try {
-        const response = await apiService.user.getListAppointment()
+        const response = await apiService.user.getListAppointment();
+        setAppointments(response);
         console.log(response)
-        setAppointments(response)
       } catch (error) {
-        console.log("Không lấy dducouocw danh sách app", error)
+        console.log("Không lấy được danh sách lịch hẹn", error);
       }
-
-    }
-    fetchService()
+    };
+    fetchService();
   }, []);
 
   const showToast = (type, message) => {
@@ -40,19 +41,26 @@ const AppointmentList = () => {
   };
 
   const toggleTheme = () => setIsDarkMode(!isDarkMode);
+
   const openModal = (appointment) => {
     setSelectedAppointment(appointment);
     setModalOpen(true);
   };
+
   const closeModal = () => setModalOpen(false);
+
   const changeTab = (index) => setActiveTab(index);
-  const editParticipant = () => showToast('warning', 'Chức năng chỉnh sửa đang phát triển');
 
   const getStatusClass = (status) => {
     switch (status) {
       case "SCHEDULED": return "status-pending";
-      case "COMPLETED": return "status-confirmed";
+      case "COMPLETED": return "status-done";
       case "CANCELLED": return "status-cancelled";
+      case "CONFIRMED": return "status-confirmed";
+      case "IN_PROGRESS": return "status-inprocess";
+      case "HOME_DELIVERY": return "status-delivery";
+      case "HOME_COLLECTION": return "status-collection";
+      case "SELF_DROP_OFF": return "status-off";
       default: return "";
     }
   };
@@ -64,47 +72,80 @@ const AppointmentList = () => {
       case "CANCELLED": return "Đã hủy";
       case "CONFIRMED": return "Đã xác nhận";
       case "IN_PROGRESS": return "Đang xử lý";
+      case "HOME_DELIVERY": return "Nhân viên đến lấy mẫu";
+      case "HOME_COLLECTION": return "Tự lấy mẫu";
+      case "SELF_DROP_OFF": return "Gửi mẫu tại cơ sở";
       default: return "";
     }
-
-
   };
-const handleCancelAppointment = async (appointmentId) => {
-  try {
-    const response = await apiService.user.cancelAppointment(appointmentId);
-    
-    // DEBUG
-    console.log("API Response:", response);
 
-    
-
-    if (response && response.success) {
-      showToast('success', response.message || 'Hủy lịch hẹn thành công.');
-
-      // ✅ Cập nhật danh sách trạng thái
-      setAppointments((prev) =>
-        prev.map((item) =>
-          item.appointmentId === appointmentId
-            ? { ...item, statusAppointment: 'CANCELLED' }
-            : item
-        )
-      );
-    } else {
-      showToast('danger', response?.message || 'Hủy lịch hẹn thất bại.');
+  const handleCancelAppointment = async (appointmentId) => {
+    try {
+      const response = await apiService.user.cancelAppointment(appointmentId);
+      if (response && response.success) {
+        showToast('success', response.message || 'Hủy lịch hẹn thành công.');
+        setAppointments((prev) =>
+          prev.map((item) =>
+            item.appointmentId === appointmentId
+              ? { ...item, statusAppointment: 'CANCELLED' }
+              : item
+          )
+        );
+      } else {
+        showToast('danger', response?.message || 'Hủy lịch hẹn thất bại.');
+      }
+    } catch (error) {
+      const message =
+        error.response?.response?.message ||
+        error.message ||
+        'Lỗi không xác định khi hủy lịch hẹn';
+      showToast('danger', message);
     }
-  } catch (error) {
-    console.error("ERROR during cancel:", error);
+  };
 
-    const message =
-      error.response?.response?.message ||
-      error.message ||
-      'Lỗi không xác định khi hủy lịch hẹn';
+  const handleSaveParticipant = async () => {
+    try {
+      const response = await apiService.user.updateParticipant(editingParticipant.participantId, {
+        name: editingParticipant.name,
+        citizenId: editingParticipant.citizenId,
+        relationShip: editingParticipant.relationship,
+        sample: {
+          sampleType: editingParticipant.sampleDTO?.sampleType
+        }
+      });
 
-    showToast('danger', message);
-  }
-};
+      if (response.success) {
+        showToast('success', response.message || 'Cập nhật thành công');
+        closeModal();
+      } else {
+        showToast('danger', response.message || 'Cập nhật thất bại');
+      }
+    } catch (error) {
+      const message =
+        error.response?.data?.message || 'Lỗi không xác định khi cập nhật';
+      showToast('danger', message);
+    }
+    setSelectedAppointment((prev) => {
+      if (!prev) return prev;
+      const updatedParticipants = prev.participantResponseDTOS.map((item) =>
+        item.participantId === editingParticipant.participantId
+          ? { ...item, ...editingParticipant }
+          : item
+      );
+      return { ...prev, participantResponseDTOS: updatedParticipants };
+    });
+  };
+const filteredAppointments = appointments.filter((a) =>
+  filterStatus === "ALL" ? true : a.statusAppointment === filterStatus
+);
 
-
+  const openEditParticipantModal = (participant) => {
+    setEditingParticipant({
+      ...participant,
+      sampleDTO: participant.sampleDTO || {}
+    });
+    setShowEditModal(true);
+  };
 
   return (
     <div className={`appointment-container ${isDarkMode ? "dark" : ""}`}>
@@ -113,6 +154,17 @@ const handleCancelAppointment = async (appointmentId) => {
           <FontAwesomeIcon icon={faCalendarCheck} />
           <span>Danh sách lịch hẹn</span>
         </h1>
+        <div className="filter-bar">
+  <label>Trạng thái:</label>
+  <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
+    <option value="ALL">Tất cả</option>
+    <option value="SCHEDULED">Đã lên lịch</option>
+    <option value="CONFIRMED">Đã xác nhận</option>
+    <option value="COMPLETED">Hoàn thành</option>
+    <option value="CANCELLED">Đã hủy</option>
+  </select>
+</div>
+
         <div className="controls">
           <button className="theme-toggle" onClick={toggleTheme}>
             <FontAwesomeIcon icon={isDarkMode ? faSun : faMoon} />
@@ -124,15 +176,19 @@ const handleCancelAppointment = async (appointmentId) => {
           </button>
         </div>
       </div>
-
       <div className="appointment-list">
-        {appointments.map((appointment) => (
-          <div className="appointment-card" key={appointment.appointmentId}>
+  {filteredAppointments.map((appointment) => (
+   <div className="appointment-card" key={appointment.appointmentId}>
             <div className="card-header">
-              <div className="card-title">{appointment.serviceName}</div>
-              <span className={`card-status ${getStatusClass(appointment.statusAppointment)}`}>
-                {getStatusText(appointment.statusAppointment)}
-              </span>
+              <div>
+                <div className="card-title">{appointment.serviceName}</div>
+                <span className={`card-status ${getStatusClass(appointment.statusAppointment)}`}>
+                  {getStatusText(appointment.statusAppointment)}
+                </span>
+              </div>
+              <div>
+                <span>{getStatusText(appointment.delivery_method)} </span>
+              </div>
             </div>
             <div className="card-detail">
               <div><FontAwesomeIcon icon={faCalendarDay} /> {appointment.date}</div>
@@ -142,20 +198,20 @@ const handleCancelAppointment = async (appointmentId) => {
               <button className="card-btn view" onClick={() => openModal(appointment)}>
                 <FontAwesomeIcon icon={faEye} /> Xem
               </button>
-              <button className="card-btn edit" onClick={() => showToast('warning', 'Chỉnh sửa lịch hẹn')}>
-                <FontAwesomeIcon icon={faEdit} /> Sửa
-              </button>
-              <button
-                className="card-btn cancel"
-                onClick={() => handleCancelAppointment(appointment.appointmentId)}
-              >
-                <FontAwesomeIcon icon={faTimes} /> Hủy
-              </button>
-
+              {appointment.statusAppointment === "SCHEDULED" && (
+                <button
+                  className="card-btn cancel"
+                  onClick={() => handleCancelAppointment(appointment.appointmentId)}
+                >
+                  <FontAwesomeIcon icon={faTimes} /> Hủy
+                </button>
+              )}
             </div>
           </div>
-        ))}
-      </div>
+  ))}
+</div>
+
+      
 
       {modalOpen && selectedAppointment && (
         <div className="modal-overlay" onClick={closeModal}>
@@ -176,7 +232,20 @@ const handleCancelAppointment = async (appointmentId) => {
                   <tr><td>Dịch vụ</td><td>{selectedAppointment.serviceName}</td></tr>
                   <tr><td>Ngày hẹn</td><td>{selectedAppointment.date}</td></tr>
                   <tr><td>Giờ hẹn</td><td>{selectedAppointment.time}</td></tr>
-                  <tr><td>Trạng thái</td><td>{getStatusText(selectedAppointment.statusAppointment)}</td></tr>
+                  <tr><td>Trạng thái lịch hẹn</td><td>{getStatusText(selectedAppointment.statusAppointment)}</td></tr>
+                  {selectedAppointment.delivery_method === "HOME_DELIVERY" && (
+                    <tr><td>Trạng thái lấy mẫu tại nhà:</td><td>Nhân viên đang đến</td></tr>
+                  )}
+                  {selectedAppointment.delivery_method === "HOME_COLLECTION" && (
+                    <tr><td>Trạng thái kit:</td><td>Kit đã được đang được gửi đến</td></tr>
+                  )}
+                  <tr>
+  <td>Kết luận xét nghiệm</td>
+  <td style={{ fontWeight: 'bold', color: selectedAppointment.result ? '#2c3e50' : '#999' }}>
+    {selectedAppointment.result || 'Chưa có kết quả'}
+  </td>
+</tr>
+
                   <tr><td>Mã hồ sơ</td><td>{selectedAppointment.caseCode}</td></tr>
                 </tbody>
               </table>
@@ -185,7 +254,15 @@ const handleCancelAppointment = async (appointmentId) => {
             <div className={`tab-content ${activeTab === 1 ? 'active' : ''}`}>
               <table className="detail-table">
                 <thead>
-                  <tr><th>Họ tên</th><th>Số căn cước công dân</th><th>Quan hệ</th><th>Loại mẫu</th><th>Trạng thái mẫu</th><th>Hành động</th></tr>
+                  <tr>
+                    <th>Họ tên</th>
+                    <th>Số căn cước công dân</th>
+                    <th>Quan hệ</th>
+                    <th>Loại mẫu</th>
+                    <th>Trạng thái mẫu</th>
+                    <th>Kết quả</th>
+                      <th>Hành động</th>
+                  </tr>
                 </thead>
                 <tbody>
                   {selectedAppointment.participantResponseDTOS.map((p, index) => (
@@ -195,7 +272,19 @@ const handleCancelAppointment = async (appointmentId) => {
                       <td>{p.relationship}</td>
                       <td>{p.sampleDTO?.sampleType || 'Chưa có'}</td>
                       <td>{p.sampleDTO?.status || 'Chưa thu thập'}</td>
-                      <td><button className="edit-btn" onClick={editParticipant}>Sửa</button></td>
+                      <td>chưa có kết quả</td>
+                      {selectedAppointment.delivery_method ==="HOME_COLLECTION" && selectedAppointment.statusAppointment ==="SCHEDULED"&&(
+
+                           <td>
+                        <button
+                          className="edit-btn"
+                          onClick={() => openEditParticipantModal(p)}
+                        >
+                          Sửa
+                        </button>
+                      </td>
+                      ) }
+                     
                     </tr>
                   ))}
                 </tbody>
@@ -205,7 +294,13 @@ const handleCancelAppointment = async (appointmentId) => {
             <div className={`tab-content ${activeTab === 2 ? 'active' : ''}`}>
               <table className="detail-table">
                 <thead>
-                  <tr><th>Mã thanh toán</th><th>Số tiền</th><th>Phương thức</th><th>Trạng thái</th><th>Ngày thanh toán</th></tr>
+                  <tr>
+                    <th>Mã thanh toán</th>
+                    <th>Số tiền</th>
+                    <th>Phương thức</th>
+                    <th>Trạng thái</th>
+                    <th>Ngày thanh toán</th>
+                  </tr>
                 </thead>
                 <tbody>
                   {selectedAppointment.payment ? (
@@ -232,6 +327,49 @@ const handleCancelAppointment = async (appointmentId) => {
             icon={toast.type === "danger" ? faTimesCircle : toast.type === "warning" ? faExclamationCircle : faCheckCircle}
           />
           <span>{toast.message}</span>
+        </div>
+      )}
+
+      {showEditModal && editingParticipant && (
+        <div className="modal-overlay" onClick={() => setShowEditModal(false)}>
+          <div className="modal-content small" onClick={(e) => e.stopPropagation()}>
+            <h3>Chỉnh sửa người tham gia</h3>
+            <label>Họ tên:</label>
+            <input
+              value={editingParticipant.name}
+              onChange={(e) =>
+                setEditingParticipant({ ...editingParticipant, name: e.target.value })
+              }
+            />
+            <label>Số CCCD:</label>
+            <input
+              value={editingParticipant.citizenId}
+              onChange={(e) =>
+                setEditingParticipant({ ...editingParticipant, citizenId: e.target.value })
+              }
+            />
+            <label>Quan hệ:</label>
+            <input
+              value={editingParticipant.relationship}
+              onChange={(e) =>
+                setEditingParticipant({ ...editingParticipant, relationship: e.target.value })
+              }
+            />
+            <label>Loại mẫu:</label>
+            <input
+              value={editingParticipant.sampleDTO.sampleType || ''}
+              onChange={(e) =>
+                setEditingParticipant({
+                  ...editingParticipant,
+                  sampleDTO: { ...editingParticipant.sampleDTO, sampleType: e.target.value }
+                })
+              }
+            />
+            <div className="modal-actions">
+              <button onClick={() => setShowEditModal(false)}>Hủy</button>
+              <button onClick={handleSaveParticipant}>Lưu</button>
+            </div>
+          </div>
         </div>
       )}
     </div>

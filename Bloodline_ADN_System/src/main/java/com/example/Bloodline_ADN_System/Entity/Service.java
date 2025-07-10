@@ -24,14 +24,21 @@ public class Service {
     @Column(name = "service_name")
     private String serviceName;
 
-//    @Column(columnDefinition = "TEXT")
-    @Column(name ="service_description")
+    @Column(name = "service_description")
     private String serviceDescription;
+
+    @Column(name = "limit_people")
+    private Integer limitPeople;
 
     @Column(name = "service_price")
     private Double servicePrice;
+
+    @Column(name = "image_url") // ✅ Thêm dòng này
+    private String imageUrl;
+
     @OneToMany(mappedBy = "service", cascade = CascadeType.ALL , fetch = FetchType.LAZY)
-    private List<CaseFile> caseFiles = new ArrayList<>() ;
+    private List<CaseFile> caseFiles = new ArrayList<>();
+
     @OneToMany(mappedBy = "service", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Feedback> feedbacks = new ArrayList<>();
 

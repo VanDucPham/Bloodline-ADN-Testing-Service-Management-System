@@ -1,17 +1,19 @@
 package com.example.Bloodline_ADN_System.controller;
 
+import com.example.Bloodline_ADN_System.dto.ApiMessResponse;
 import com.example.Bloodline_ADN_System.dto.ChangePasswordDTO;
 import com.example.Bloodline_ADN_System.dto.SampleDTO;
 import com.example.Bloodline_ADN_System.dto.TrackingAppoint.AppointmentResponseDTO;
+import com.example.Bloodline_ADN_System.dto.TrackingAppoint.UpdateParticipant;
 import com.example.Bloodline_ADN_System.dto.UserUpdateDTO;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentDTO;
-import com.example.Bloodline_ADN_System.service.AppointmentService;
-import com.example.Bloodline_ADN_System.service.UserService;
+import com.example.Bloodline_ADN_System.service.*;
 import com.example.Bloodline_ADN_System.service.impl.AppointmentServiceImpl;
 import com.example.Bloodline_ADN_System.service.impl.CustomerServiceImp;
 import com.example.Bloodline_ADN_System.service.impl.SampleServiceImpl;
 import com.example.Bloodline_ADN_System.service.impl.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -23,10 +25,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CustomerController {
     private final UserService userService;
-    private final UserServiceImpl userServiceImpl;
-    private final AppointmentServiceImpl appointmentService;
-    private final CustomerServiceImp customerServiceImp;
-    private final SampleServiceImpl sampleServiceImpl;
+    private final UserService userServiceImpl;
+    private final AppointmentService appointmentService;
+    private final CustomerService customerServiceImp;
+    private final SampleService sampleServiceImpl;
+    private final CustomerService customerService;
+    private final ParticipantService participantService;
 
     @PutMapping
     public ResponseEntity<UserUpdateDTO> updateUser(Authentication authentication, @RequestBody UserUpdateDTO updatedUser) {
@@ -55,9 +59,20 @@ public class CustomerController {
         List<AppointmentResponseDTO> appointments = customerServiceImp.getAllAppointments(userId);
         return ResponseEntity.ok(appointments);
     }
-    @PutMapping("/updateSample")
-    public ResponseEntity<?> updateSample(@RequestBody SampleDTO dto) {
-            sampleServiceImpl.updateSample(dto);
-        return ResponseEntity.ok("Sample updated successfully");
+    @PutMapping("/{participantId}/update")
+    public ResponseEntity<ApiMessResponse> updateParticipant(
+            @PathVariable Long participantId,
+            @RequestBody UpdateParticipant dto) {
+        try {
+            boolean updated = participantService.updateParticipant(participantId, dto);
+            if (updated) {
+                return ResponseEntity.ok(new ApiMessResponse(true, "Cập nhật thành công"));
+            }
+            return ResponseEntity.badRequest().body(new ApiMessResponse(false, "Không tìm thấy người tham gia"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiMessResponse(false, "Lỗi server khi cập nhật"));
+        }
     }
+
 }

@@ -28,7 +28,7 @@ public class ParticipantDTO {
     public Participant toEntity(Appointment appointment) {
         Participant p = new Participant();
         p.setParticipantId(this.participantId);
-        p.setAppointment(appointment);  // ← dùng tham số truyền vào
+        p.setAppointment(appointment);
         p.setName(this.name);
         p.setRelationship(this.relationship);
         p.setCitizenId(this.citizenId);

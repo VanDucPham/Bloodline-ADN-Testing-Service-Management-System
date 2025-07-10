@@ -12,11 +12,8 @@ import lombok.AllArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 @org.springframework.stereotype.Service
 @AllArgsConstructor
@@ -259,6 +256,12 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
+    public Long findCaseIdByAppointmentId(Long id) {
+
+        return appointmentRepository.findCaseIdByAppointmentId(id) ;
+    }
+
+    @Override
     public List<AppointmentDTO> getAllAppointment() {
         return appointmentRepository.findAll().stream()
                 .map(this::toDTO)
@@ -356,6 +359,8 @@ public class AppointmentServiceImpl implements AppointmentService {
         // Lưu lại
         appointmentRepository.save(appointment);
     }
+
+
 
     public AppointmentDTO toDTO(Appointment appointment) {
         AppointmentDTO dto = new AppointmentDTO();

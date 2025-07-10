@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import apiService from '../../service/api';
 import './BlogList.css';
-// Sử dụng ảnh fallback online để tránh dựt và lỗi local
-const fallbackImg = "https://via.placeholder.com/300x200?text=No+Image";
+// Sử dụng ảnh fallback local để tránh lỗi mạng hoặc bị chặn
+const fallbackImg = "/images/no-image.png";
 
 function BlogCard({ blog }) {
+  const [showFull, setShowFull] = React.useState(false);
   try {
     if (!blog) return null;
     // Đảm bảo các trường không bị undefined/null
@@ -26,7 +27,12 @@ function BlogCard({ blog }) {
           : '/images/' + cleanImageUrl;
       }
     }
-    const [showFull, setShowFull] = React.useState(false);
+    // Thêm hiển thị trạng thái
+    const statusColor = {
+      DRAFT: '#faad14',
+      PUBLISHED: '#52c41a',
+      ARCHIVED: '#bfbfbf'
+    };
     return (
       <div className="blog-card">
         <img
@@ -47,6 +53,10 @@ function BlogCard({ blog }) {
             <span className="blog-card-publishDate">
               {blog.createdAt ? new Date(blog.createdAt).toLocaleDateString('vi-VN') : ''}
             </span>
+            {/* Hiển thị trạng thái */}
+            <span className="blog-card-status" style={{ background: statusColor[blog.status] || '#d9d9d9', color: '#fff', borderRadius: 4, padding: '2px 8px', marginLeft: 8, fontSize: 12 }}>
+              {blog.status === 'DRAFT' ? 'Nháp' : blog.status === 'PUBLISHED' ? 'Xuất bản' : blog.status === 'ARCHIVED' ? 'Lưu trữ' : blog.status}
+            </span>
           </div>
           <h2 className="blog-card-title">{title}</h2>
           <div className="blog-card-desc">
@@ -58,30 +68,43 @@ function BlogCard({ blog }) {
         </div>
       </div>
     );
-  } catch (err) {
-    console.error('BlogCard render error:', err, blog);
+  } catch {
     return <div className="blog-card-error">Lỗi hiển thị bài viết</div>;
   }
 }
 
 function BlogList() {
   const [blogs, setBlogs] = useState([]);
+  const [page, setPage] = useState(0);
+  const [size] = useState(6);
+  const [totalPages, setTotalPages] = useState(1);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const res = await apiService.auth.getBlog();
-        setBlogs(res);
+        setError("");
+        const res = await apiService.get('/blog/page', { page, size });
+        setBlogs(res.data.content || []);
+        setTotalPages(res.data.totalPages || 1);
       } catch (e) {
         setBlogs([]);
+        setTotalPages(1);
+        setError(e?.response?.data?.message || "Lỗi tải danh sách blog");
       }
     };
     fetchBlogs();
-  }, []);
+  }, [page, size]);
 
   return (
     <div>
+      {error && <div className="blog-list-error">{error}</div>}
       {blogs.filter(Boolean).map(blog => <BlogCard key={blog.blogId} blog={blog} />)}
+      <div className="blog-list-pagination">
+        <button disabled={page === 0} onClick={() => setPage(p => p - 1)}>Trước</button>
+        <span>Trang {page + 1} / {totalPages}</span>
+        <button disabled={page + 1 >= totalPages} onClick={() => setPage(p => p + 1)}>Sau</button>
+      </div>
     </div>
   );
 }

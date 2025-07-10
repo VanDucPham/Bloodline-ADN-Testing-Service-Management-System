@@ -16,9 +16,16 @@ public interface AppointmentService {
 
     AppointmentResponse<AppointmentDTO> createAppointmentCaseFile(AppointmentDTO dto);
     AppointmentResponse<AppointmentDTO> createAppointmentByStaff(AppointmentRequest request);
+
+    // --------------------- CUSTOMER CREATE APPOINTMENT ---------------------
+
+
+    // --------------------- CUSTOMER CREATE APPOINTMENT ---------------------
     @Transactional
     AppointmentResponse<AppointmentDTO> createAppointment(AppointmentRequest request);
 
+
+    boolean isUserIdExist(Long userId);
 
     List<AppointmentDTO> getAllAppointment();
     List<AppointmentDTO> getAppointmentByUserId(Long userId);
@@ -26,18 +33,18 @@ public interface AppointmentService {
     List<AppointmentDTO> filterAppointment(Appointment.AppointmentStatus status, Appointment.AppointmentType type, LocalDate date);
     AppointmentDTO updateAppointmentProgress(Long id, Appointment.AppointmentStatus status,Appointment.CollectionStatus collectionStatus);
 
-
   //  Long getUserIdByUsername(String username);
 
 
 
         boolean checkAvailability(LocalDate date, LocalTime time, String email);
         Long getUserIdByUsername(String username);
-        boolean isUserIdExist(Long userId);
 
 
-
+    Long findCaseIdByAppointmentId(Long id);
 
     void updateAppointment(AppointmentDTO appointmentDTO, Long appointmentId);
 }
+
+
 

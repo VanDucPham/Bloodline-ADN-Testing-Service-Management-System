@@ -23,5 +23,7 @@ public class ServiceDTO {
         this.servicePrice = servicePrice;
     }
 
+    public ServiceDTO(String imageUrl, Integer limitPeople, Long serviceId, String serviceName, String serviceDescription, Double servicePrice) {
+    }
 }
 

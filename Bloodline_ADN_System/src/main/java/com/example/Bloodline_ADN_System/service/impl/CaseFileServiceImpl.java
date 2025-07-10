@@ -6,11 +6,13 @@ import com.example.Bloodline_ADN_System.Entity.User;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.caseFileDTO;
 import com.example.Bloodline_ADN_System.repository.CaseFileRepository;
 import com.example.Bloodline_ADN_System.repository.ServiceRepository;
+import com.example.Bloodline_ADN_System.service.AppointmentService;
 import com.example.Bloodline_ADN_System.service.CaseFileService;
 import com.example.Bloodline_ADN_System.service.UserService;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @org.springframework.stereotype.Service
 public class CaseFileServiceImpl implements CaseFileService {
@@ -18,12 +20,14 @@ public class CaseFileServiceImpl implements CaseFileService {
     private final CaseFileRepository caseFileRepository;
     private final ServiceRepository serviceRepository;
 
+
     public CaseFileServiceImpl(UserService userService,
                                CaseFileRepository caseFileRepository,
                                ServiceRepository serviceRepository) {
         this.userService = userService;
         this.caseFileRepository = caseFileRepository;
         this.serviceRepository = serviceRepository;
+
     }
 
 
@@ -97,7 +101,17 @@ public class CaseFileServiceImpl implements CaseFileService {
         return caseCode;
     }
 
+    @Override
+    public <Optional> CaseFile findByCaseCode(String caseCode) {
+        return null;
+    }
 
+    @Override
+    public Optional<CaseFile> findByCaseCode(Long caseId) {
+
+
+        return  caseFileRepository.findById(caseId);
+    }
 
 
 }

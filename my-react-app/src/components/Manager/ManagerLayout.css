@@ -1,0 +1,44 @@
+/* ManagerLayout.css */
+
+/* Logo trên Sider */
+.logo {
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  padding: 16px 0;
+  background: #001529;
+}
+
+/* Header Manager */
+.manager-header {
+  background: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px;
+  box-shadow: 0 2px 8px #f0f1f2;
+}
+
+/* Collapse button trong header */
+.collapse-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* Thông tin người dùng bên phải header */
+.manager-info {
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  font-size: 16px;
+  color: #333;
+}
+
+/* Nút logout */
+.manager-info .anticon-logout:hover {
+  color: red;
+  transition: 0.3s;
+}

@@ -1,0 +1,234 @@
+/* src/pages/StaffManagement.css */
+
+.account-page {
+  max-width: none;
+  margin: 36px auto 24px auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+  padding: 32px 18px 24px 18px;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.main-content {
+  width: 100%;
+}
+
+.topbar {
+  display: block;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 22px;
+}
+
+.title {
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #1a237e;
+}
+
+.add-btn {
+  background: #1890ff;
+  color: #fff;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+.add-btn:hover {
+  background: #40a9ff;
+}
+
+.filters {
+  margin-bottom: 18px;
+}
+.filters input[type="text"] {
+  padding: 7px 12px;
+  border: 1px solid #d6dbe7;
+  border-radius: 5px;
+  font-size: 1rem;
+  min-width: 240px;
+}
+
+.status-message {
+  color: #e67e22;
+  font-weight: 500;
+  margin-bottom: 18px;
+}
+
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fafbfc;
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 1rem;
+  margin-top: 8px;
+}
+.user-table th, .user-table td {
+  padding: 12px 10px;
+  text-align: left;
+  border-bottom: 1px solid #e5e8ee;
+}
+.user-table th {
+  background: #f5f7fa;
+  font-weight: 600;
+  color: #222;
+}
+.user-table tr:last-child td {
+  border-bottom: none;
+}
+.user-table td {
+  vertical-align: middle;
+}
+.avatar {
+  display: inline-block;
+  width: 34px;
+  height: 34px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  border-radius: 50%;
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 600;
+  line-height: 34px;
+  margin-right: 10px;
+  box-shadow: 0 1px 4px rgba(24,144,255,0.07);
+}
+.email {
+  color: #888;
+  font-size: 0.97rem;
+}
+
+.role {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 14px;
+  font-size: 0.97rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+.role.staff { background: #e6f7ff; color: #1890ff; }
+.role.manager { background: #fffbe6; color: #faad14; }
+.role.admin { background: #f9dbe7; color: #d72660; }
+.role.user, .role.customer { background: #e9fbe6; color: #52c41a; }
+
+.status.active {
+  color: #27ae60;
+  font-weight: 600;
+}
+.status.inactive {
+  color: #e74c3c;
+  font-weight: 600;
+}
+
+.action {
+  background: none;
+  border: none;
+  font-size: 1.15rem;
+  cursor: pointer;
+  margin-right: 8px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background 0.18s;
+}
+.action.edit:hover {
+  background: #e6f7ff;
+  color: #1890ff;
+}
+.action.delete:hover {
+  background: #fff1f0;
+  color: #cf1322;
+}
+
+.modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.17);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal-content {
+  background: #fff;
+  border-radius: 12px;
+  padding: 32px 28px;
+  min-width: 320px;
+  max-width: 95vw;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.13);
+  position: relative;
+}
+.modal-content h2 {
+  margin-bottom: 18px;
+  color: #1890ff;
+}
+.modal-content form label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: 500;
+  color: #222;
+}
+.modal-content input,
+.modal-content select {
+  width: 100%;
+  padding: 7px 10px;
+  border: 1px solid #d6dbe7;
+  border-radius: 5px;
+  font-size: 1rem;
+  margin-top: 2px;
+  margin-bottom: 8px;
+  background: #f8fafc;
+  transition: border 0.18s;
+}
+.modal-content input:focus,
+.modal-content select:focus {
+  outline: none;
+  border-color: #1890ff;
+}
+.modal-content .error {
+  color: #e74c3c;
+  font-size: 0.97rem;
+  margin-top: 2px;
+  margin-bottom: 0;
+}
+.modal-content button[type="submit"] {
+  background: #1890ff;
+  color: #fff;
+  border: none;
+  padding: 8px 24px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-right: 12px;
+  transition: background 0.18s;
+}
+.modal-content button[type="submit"]:hover {
+  background: #40a9ff;
+}
+.modal-content button[type="button"] {
+  background: #f5f5f5;
+  color: #444;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+.modal-content button[type="button"]:hover {
+  background: #e6e9f0;
+}
+
+@media (max-width: 700px) {
+  .account-page { padding: 10px 2px; }
+  .main-content { padding: 0; }
+  .user-table th, .user-table td { padding: 8px 4px; font-size: 0.97rem; }
+  .modal-content { padding: 16px 8px; }
+  .title { font-size: 1.1rem; }
+}
