@@ -5,13 +5,51 @@ import { faUser, faCoffee, faHome, faBars, faCheck } from '@fortawesome/free-sol
 import Register from './components/register/Register';
 import { useNavigate } from 'react-router-dom';
 import Footer from './components/Footer';
+// import 'dotenv';
+// dotenv.config();
+// const handleFileUpload = () => {
+//   const API = "f692f4eb8a8104c8622e537211c63d79"
+//   const fileInput = document.getElementById('input-img');
+
+//   const file = fileInput.files[0];
+//   if (!file) {
+//     alert('Please select a file to upload.');
+//     return;
+//   }
+
+//   document.getElementById('preview').src = URL.createObjectURL(file);
+
+//   const formData = new FormData();
+//   formData.append('image', file);
+
+//   fetch(`https://api.imgbb.com/1/upload?key=${API}`, {
+//     method: 'POST',
+//     body: formData,
+//   }).then(response => response.json())
+//     .then(data => {
+//       if (data && data.data && data.data.url) {
+//         document.getElementById('img_url').value = data.data.url;
+//         // code luu database
+//       } else {
+//         alert('Error uploading image. Please try again.');
+//       }
+//     })
+//     .catch(error => {
+//       console.error('Error uploading image:', error);
+//       alert('Error uploading image. Please try again.');
+//     });
+// }
 
 const Homepage = () => {
-const navigate = useNavigate();
-
   return (
     <div>
-      
+      <div>
+        {/* <input type='file' id='input-img'></input>
+        <button onClick={handleFileUpload} >Submit</button>
+        <input type="text" id="img_url" placeholder="Link ảnh sẽ hiện ở đây" readOnly />
+        <img id="preview" style={{ maxWidth: "200px", marginTop: "10px" }} />
+        <img src={data} width={100} height={100}></img> */}
+      </div>
       <div className='' >
         <div className="hero">
           <div className="hero-left">
@@ -60,7 +98,7 @@ const navigate = useNavigate();
           </div>
 
         </div>
-        
+
         {/* Form tư vấn */}
         <div className="consultation-section">
           <div className="consultation-container">
@@ -83,27 +121,27 @@ const navigate = useNavigate();
                   </div>
                 </div>
               </div>
-              
+
               <div className="consultation-form-container">
                 <form className="consultation-form">
                   <div className="form-group">
-                    <input 
-                      type="text" 
-                      placeholder="Họ và tên *" 
-                      required 
+                    <input
+                      type="text"
+                      placeholder="Họ và tên *"
+                      required
                     />
                   </div>
                   <div className="form-group">
-                    <input 
-                      type="tel" 
-                      placeholder="Số điện thoại *" 
-                      required 
+                    <input
+                      type="tel"
+                      placeholder="Số điện thoại *"
+                      required
                     />
                   </div>
                   <div className="form-group">
-                    <input 
-                      type="email" 
-                      placeholder="Email" 
+                    <input
+                      type="email"
+                      placeholder="Email"
                     />
                   </div>
                   <div className="form-group">
@@ -116,8 +154,8 @@ const navigate = useNavigate();
                     </select>
                   </div>
                   <div className="form-group">
-                    <textarea 
-                      placeholder="Mô tả chi tiết về tình hình của bạn (tùy chọn)" 
+                    <textarea
+                      placeholder="Mô tả chi tiết về tình hình của bạn (tùy chọn)"
                       rows="4"
                     ></textarea>
                   </div>
@@ -135,7 +173,7 @@ const navigate = useNavigate();
         </div>
 
       </div>
-       <Footer />
+      <Footer />
     </div>
   )
 }

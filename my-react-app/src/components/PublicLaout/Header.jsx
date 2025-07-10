@@ -10,8 +10,8 @@ const menuItems = [
   {
     name: 'GIỚI THIỆU',
     submenu: [
-      { name: 'Về chúng tôi' },
-      { name: 'Hỏi đáp ADN huyết thống' }
+      { name: 'Về chúng tôi' , path: '/about-us'},
+      { name: 'Hỏi đáp ADN huyết thống', path: '/questionADN' },
     ]
   },
   { name: 'DỊCH VỤ' },

@@ -1,0 +1,58 @@
+/* src/pages/AboutUs.css */
+.aboutus-section {
+    padding: 40px 20px;
+    background-color: #f9f9f9;
+    margin: auto;
+}
+
+.aboutus-section h2 {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 30px;
+    font-weight: bold;
+}
+
+.aboutus-content {
+  display: flex;
+  justify-content: center;     /* 👈 căn giữa theo chiều ngang */
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 40px;
+  max-width: 1100px;           /* 👈 giới hạn chiều rộng toàn phần */
+  margin: 0 auto; 
+}
+
+.aboutus-text {
+    flex: 1;
+    max-width: 700px;
+    
+}
+
+.aboutus-block {
+    margin-bottom: 30px;
+}
+
+.aboutus-block h3 {
+    font-size: 20px;
+    color: #1a1a1a;
+    margin-bottom: 10px;
+}
+
+.aboutus-block p {
+    font-size: 16px;
+    line-height: 1.6;
+    text-align: justify;
+}
+
+.aboutus-image {
+    height: auto;
+    width: 400px;
+    max-width: 100%;
+    
+}
+
+.aboutus-image img {
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}

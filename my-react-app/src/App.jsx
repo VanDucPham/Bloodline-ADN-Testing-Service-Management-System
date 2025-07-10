@@ -17,6 +17,8 @@ import AppointmentBooking from './components/htmltest/tracking_customer/tracking
 import BlogDetail from './components/post-detail/BlogDetail';
 import DnaPost from './components/dna-testing/DnaPost';
 import AllPost from './components/allpost/allpost';
+import AboutUs from './components/aboutus/AboutUs';
+import QuestionADNApp from "./components/questionADN/QuestionADN";
 
 
 import CustomerAppointmentList from './components/htmltest/tracking_customer/tracking_user/CustomerApointmentList';
@@ -70,6 +72,8 @@ function App() {
           <Route path="/post-detail/:id" element={<BlogDetail />} />
           <Route path="/dna" element={<DnaPost />} />
           <Route path="/blogList" element={<BlogList />} />
+          <Route path="/about-us" element={<AboutUs />} />
+          <Route path="/questionADN" element={<QuestionADNApp />} />
 
            
           <Route path="/admin-dashboard" element={<AdminDashboard activeSection="admin" />} />
