@@ -5,6 +5,8 @@ import dayjs from "dayjs";
 import apiService from '../../service/api';
 import "./BlogManager.css";
 
+
+
 const BLOG_TYPES = [
   { value: "NEWS", label: "Tin tức" },
   { value: "GUIDE", label: "Hướng dẫn" },
@@ -26,7 +28,11 @@ const typeColor = {
 };
 
 const BlogManager = () => {
-  const [blogs, setBlogs] = useState([]);
+
+  
+
+  
+  const [blogs, setBlogs] = useState(initialBlogs);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingBlog, setEditingBlog] = useState(null);
   const [search, setSearch] = useState("");

@@ -3,11 +3,13 @@ import React from 'react';
 import Header from '../components/Header';
 import './about.css';
 
+
 const AboutUs = () => {
   return (
     <div className="about-container">
       {/* Hero Section */}
-      <Header/>
+
+      <Header />
       <section className="hero-section">
         <div>
           {/* Hero img with overlay content */}
@@ -30,10 +32,11 @@ const AboutUs = () => {
             </div>
           </div>
         </div>
-      </section> 
+      </section>
 
       {/* Content Section */}
       <section className="content-section">
+       
         <div className="content-container">
           <div className="content-grid">
             {/* Left content */}
