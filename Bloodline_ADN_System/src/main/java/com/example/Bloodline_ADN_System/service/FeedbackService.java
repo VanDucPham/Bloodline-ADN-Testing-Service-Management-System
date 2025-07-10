@@ -1,7 +1,7 @@
 package com.example.Bloodline_ADN_System.service;
 
-import com.example.Bloodline_ADN_System.dto.FeedbackDTO;
-import com.example.Bloodline_ADN_System.dto.FeedbackResponse;
+import com.example.Bloodline_ADN_System.dto.noneWhere.FeedbackDTO;
+import com.example.Bloodline_ADN_System.dto.noneWhere.FeedbackResponse;
 
 public interface FeedbackService {
     FeedbackResponse createFeedback(FeedbackDTO feedbackDTO);

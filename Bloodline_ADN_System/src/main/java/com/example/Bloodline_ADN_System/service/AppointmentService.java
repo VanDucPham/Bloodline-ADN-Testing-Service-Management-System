@@ -1,7 +1,7 @@
 package com.example.Bloodline_ADN_System.service;
 
 import com.example.Bloodline_ADN_System.Entity.Appointment;
-import com.example.Bloodline_ADN_System.dto.ApiMessResponse;
+import com.example.Bloodline_ADN_System.dto.noneWhere.ApiMessResponse;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentDTO;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentRequest;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentResponse;

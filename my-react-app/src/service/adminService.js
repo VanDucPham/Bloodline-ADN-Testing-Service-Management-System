@@ -66,6 +66,14 @@ class adminService extends BaseApiService {
    async getBlogById(id) {
       return this.get(`/admin/blog/get/${id}`);
    }
-
+    async getscheduleByMonth(month){
+      return this.get(`/admin/case_schedule/${month}`);
+   }
+   async getStaffAssigned(){
+      return this.get('/admin/staff_inf')
+   }
+   async addStaffAsigned(payload){
+      return this.post('/admin/assign-staff', payload)
+   }
 }
 export default adminService

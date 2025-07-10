@@ -1,4 +1,4 @@
-package com.example.Bloodline_ADN_System.dto;
+package com.example.Bloodline_ADN_System.dto.noneWhere;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

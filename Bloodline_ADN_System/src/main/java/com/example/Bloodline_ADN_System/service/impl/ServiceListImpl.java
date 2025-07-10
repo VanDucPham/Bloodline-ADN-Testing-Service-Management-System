@@ -2,7 +2,7 @@ package com.example.Bloodline_ADN_System.service.impl;
 
 import com.example.Bloodline_ADN_System.Entity.Service;
 import com.example.Bloodline_ADN_System.dto.ManagerService.ServiceManagerDTO;
-import com.example.Bloodline_ADN_System.dto.ServiceDTO;
+import com.example.Bloodline_ADN_System.dto.noneWhere.ServiceDTO;
 import com.example.Bloodline_ADN_System.repository.ServiceRepository;
 import com.example.Bloodline_ADN_System.service.ServiceList;
 

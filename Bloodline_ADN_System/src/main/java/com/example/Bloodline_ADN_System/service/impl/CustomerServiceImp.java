@@ -1,24 +1,16 @@
 package com.example.Bloodline_ADN_System.service.impl;
 
 import com.example.Bloodline_ADN_System.Entity.CaseFile;
-import com.example.Bloodline_ADN_System.Entity.Participant;
-import com.example.Bloodline_ADN_System.Entity.Sample;
 import com.example.Bloodline_ADN_System.Entity.Service;
-import com.example.Bloodline_ADN_System.dto.ParticipantResponeDTO;
-import com.example.Bloodline_ADN_System.dto.SampleDTO;
+import com.example.Bloodline_ADN_System.dto.noneWhere.ParticipantResponeDTO;
+import com.example.Bloodline_ADN_System.dto.noneWhere.SampleDTO;
 import com.example.Bloodline_ADN_System.dto.TrackingAppoint.AppointmentResponseDTO;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentDTO;
-import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentResponse;
-import com.example.Bloodline_ADN_System.repository.AppointmentRepository;
-import com.example.Bloodline_ADN_System.repository.ServiceRepository;
 import com.example.Bloodline_ADN_System.service.CustomerService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @org.springframework.stereotype.Service
 public class CustomerServiceImp implements CustomerService {

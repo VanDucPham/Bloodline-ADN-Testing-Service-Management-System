@@ -1,11 +1,15 @@
 package com.example.Bloodline_ADN_System.controller;
 
-import com.example.Bloodline_ADN_System.Entity.Blog;
-import com.example.Bloodline_ADN_System.Entity.User;
-import com.example.Bloodline_ADN_System.dto.*;
 import com.example.Bloodline_ADN_System.dto.ManagerService.ServiceManagerDTO;
+import com.example.Bloodline_ADN_System.dto.ScheduleManager.StaffDTO;
+import com.example.Bloodline_ADN_System.dto.ScheduleManager.request.AppoinmentAsignedStaffDTO;
+import com.example.Bloodline_ADN_System.dto.ScheduleManager.request.AssignmentRequestDTO;
+import com.example.Bloodline_ADN_System.dto.ScheduleManager.response.CaseassignmentDTO;
+import com.example.Bloodline_ADN_System.dto.ScheduleManager.response.DayscheduleDTO;
+import com.example.Bloodline_ADN_System.dto.noneWhere.*;
 import com.example.Bloodline_ADN_System.repository.UserRepository;
 import com.example.Bloodline_ADN_System.service.BlogService;
+import com.example.Bloodline_ADN_System.service.ScheduleService;
 import com.example.Bloodline_ADN_System.service.ServiceList;
 import com.example.Bloodline_ADN_System.service.UserService;
 import com.example.Bloodline_ADN_System.service.impl.AdminServiceImpl;
@@ -30,7 +34,7 @@ public class AdminController {
     private final ServiceList serviceList;
     private final BlogService blogService;
     private final UserService userService;
-
+    private final ScheduleService scheduleService;
     @PostMapping("/create")
     public ResponseEntity<?> createUser(@RequestBody CreateUserRequest request) {
         adminService.createUser(request);
@@ -138,6 +142,29 @@ public class AdminController {
     public BlogDTO updateBlog(@PathVariable Long id, @RequestBody BlogDTO dto) {
         return blogService.updateBlog(id, dto);
     }
+
+    @GetMapping("/case_schedule/{month}")
+    public ResponseEntity<List<DayscheduleDTO>> getCaseSchedule(@PathVariable String  month) {
+         List<DayscheduleDTO>   schedule =  scheduleService.getSchedule(month) ;
+
+        return ResponseEntity.ok(schedule);
+    }
+
+    @GetMapping("/staff_inf")
+    public ResponseEntity<List<StaffDTO>> getStaffInfor() {
+        return ResponseEntity.ok(scheduleService.getAllStaff()) ;
+    }
+
+    @PostMapping("/assign-staff")
+    public ResponseEntity<?> assignStaffToAppointments(@RequestBody List<AppoinmentAsignedStaffDTO> assignments) {
+        try {
+            scheduleService.assignStaffToCase(assignments);
+            return ResponseEntity.ok("Success");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi khi phân công");
+        }
+    }
+
 
 
 }

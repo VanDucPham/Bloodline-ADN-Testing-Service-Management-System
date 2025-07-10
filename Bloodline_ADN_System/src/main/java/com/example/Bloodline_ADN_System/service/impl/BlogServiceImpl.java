@@ -2,7 +2,7 @@ package com.example.Bloodline_ADN_System.service.impl;
 
 import com.example.Bloodline_ADN_System.Entity.Blog;
 import com.example.Bloodline_ADN_System.Entity.User;
-import com.example.Bloodline_ADN_System.dto.BlogDTO;
+import com.example.Bloodline_ADN_System.dto.noneWhere.BlogDTO;
 import com.example.Bloodline_ADN_System.repository.BlogRepository;
 import com.example.Bloodline_ADN_System.repository.UserRepository;
 import com.example.Bloodline_ADN_System.service.BlogService;

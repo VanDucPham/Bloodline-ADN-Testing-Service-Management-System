@@ -2,7 +2,7 @@ package com.example.Bloodline_ADN_System.service.impl;
 
 import com.example.Bloodline_ADN_System.Entity.User;
 import com.example.Bloodline_ADN_System.config.JwtService;
-import com.example.Bloodline_ADN_System.dto.RegisterRequest;
+import com.example.Bloodline_ADN_System.dto.noneWhere.RegisterRequest;
 import com.example.Bloodline_ADN_System.dto.Login.LoginRequest;
 import com.example.Bloodline_ADN_System.dto.Login.LoginResponse;
 import com.example.Bloodline_ADN_System.repository.UserRepository;

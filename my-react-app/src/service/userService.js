@@ -10,7 +10,7 @@ class UserService extends BaseApiService {
         return this.get(`/user/all?${queryString}`);
     }
     async getService(){
-        return this.get('/customer/service')
+        return this.get('/customer/appointment/services')
     }
     async getUserById(id) { return this.get(`/user/${id}`); }
     async deleteUser(id) { return this.delete(`/user/${id}`); }
@@ -33,7 +33,9 @@ return this.post('/customer/appointment/check-availability', data)
    async updateParticipant(id, data) {
     return this.put(`/customer/${id}/update`, data);
   }
-
+  async creatPaymentVnPay(data){
+    return this.post('/auth/vnpay/create', data)
+  }
 }
     
 

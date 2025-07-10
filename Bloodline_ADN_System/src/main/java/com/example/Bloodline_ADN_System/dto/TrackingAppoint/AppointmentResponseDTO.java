@@ -1,8 +1,7 @@
 package com.example.Bloodline_ADN_System.dto.TrackingAppoint;
 
 import com.example.Bloodline_ADN_System.Entity.Payment;
-import com.example.Bloodline_ADN_System.dto.ParticipantResponeDTO;
-import com.example.Bloodline_ADN_System.dto.SampleDTO;
+import com.example.Bloodline_ADN_System.dto.noneWhere.ParticipantResponeDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

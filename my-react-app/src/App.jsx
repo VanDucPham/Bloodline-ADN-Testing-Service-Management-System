@@ -68,7 +68,7 @@ function App() {
           <Route path="/post-detail/:section/:id" element={<BlogDetail />} />
           <Route path="/dna" element={<DnaPost />} />
           <Route path="/blogList" element={<BlogList />} />
-
+          
            
           <Route path="/admin-dashboard" element={<AdminDashboard activeSection="admin" />} />
         </Route>

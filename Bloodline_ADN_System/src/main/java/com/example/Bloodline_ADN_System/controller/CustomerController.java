@@ -1,17 +1,11 @@
 package com.example.Bloodline_ADN_System.controller;
 
-import com.example.Bloodline_ADN_System.dto.ApiMessResponse;
-import com.example.Bloodline_ADN_System.dto.ChangePasswordDTO;
-import com.example.Bloodline_ADN_System.dto.SampleDTO;
+import com.example.Bloodline_ADN_System.dto.noneWhere.ApiMessResponse;
+import com.example.Bloodline_ADN_System.dto.noneWhere.ChangePasswordDTO;
 import com.example.Bloodline_ADN_System.dto.TrackingAppoint.AppointmentResponseDTO;
 import com.example.Bloodline_ADN_System.dto.TrackingAppoint.UpdateParticipant;
-import com.example.Bloodline_ADN_System.dto.UserUpdateDTO;
-import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentDTO;
+import com.example.Bloodline_ADN_System.dto.noneWhere.UserUpdateDTO;
 import com.example.Bloodline_ADN_System.service.*;
-import com.example.Bloodline_ADN_System.service.impl.AppointmentServiceImpl;
-import com.example.Bloodline_ADN_System.service.impl.CustomerServiceImp;
-import com.example.Bloodline_ADN_System.service.impl.SampleServiceImpl;
-import com.example.Bloodline_ADN_System.service.impl.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

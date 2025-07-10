@@ -1,17 +1,18 @@
 package com.example.Bloodline_ADN_System.controller;
 
 import com.example.Bloodline_ADN_System.Entity.Appointment;
-import com.example.Bloodline_ADN_System.dto.ApiMessResponse;
-import com.example.Bloodline_ADN_System.dto.AppointmentCheckRequest;
-import com.example.Bloodline_ADN_System.dto.ServiceDTO;
+import com.example.Bloodline_ADN_System.dto.ManagerService.ServiceManagerDTO;
+import com.example.Bloodline_ADN_System.dto.noneWhere.ApiMessResponse;
+import com.example.Bloodline_ADN_System.dto.noneWhere.AppointmentCheckRequest;
+import com.example.Bloodline_ADN_System.dto.noneWhere.ServiceDTO;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentDTO;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentRequest;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentResponse;
 import com.example.Bloodline_ADN_System.service.AppointmentService;
+import com.example.Bloodline_ADN_System.service.ServiceList;
 import com.example.Bloodline_ADN_System.service.impl.ServiceImpl;
 import com.example.Bloodline_ADN_System.service.impl.Time_slot_limit_Impl;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -26,13 +27,15 @@ public class AppointmentController {
     private final AppointmentService appointmentService;
     private final Time_slot_limit_Impl timeSlotLimitService;
     private final ServiceImpl serviceImpl;
+    private final ServiceList serviceList;
 
     public AppointmentController(AppointmentService appointmentService,
                                  Time_slot_limit_Impl timeSlotLimitService,
-                                 ServiceImpl serviceImpl) {
+                                 ServiceImpl serviceImpl, ServiceList serviceList) {
         this.appointmentService = appointmentService;
         this.timeSlotLimitService = timeSlotLimitService;
         this.serviceImpl = serviceImpl;
+        this.serviceList = serviceList;
     }
 
     /**
@@ -128,7 +131,7 @@ public class AppointmentController {
      * Lấy danh sách dịch vụ
      */
     @GetMapping("/services")
-    public ResponseEntity<List<ServiceDTO>> getAppointmentServices() {
-        return ResponseEntity.ok(serviceImpl.getAllServices());
+    public ResponseEntity<List<ServiceManagerDTO>> getAppointmentServices() {
+        return ResponseEntity.ok(serviceList.getAllServices());
     }
 }

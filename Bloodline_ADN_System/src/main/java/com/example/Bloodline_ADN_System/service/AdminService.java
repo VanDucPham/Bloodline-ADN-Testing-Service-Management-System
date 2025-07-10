@@ -1,9 +1,8 @@
 package com.example.Bloodline_ADN_System.service;
 
-import com.example.Bloodline_ADN_System.Entity.User;
-import com.example.Bloodline_ADN_System.dto.CreateUserRequest;
-import com.example.Bloodline_ADN_System.dto.accountResponse;
-import com.example.Bloodline_ADN_System.dto.updateUserRequest;
+import com.example.Bloodline_ADN_System.dto.noneWhere.CreateUserRequest;
+import com.example.Bloodline_ADN_System.dto.noneWhere.accountResponse;
+import com.example.Bloodline_ADN_System.dto.noneWhere.updateUserRequest;
 
 import java.util.List;
 

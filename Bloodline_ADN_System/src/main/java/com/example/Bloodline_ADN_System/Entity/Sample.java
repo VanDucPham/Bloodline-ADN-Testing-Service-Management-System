@@ -1,6 +1,5 @@
 package com.example.Bloodline_ADN_System.Entity;
 
-import com.example.Bloodline_ADN_System.dto.SampleDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

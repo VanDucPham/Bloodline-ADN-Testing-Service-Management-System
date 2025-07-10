@@ -1,7 +1,7 @@
 package com.example.Bloodline_ADN_System.controller;
 
-import com.example.Bloodline_ADN_System.dto.FeedbackDTO;
-import com.example.Bloodline_ADN_System.dto.FeedbackResponse;
+import com.example.Bloodline_ADN_System.dto.noneWhere.FeedbackDTO;
+import com.example.Bloodline_ADN_System.dto.noneWhere.FeedbackResponse;
 import com.example.Bloodline_ADN_System.service.FeedbackService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -2,9 +2,9 @@ package com.example.Bloodline_ADN_System.service;
 
 import com.example.Bloodline_ADN_System.Entity.Sample;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.SampleCustomerDTO;
-import com.example.Bloodline_ADN_System.dto.SampleDTO;
-import com.example.Bloodline_ADN_System.dto.SampleStaffDTO;
-import com.example.Bloodline_ADN_System.dto.SampleUpdateDTO;
+import com.example.Bloodline_ADN_System.dto.noneWhere.SampleDTO;
+import com.example.Bloodline_ADN_System.dto.noneWhere.SampleStaffDTO;
+import com.example.Bloodline_ADN_System.dto.noneWhere.SampleUpdateDTO;
 
 import java.util.List;
 

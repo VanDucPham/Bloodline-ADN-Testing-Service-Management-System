@@ -1,7 +1,6 @@
-package com.example.Bloodline_ADN_System.dto;
+package com.example.Bloodline_ADN_System.dto.noneWhere;
 
 import lombok.Data;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController

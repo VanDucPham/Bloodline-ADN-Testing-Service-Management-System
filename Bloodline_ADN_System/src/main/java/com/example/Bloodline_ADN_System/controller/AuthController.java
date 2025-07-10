@@ -1,15 +1,13 @@
 package com.example.Bloodline_ADN_System.controller;
 
 
-import com.example.Bloodline_ADN_System.dto.BlogDTO;
+import com.example.Bloodline_ADN_System.dto.noneWhere.BlogDTO;
 import com.example.Bloodline_ADN_System.dto.Login.LoginRequest;
 import com.example.Bloodline_ADN_System.dto.Login.LoginResponse;
-import com.example.Bloodline_ADN_System.dto.RegisterRequest;
-import com.example.Bloodline_ADN_System.service.AuthService;
+import com.example.Bloodline_ADN_System.dto.noneWhere.RegisterRequest;
 import com.example.Bloodline_ADN_System.service.BlogService;
 import com.example.Bloodline_ADN_System.service.impl.AuthServiceImpl;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
