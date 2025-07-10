@@ -30,12 +30,27 @@ const menuItems = [
       { name: 'Thư viện kỹ thuật' }
     ]
   },
-  { name: 'LIÊN HỆ' }
+  { name: 'LIÊN HỆ', action: 'scroll' }
 ];
 
 function Header() {
   const [activeMenu, setActiveMenu] = useState('');
   const navigate = useNavigate();
+
+  const scrollToConsultationForm = () => {
+    const element = document.getElementById('consultation-form');
+    if (element) {
+      // Tính toán vị trí scroll để form hiển thị đầy đủ
+      const elementRect = element.getBoundingClientRect();
+      const absoluteElementTop = elementRect.top + window.pageYOffset;
+      const middle = absoluteElementTop - (window.innerHeight / 2) + (elementRect.height / 2);
+      
+      window.scrollTo({
+        top: middle,
+        behavior: 'smooth'
+      });
+    }
+  };
 
   const userData = localStorage.getItem('userInfo');
   const user = userData ? JSON.parse(userData) : null;
@@ -84,7 +99,13 @@ function Header() {
               className={`menu-item ${item.submenu ? 'dropdown' : ''} ${activeMenu === item.name ? 'active' : ''}`}
               onMouseEnter={() => item.submenu && setActiveMenu(item.name)}
               onMouseLeave={() => item.submenu && setActiveMenu('')}
-              onClick={() => item.path && navigate(item.path)}
+              onClick={() => {
+                if (item.action === 'scroll') {
+                  scrollToConsultationForm();
+                } else if (item.path) {
+                  navigate(item.path);
+                }
+              }}
             >
               <span>{item.name}</span>
               {item.submenu && (

@@ -1,3 +1,7 @@
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -98,6 +102,12 @@ body {
   background-color: #1e3a8a;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .btn-outline {
@@ -279,6 +289,7 @@ body {
   background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
   padding: 80px 0;
   margin-top: 60px;
+  scroll-margin-top: 20px; /* Đảm bảo có khoảng cách khi scroll */
 }
 
 .consultation-container {
@@ -301,10 +312,14 @@ body {
 
 .consultation-text h2 {
   color: #1e40af;
-  font-size: 2.25rem;
-  font-weight: 700;
-  margin-bottom: 20px;
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 24px;
   line-height: 1.2;
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .consultation-text p {
@@ -337,11 +352,23 @@ body {
 .consultation-form-container {
   flex: 1;
   min-width: 400px;
-  background: white;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
   padding: 40px;
-  border-radius: 16px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+  position: relative;
+  overflow: hidden;
+}
+
+.consultation-form-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #1e40af, #3b82f6, #1e40af);
 }
 
 .consultation-form {
@@ -354,24 +381,33 @@ body {
 .form-group select,
 .form-group textarea {
   width: 100%;
-  padding: 16px;
+  padding: 18px 20px;
   font-size: 1rem;
-  border: 2px solid #e5e7eb;
-  border-radius: 10px;
-  background-color: #fafafa;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  background-color: #ffffff;
   transition: all 0.3s ease;
   font-family: inherit;
   box-sizing: border-box;
+  color: #1f2937;
+  font-weight: 500;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: #9ca3af;
+  font-weight: 400;
 }
 
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #1e40af;
-  background-color: white;
-  box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
-  transform: translateY(-1px);
+  border-color: #3b82f6;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+  transform: translateY(-2px);
+  color: #1f2937;
 }
 
 .form-group select {
@@ -384,40 +420,99 @@ body {
 }
 
 .consultation-btn {
-  background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
   color: white;
   border: none;
-  padding: 18px 32px;
+  padding: 20px 36px;
   font-size: 1.1rem;
   font-weight: 700;
   text-transform: uppercase;
-  border-radius: 10px;
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
   letter-spacing: 0.5px;
-  margin-top: 10px;
+  margin-top: 15px;
+  position: relative;
+  overflow: hidden;
+}
+
+.consultation-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.consultation-btn:hover::before {
+  left: 100%;
 }
 
 .consultation-btn:hover {
   background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(30, 64, 175, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 25px rgba(30, 64, 175, 0.4);
+}
+
+.consultation-btn:disabled {
+  background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 .form-note {
-  margin-top: 16px;
+  margin-top: 20px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.9rem;
+  gap: 10px;
+  font-size: 0.95rem;
   color: #059669;
-  font-weight: 500;
+  font-weight: 600;
   text-align: center;
   justify-content: center;
+  padding: 12px 16px;
+  background-color: #f0fdf4;
+  border-radius: 8px;
+  border: 1px solid #bbf7d0;
 }
 
 .form-note svg {
   color: #059669;
+}
+
+/* Message Display Styles */
+.message {
+  margin-bottom: 20px;
+  border-radius: 12px;
+  font-weight: 500;
+  animation: slideIn 0.3s ease-out;
+}
+
+.message.success {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border: 2px solid #bbf7d0;
+  color: #166534;
+}
+
+.message.error {
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  border: 2px solid #fecaca;
+  color: #dc2626;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 768px) {

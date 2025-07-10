@@ -19,6 +19,8 @@ import DnaPost from './components/dna-testing/DnaPost';
 import AllPost from './components/allpost/allpost';
 import AboutUs from './components/aboutus/AboutUs';
 import QuestionADNApp from "./components/questionADN/QuestionADN";
+import ConsultationStatus from './components/ConsultationStatus';
+import ConsultationDemo from './components/ConsultationDemo';
 
 
 import CustomerAppointmentList from './components/htmltest/tracking_customer/tracking_user/CustomerApointmentList';
@@ -74,6 +76,8 @@ function App() {
           <Route path="/blogList" element={<BlogList />} />
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/questionADN" element={<QuestionADNApp />} />
+          <Route path="/consultation-status" element={<ConsultationStatus />} />
+          <Route path="/consultation-demo" element={<ConsultationDemo />} />
 
            
           <Route path="/admin-dashboard" element={<AdminDashboard activeSection="admin" />} />

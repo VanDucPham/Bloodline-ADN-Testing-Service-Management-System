@@ -32,6 +32,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/blog/**").permitAll()
+                        .requestMatchers("/api/consultation/register").permitAll()
+                        .requestMatchers("/api/consultation/status/**").permitAll()
                         .requestMatchers("/api/feedback/create").hasRole("CUSTOMER")
                         .requestMatchers("/api/feedback/my-feedback/**").hasRole("CUSTOMER")
                         .requestMatchers("/api/feedback/**").hasAnyRole("ADMIN", "MANAGER", "STAFF")
