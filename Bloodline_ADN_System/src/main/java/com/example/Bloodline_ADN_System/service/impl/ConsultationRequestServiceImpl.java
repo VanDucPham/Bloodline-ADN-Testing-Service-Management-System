@@ -19,7 +19,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class ConsultationRequestServiceImpl implements ConsultationRequestService {
@@ -39,14 +38,18 @@ public class ConsultationRequestServiceImpl implements ConsultationRequestServic
             throw new RuntimeException("Validation errors: " + String.join(", ", validationErrors));
         }
         
+        // Clean phone number
+        String cleanPhone = request.getPhone().trim().replaceAll("[\\s\\-_()]", "");
+        
         // Check if phone already exists
-        if (consultationRequestRepository.findByPhone(request.getPhone().trim()).isPresent()) {
+        List<ConsultationRequest> existingRequests = consultationRequestRepository.findByPhoneOrderByCreatedAtDesc(cleanPhone);
+        if (!existingRequests.isEmpty()) {
             throw new RuntimeException("Số điện thoại này đã được đăng ký tư vấn trước đó");
         }
         
         ConsultationRequest consultationRequest = new ConsultationRequest();
         consultationRequest.setCustomerName(request.getCustomerName().trim());
-        consultationRequest.setPhone(request.getPhone().trim());
+        consultationRequest.setPhone(cleanPhone);
         consultationRequest.setEmail(request.getEmail() != null ? request.getEmail().trim() : null);
         consultationRequest.setContent(request.getContent().trim());
         
@@ -57,8 +60,12 @@ public class ConsultationRequestServiceImpl implements ConsultationRequestServic
     // ✅ Theo dõi trạng thái (Khách hàng)
     @Override
     public ConsultationRequestDTO getConsultationStatusByPhone(String phone) {
-        ConsultationRequest request = consultationRequestRepository.findByPhone(phone)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy yêu cầu tư vấn với số điện thoại: " + phone));
+        List<ConsultationRequest> requests = consultationRequestRepository.findByPhoneOrderByCreatedAtDesc(phone);
+        if (requests.isEmpty()) {
+            throw new RuntimeException("Không tìm thấy yêu cầu tư vấn với số điện thoại: " + phone);
+        }
+        // Lấy bản ghi mới nhất
+        ConsultationRequest request = requests.getFirst();
         return convertToDTO(request);
     }
 
@@ -122,7 +129,7 @@ public class ConsultationRequestServiceImpl implements ConsultationRequestServic
     @Override
     public List<ConsultationRequestDTO> getMyAssignments(Long staffId) {
         List<ConsultationRequest> requests = consultationRequestRepository.findByStaffUserId(staffId);
-        return requests.stream().map(this::convertToDTO).collect(Collectors.toList());
+        return requests.stream().map(this::convertToDTO).toList();
     }
 
     @Override
@@ -164,7 +171,7 @@ public class ConsultationRequestServiceImpl implements ConsultationRequestServic
         // Thống kê theo nhân viên
         List<User> staffList = userRepository.findAll().stream()
                 .filter(user -> user.getRole().equals("STAFF") || user.getRole().equals("ADMIN"))
-                .collect(Collectors.toList());
+                .toList();
         
         for (User staff : staffList) {
             long count = consultationRequestRepository.countByStaffUserId(staff.getUserId());
@@ -195,7 +202,7 @@ public class ConsultationRequestServiceImpl implements ConsultationRequestServic
     public List<ConsultationRequestDTO> getConsultationRequestsByStatus(String status) {
         ConsultationRequest.RequestStatus requestStatus = ConsultationRequest.RequestStatus.valueOf(status.toUpperCase());
         List<ConsultationRequest> requests = consultationRequestRepository.findByStatus(requestStatus);
-        return requests.stream().map(this::convertToDTO).collect(Collectors.toList());
+        return requests.stream().map(this::convertToDTO).toList();
     }
 
     private ConsultationRequestDTO convertToDTO(ConsultationRequest request) {

@@ -9,7 +9,6 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 public interface ConsultationRequestRepository extends JpaRepository<ConsultationRequest, Long> {
     
@@ -19,21 +18,11 @@ public interface ConsultationRequestRepository extends JpaRepository<Consultatio
     // Tìm theo nhân viên xử lý
     List<ConsultationRequest> findByStaffUserId(Long staffId);
     
-    // Tìm theo số điện thoại
-    Optional<ConsultationRequest> findByPhone(String phone);
+    // Tìm theo số điện thoại (lấy bản ghi mới nhất)
+    @Query("SELECT cr FROM ConsultationRequest cr WHERE cr.phone = :phone ORDER BY cr.createdAt DESC")
+    List<ConsultationRequest> findByPhoneOrderByCreatedAtDesc(@Param("phone") String phone);
     
-    // Tìm theo email
-    List<ConsultationRequest> findByEmail(String email);
-    
-    // Phân trang theo trạng thái
-    Page<ConsultationRequest> findByStatus(ConsultationRequest.RequestStatus status, Pageable pageable);
-    
-    // Phân trang theo nhân viên
-    Page<ConsultationRequest> findByStaffUserId(Long staffId, Pageable pageable);
-    
-    // Tìm kiếm theo tên khách hàng (contains)
-    @Query("SELECT cr FROM ConsultationRequest cr WHERE cr.customerName LIKE %:name%")
-    List<ConsultationRequest> findByCustomerNameContaining(@Param("name") String name);
+
     
     // Đếm số lượng theo trạng thái
     long countByStatus(ConsultationRequest.RequestStatus status);

@@ -23,9 +23,14 @@ public class ConsultationValidation {
         if (request.getPhone() == null || request.getPhone().trim().isEmpty()) {
             errors.add("Số điện thoại không được để trống");
         } else {
-            String phoneRegex = "^(0|\\+84)[0-9]{9,10}$";
-            if (!Pattern.matches(phoneRegex, request.getPhone().trim())) {
-                errors.add("Số điện thoại không hợp lệ (định dạng: 0123456789 hoặc +84123456789)");
+            String phone = request.getPhone().trim();
+            // Loại bỏ tất cả khoảng trắng và ký tự đặc biệt
+            phone = phone.replaceAll("[\\s\\-_()]", "");
+            
+            // Regex cho số điện thoại Việt Nam
+            String phoneRegex = "^(0|\\+84|84)[0-9]{9}$";
+            if (!Pattern.matches(phoneRegex, phone)) {
+                errors.add("Số điện thoại không hợp lệ (định dạng: 0123456789, +84123456789 hoặc 84123456789)");
             }
         }
         
