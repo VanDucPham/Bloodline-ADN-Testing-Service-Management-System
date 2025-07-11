@@ -52,6 +52,22 @@ function Header() {
     }
   };
 
+  // Hàm xử lý nút LIÊN HỆ ở mọi trang
+  const handleContactClick = () => {
+    if (window.location.pathname === "/") {
+      // Đã ở trang chủ, scroll luôn
+      const el = document.getElementById("consultation-form");
+      if (el) {
+        setTimeout(() => {
+          el.scrollIntoView({ behavior: "smooth" });
+        }, 100);
+      }
+    } else {
+      // Chuyển về trang chủ và truyền state
+      navigate("/", { state: { scrollToConsultation: true } });
+    }
+  };
+
   const userData = localStorage.getItem('userInfo');
   const user = userData ? JSON.parse(userData) : null;
   const isLogin = !!user;
@@ -100,7 +116,9 @@ function Header() {
               onMouseEnter={() => item.submenu && setActiveMenu(item.name)}
               onMouseLeave={() => item.submenu && setActiveMenu('')}
               onClick={() => {
-                if (item.action === 'scroll') {
+                if (item.name === 'LIÊN HỆ') {
+                  handleContactClick();
+                } else if (item.action === 'scroll') {
                   scrollToConsultationForm();
                 } else if (item.path) {
                   navigate(item.path);

@@ -1,5 +1,6 @@
 import './Homepage.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
@@ -41,6 +42,7 @@ import axios from 'axios';
 // }
 
 const Homepage = () => {
+  const location = useLocation();
   const [formData, setFormData] = useState({
     customerName: '',
     phone: '',
@@ -74,6 +76,17 @@ const Homepage = () => {
       });
     }
   };
+
+  useEffect(() => {
+    if (location.state?.scrollToConsultation) {
+      const el = document.getElementById('consultation-form');
+      if (el) {
+        setTimeout(() => {
+          el.scrollIntoView({ behavior: 'smooth' });
+        }, 200);
+      }
+    }
+  }, [location]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
