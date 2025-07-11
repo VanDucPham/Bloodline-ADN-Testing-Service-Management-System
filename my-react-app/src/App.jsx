@@ -45,6 +45,7 @@ import ManagerLayout from './components/Manager/ManagerLayout';
 import ManagerStaff from './components/Manager/ManagerStaff';
 import CaseTracking from './components/Manager/CaseTracking';
 import BlogList from './components/allpost/BlogList';
+import ServiceDetail from './components/pricelist/ServiceDetail';
 
 
 // import SettingsPage from './components/admin/SettingsPage';
@@ -78,6 +79,7 @@ function App() {
           <Route path="/questionADN" element={<QuestionADNApp />} />
           <Route path="/consultation-status" element={<ConsultationStatus />} />
           <Route path="/consultation-demo" element={<ConsultationDemo />} />
+          <Route path="/service/:id" element={<ServiceDetail />} />
 
            
           <Route path="/admin-dashboard" element={<AdminDashboard activeSection="admin" />} />

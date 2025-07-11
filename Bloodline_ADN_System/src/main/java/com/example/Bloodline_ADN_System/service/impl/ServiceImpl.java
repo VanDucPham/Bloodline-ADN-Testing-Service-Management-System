@@ -35,4 +35,15 @@ public class ServiceImpl implements ServiceService {
         return  serviceRepository.findById(ServiceId);
     }
 
+    @Override
+    public ServiceDTO getServiceById(Long id) {
+        Service service = serviceRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Service not found"));
+        return new ServiceDTO(
+                service.getServiceName(),
+                service.getServiceDescription(),
+                service.getServiceId(),
+                service.getServicePrice()
+        );
+    }
 }
