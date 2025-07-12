@@ -10,6 +10,7 @@ import com.example.Bloodline_ADN_System.dto.managerCaseFile.ParticipantDTO;
 import com.example.Bloodline_ADN_System.service.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -100,5 +101,11 @@ public class StaffCaseFileController {
     public ResultDTO getResult(@PathVariable Long appointmentId){
         return resultService.getResultByAppointmentId(appointmentId);
     }
+
+    @GetMapping("/export-pdf/{appointmentId}")
+    public ResponseEntity<ByteArrayResource> exportPdf(@PathVariable Long appointmentId) {
+        return resultService.exportResultPdf(appointmentId);
+    }
+
 
 }

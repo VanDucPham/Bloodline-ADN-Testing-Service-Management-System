@@ -21,6 +21,9 @@ public class AppointmentDTO {
     // Thông tin người dùng
     private Long userId;
 
+    //Nhân viên phụ trách
+    private Long AssignedStaff;
+
     // Thông tin dịch vụ
     private Long serviceId;
 

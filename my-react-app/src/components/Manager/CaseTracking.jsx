@@ -4,14 +4,12 @@ import apiService from '../../service/api';
 
 
 const statusOptions = [
-  { value: "pending", label: "Chờ tiếp nhận", color: "default" },
-  { value: "processing", label: "Đang xử lý", color: "blue" },
-  { value: "testing", label: "Đang xét nghiệm", color: "orange" },
-  { value: "waiting", label: "Chờ kết quả", color: "purple" },
-  { value: "completed", label: "Hoàn thành", color: "green" },
-  { value: "delivered", label: "Đã trả kết quả", color: "success" },
-  { value: "cancelled", label: "Từ chối / Hủy", color: "red" },
-];
+  { value: "SCHEDULED", label: "Chờ tiếp nhận", color: "default" },
+  { value: "CONFIRMED", label: "Đã tiếp nhận", color: "orange" },
+  { value: "IN_PROGRESS", label: "Đang xử lý", color: "blue" },
+  { value: "COMPLETED", label: "Hoàn thành", color: "green" },
+  { value: "CANCELLED", label: "Từ chối / Hủy", color: "red" },
+]
 
 export default function CaseTracking() {
   const [caseData, setCaseData] = useState([]);
@@ -38,14 +36,14 @@ export default function CaseTracking() {
   }, []);
 
   const filtered = Array.isArray(caseData)
-  ? caseData.filter(
+    ? caseData.filter(
       c =>
         (c.caseId?.toLowerCase().includes(search.toLowerCase()) ||
-         c.customer?.toLowerCase().includes(search.toLowerCase())) &&
+          c.customer?.toLowerCase().includes(search.toLowerCase())) &&
         (!statusFilter || c.status === statusFilter)
     )
-    
-  : [];
+
+    : [];
 
 
   const columns = [

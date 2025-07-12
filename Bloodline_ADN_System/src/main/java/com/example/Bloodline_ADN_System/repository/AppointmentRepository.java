@@ -49,10 +49,10 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     Optional<Appointment> findByCaseFile_CaseCode(String caseCode);
 
     @EntityGraph(attributePaths = {
-            "caseFile",         // 👈 Lỗi chính ở đây
+            "caseFile",
             "user",
             "assignedStaff",
-            "participants.sample", // nested relation
+            "participants.sample",
             "result"
     })
     List<Appointment> findAll();

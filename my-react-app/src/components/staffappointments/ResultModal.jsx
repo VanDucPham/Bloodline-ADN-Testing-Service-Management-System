@@ -3,7 +3,7 @@ import { Modal, Form, Input, Button } from 'antd';
 import moment from 'moment';
 
 
-function ResultModal({ open, onClose, appointment, existingResult, onSaveResult }) {
+function ResultModal({ open, onClose, appointment, existingResult, onSaveResult, onExportResult }) {
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -31,9 +31,27 @@ function ResultModal({ open, onClose, appointment, existingResult, onSaveResult 
           <Button key="close" onClick={onClose}>
             Đóng
           </Button>,
+
+          <Button key="export" onClick={() => onExportResult(appointment.appointmentId)}>
+            Xuất PDF
+          </Button>,
+
+
         ]}
         centered
       >
+        <p><b>Loại lịch hẹn:</b></p>
+        <p>{existingResult.appointmentType || '-'}</p>
+
+
+        <p><b>Người tham gia:</b></p>
+        <p>
+  {existingResult.participants && existingResult.participants.length > 0
+    ? existingResult.participants.join(', ')
+    : '-'}
+</p>
+
+
         <p><b>Kết quả:</b></p>
         <p>{existingResult.resultValue}</p>
 

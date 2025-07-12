@@ -55,6 +55,11 @@ class StaffService extends BaseApiService {
     async getResultByAppointmentId(appointmentId) {
         return this.get(`/staff/result/get/${appointmentId}`);
     }
+
+    async exportAppointmentResult(appointmentId) {
+        return this.get(`/staff/export-pdf/${appointmentId}`, { responseType: 'blob' });//blob xử lí nhị phân
+    }
+
 }
 
 export default StaffService;

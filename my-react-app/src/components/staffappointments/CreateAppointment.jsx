@@ -9,7 +9,7 @@ const APPOINTMENT_TYPES = [
 ];
 const DELIVERY_METHODS = [
   { value: 'HOME_COLLECTION', label: 'Tự lấy mẫu tại nhà' },
-  { value: 'SELF_DROP_OFF', label: 'Tự mang mẫu đến cơ sở' },
+  { value: 'SELF_DROP_OFF', label: 'Đến cơ sở lấy mẫu cơ sở' },
 ];
 const STATUS_OPTIONS = [
   { value: 'SCHEDULED', label: 'Đã đặt' },
@@ -114,7 +114,7 @@ await apiService.staff.createAppointment({
         caseFile: caseFile
       });
             setSuccess('Đặt lịch thành công!');
-      setTimeout(() => navigate('/staff/appointment'), 1200);
+      setTimeout(() => navigate('/staff/appointments'), 1200);
     } catch (err) {
       // Nếu backend trả về lỗi khung giờ đã đầy thì hiển thị đúng thông báo
       //GlobalExceptionHandler class này đã xử lí

@@ -77,8 +77,6 @@ function StaffAppointments() {
       if (statusFilter) params.status = statusFilter;
       if (dateFilter) params.appointmentDate = dateFilter.format('YYYY-MM-DD');
       const response = await apiService.staff.getAppointment(params);
-      console.log('Dữ liệu lịch hẹn:', response);
-
       setAppointments(response);
     } catch (error) {
       console.error('Lỗi khi lấy danh sách lịch hẹn:', error);
@@ -183,6 +181,7 @@ function StaffAppointments() {
   const handleOpenResultModal = async (appointment) => {
     try {
       const result = await apiService.staff.getResultByAppointmentId(appointment.appointmentId);
+  
       setExistingResult(result); // null nếu chưa có kết quả
       setSelectedAppointmentForResult(appointment);
       setResultModalOpen(true);
@@ -309,6 +308,41 @@ function StaffAppointments() {
     const matchId = searchId ? String(item.appointmentId) === searchId : true;
     return matchStatus && matchDate && matchId;
   });
+
+
+const handleExportResult = async (appointmentId) => {
+  try {
+    console.log(`Bắt đầu gọi API xuất file PDF cho appointmentId: ${appointmentId}`);
+    const response = await apiService.staff.exportAppointmentResult(appointmentId);
+    if (!response) {
+      alert('Không nhận được file từ máy chủ!');
+      return;
+    }
+
+    const disposition = response.headers && response.headers['content-disposition'];
+    const filenameMatch = disposition && disposition.match(/filename="?(.+)"?/);
+    const filename = filenameMatch ? filenameMatch[1] : `result_${appointmentId}.pdf`;
+    
+    if (!(response instanceof Blob)) {
+      alert('Dữ liệu trả về không phải file hợp lệ!');
+      return;
+    }
+
+    const url = window.URL.createObjectURL(response);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } catch (err) {
+    alert('Xuất kết quả thất bại!');
+    console.error('Lỗi khi xuất file PDF:', err);
+  }
+};
+
+
+
 
   return (
     <div className="staff-appointments-container">
@@ -453,6 +487,7 @@ function StaffAppointments() {
         appointment={selectedAppointmentForResult}
         existingResult={existingResult}
         onSaveResult={handleSaveResult}
+        onExportResult={handleExportResult}
       />
 
     </div>

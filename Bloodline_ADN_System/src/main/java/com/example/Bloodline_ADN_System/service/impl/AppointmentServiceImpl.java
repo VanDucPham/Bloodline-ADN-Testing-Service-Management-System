@@ -92,6 +92,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         appointment.setStatus(Appointment.AppointmentStatus.SCHEDULED);
         appointment.setCollectionStatus(Appointment.CollectionStatus.ASSIGNED);
         appointment.setCaseFile(caseFile);
+        appointment.setAssignedStaff(user);
 
         Appointment saved = appointmentRepository.save(appointment);
         return new AppointmentResponse<>("Đặt lịch thành công", toDTO(saved));
@@ -374,6 +375,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         dto.setDeliveryMethod(String.valueOf(appointment.getDeliveryMethod()));
         dto.setAppointmentNote(appointment.getAppointmentNote());
         dto.setCollectionStatus(appointment.getCollectionStatus());
+        dto.setAssignedStaff(appointment.getUser().getUserId());
         return dto;
     }
 }
