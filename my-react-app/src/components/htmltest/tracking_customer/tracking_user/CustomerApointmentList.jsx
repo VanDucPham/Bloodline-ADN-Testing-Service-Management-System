@@ -7,6 +7,7 @@ import {
 import './CustomerApointment.css';
 import { useNavigate } from 'react-router-dom';
 import apiService from '../../../../service/api';
+import Feedback from '../../../feedback/FeedBack';
 
 const AppointmentList = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -18,6 +19,8 @@ const AppointmentList = () => {
   const [editingParticipant, setEditingParticipant] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [filterStatus, setFilterStatus] = useState("ALL");
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [feedbackAppointment, setFeedbackAppointment] = useState(null);
 
   const navigate = useNavigate();
 
@@ -206,6 +209,17 @@ const filteredAppointments = appointments.filter((a) =>
                   <FontAwesomeIcon icon={faTimes} /> Hủy
                 </button>
               )}
+              {appointment.appointmentStatus === "COMPLETED" && (
+                <button
+                  className="card-btn feedback"
+                  onClick={() => {
+                    setFeedbackAppointment(appointment);
+                    setShowFeedbackModal(true);
+                  }}
+                >
+                  <FontAwesomeIcon icon={faCheckCircle} /> Gửi phản hồi
+                </button>
+              )}
             </div>
           </div>
   ))}
@@ -369,6 +383,22 @@ const filteredAppointments = appointments.filter((a) =>
               <button onClick={() => setShowEditModal(false)}>Hủy</button>
               <button onClick={handleSaveParticipant}>Lưu</button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {showFeedbackModal && feedbackAppointment && (
+        <div className="modal-overlay" onClick={() => setShowFeedbackModal(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setShowFeedbackModal(false)}>
+              <FontAwesomeIcon icon={faTimes} />
+            </button>
+            <h2 className="modal-title">Gửi phản hồi cho lịch hẹn</h2>
+            <Feedback
+              appointment_id={feedbackAppointment.appointmentId}
+              service_id={feedbackAppointment.serviceId}
+              user_id={feedbackAppointment.userId}
+            />
           </div>
         </div>
       )}

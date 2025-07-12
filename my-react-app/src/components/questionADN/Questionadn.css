@@ -101,3 +101,31 @@ align-items: start; /* 👈 Cực kỳ quan trọng */
   opacity: 1;
   padding: 1rem;
 }
+
+.faq-header-wrapper {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center; /* căn giữa theo chiều ngang */
+  align-items: center;     /* căn giữa theo chiều dọc */
+  background-color: #f3f4f6; /* tương đương bg-gray-100 */
+  padding: 161px;
+}
+
+.faq-header-content {
+  text-align: center;
+  margin-bottom: 200px;
+}
+
+.faq-header-content h3 {
+  color: #6b7280;
+  font-size: 14px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.faq-header-content h1 {
+  font-size: 30px;
+  font-weight: bold;
+  line-height: 1.4;
+  color: #111827;
+}
