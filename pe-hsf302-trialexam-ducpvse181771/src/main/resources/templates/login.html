@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org" >
+
+<head>
+    <meta charset="UTF-8">
+    <title>Login_Cinestar2024</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/login.css}">
+</head>
+<body>
+<h1>Login Page</h1>
+
+<form method="post" th:action="@{/login}">
+ <table>
+     <tr>
+         <td>
+             <label for="email">Email</label>
+         </td>
+         <td>
+             <input type="text" id="email" name="email" placeholder="Email">
+         </td>
+     </tr>
+     <tr>
+         <td>
+             <label for="password">Password</label>
+         </td>
+         <td>
+             <input type="password" id="password" name="password" placeholder="password">
+         </td>
+     </tr>
+     <tr>
+         <td colspan="2" style="text-align: center;">
+             <button type="submit">Login</button>
+         </td>
+     </tr>
+
+
+ </table>
+</form>
+</body>
+</html>

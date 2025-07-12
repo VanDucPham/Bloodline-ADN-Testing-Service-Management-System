@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <meta charset="UTF-8">
+    <title>Add movie</title>
+</head>
+<body>
+    <form th:action="@{/create}" th:object="${movie}" method="post">
+        <table>
+            <tr>
+                <td>
+                    <label for="movieName">Movie Name:</label>
+                </td>
+                <td>
+                    <input type="text" id="movieName" name="movieName" th:field="*{movieName}" required>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="duration">Duration:</label>
+                </td>
+                <td>
+                    <input type="text" id="duration" name="duration" th:field="*{duration}" required>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="status">Status:</label>
+                </td>
+                <td>
+                    <input type="text" id="status" name="status" th:field="*{status}" required>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="actor">Movie Name:</label>
+                </td>
+                <td>
+                    <input type="text" id="actor" name="actor" th:field="*{actor}" required>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="director">Director Name:</label>
+                </td>
+                <td>
+                    <select id="director" name="director.directionName" th:field="*{director.directionName}" required>
+                        <option value="" disabled selected>Select Director</option>
+                        <option th:each="director : ${directors}" th:value="${director.directionName}" th:text="${director.directionName}"></option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+    </form>
+</body>
+</html>
