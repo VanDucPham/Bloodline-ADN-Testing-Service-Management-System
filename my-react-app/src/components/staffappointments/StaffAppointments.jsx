@@ -357,20 +357,21 @@ const handleExportResult = async (appointmentId) => {
             ))}
           </select>
         </div>
-        <div>
-          <label>Lọc theo ngày: </label>
-          <DatePicker
-            value={dateFilter}
-            onChange={date => {
-              if (date && date.isValid()) {
-                setDateFilter(date);
-              }
-            }}
-            format="DD/MM/YYYY"
-            allowClear={false}
-          />
-        </div>
-
+         <div>
+      <label>Lọc theo ngày: </label>
+      <input
+        type="date"
+        value={dateFilter ? dateFilter.format('YYYY-MM-DD') : ''}
+        onChange={e => {
+          const value = e.target.value;
+          if (value) {
+            setDateFilter(moment(value, 'YYYY-MM-DD'));
+          } else {
+            setDateFilter(null);
+          }
+        }}
+      />
+    </div>
         <div>
           <label>Tìm theo mã lịch hẹn: </label>
           <input
