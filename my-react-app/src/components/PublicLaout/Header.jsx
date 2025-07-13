@@ -10,8 +10,8 @@ const menuItems = [
   {
     name: 'GIỚI THIỆU',
     submenu: [
-      { name: 'Về chúng tôi' },
-      { name: 'Hỏi đáp ADN huyết thống' }
+      { name: 'Về chúng tôi' , path: '/about-us'},
+      { name: 'Hỏi đáp ADN huyết thống', path: '/questionADN' },
     ]
   },
   { name: 'DỊCH VỤ' },
@@ -30,12 +30,43 @@ const menuItems = [
       { name: 'Thư viện kỹ thuật' }
     ]
   },
-  { name: 'LIÊN HỆ' }
+  { name: 'LIÊN HỆ', action: 'scroll' }
 ];
 
 function Header() {
   const [activeMenu, setActiveMenu] = useState('');
   const navigate = useNavigate();
+
+  const scrollToConsultationForm = () => {
+    const element = document.getElementById('consultation-form');
+    if (element) {
+      // Tính toán vị trí scroll để form hiển thị đầy đủ
+      const elementRect = element.getBoundingClientRect();
+      const absoluteElementTop = elementRect.top + window.pageYOffset;
+      const middle = absoluteElementTop - (window.innerHeight / 2) + (elementRect.height / 2);
+      
+      window.scrollTo({
+        top: middle,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  // Hàm xử lý nút LIÊN HỆ ở mọi trang
+  const handleContactClick = () => {
+    if (window.location.pathname === "/") {
+      // Đã ở trang chủ, scroll luôn
+      const el = document.getElementById("consultation-form");
+      if (el) {
+        setTimeout(() => {
+          el.scrollIntoView({ behavior: "smooth" });
+        }, 100);
+      }
+    } else {
+      // Chuyển về trang chủ và truyền state
+      navigate("/", { state: { scrollToConsultation: true } });
+    }
+  };
 
   const userData = localStorage.getItem('userInfo');
   const user = userData ? JSON.parse(userData) : null;
@@ -84,7 +115,15 @@ function Header() {
               className={`menu-item ${item.submenu ? 'dropdown' : ''} ${activeMenu === item.name ? 'active' : ''}`}
               onMouseEnter={() => item.submenu && setActiveMenu(item.name)}
               onMouseLeave={() => item.submenu && setActiveMenu('')}
-              onClick={() => item.path && navigate(item.path)}
+              onClick={() => {
+                if (item.name === 'LIÊN HỆ') {
+                  handleContactClick();
+                } else if (item.action === 'scroll') {
+                  scrollToConsultationForm();
+                } else if (item.path) {
+                  navigate(item.path);
+                }
+              }}
             >
               <span>{item.name}</span>
               {item.submenu && (

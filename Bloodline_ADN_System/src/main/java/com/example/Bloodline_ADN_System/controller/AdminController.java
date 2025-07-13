@@ -1,5 +1,8 @@
 package com.example.Bloodline_ADN_System.controller;
 
+//import com.example.Bloodline_ADN_System.Entity.Blog;
+//import com.example.Bloodline_ADN_System.Entity.User;
+import com.example.Bloodline_ADN_System.dto.*;
 import com.example.Bloodline_ADN_System.dto.ManagerService.ServiceManagerDTO;
 import com.example.Bloodline_ADN_System.dto.ScheduleManager.StaffDTO;
 import com.example.Bloodline_ADN_System.dto.ScheduleManager.request.AppoinmentAsignedStaffDTO;
@@ -23,6 +26,16 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
+//import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.util.StringUtils;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -143,6 +156,26 @@ public class AdminController {
         return blogService.updateBlog(id, dto);
     }
 
+    @PutMapping("/blog/status/{id}")
+    public ResponseEntity<?> updateBlogStatus(@PathVariable Long id, @RequestParam String status) {
+        BlogDTO blog = blogService.getBlogById(id)
+                .orElseThrow(() -> new RuntimeException("Blog không tồn tại"));
+        blog.setStatus(status);
+        BlogDTO updated = blogService.updateBlog(id, blog);
+        return ResponseEntity.ok(updated);
+    }
+
+    @GetMapping("/blog/page")
+    public ResponseEntity<?> getBlogsPage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) Long authorId
+    ) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return ResponseEntity.ok(blogService.getBlogsPage(pageable, status, type, authorId));
+    }
     @GetMapping("/case_schedule/{month}")
     public ResponseEntity<List<DayscheduleDTO>> getCaseSchedule(@PathVariable String  month) {
          List<DayscheduleDTO>   schedule =  scheduleService.getSchedule(month) ;
@@ -167,4 +200,29 @@ public class AdminController {
 
 
 
+    @PostMapping("/blog/upload-image")
+    public ResponseEntity<?> uploadBlogImage(@RequestParam("file") MultipartFile file) {
+        try {
+            if (file.isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("message", "File rỗng"));
+            }
+            String fileName = System.currentTimeMillis() + "_" + StringUtils.cleanPath(file.getOriginalFilename());
+            Path uploadPath = Paths.get("src/main/resources/static/images/blog");
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+            Path filePath = uploadPath.resolve(fileName);
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            String imageUrl = "/images/blog/" + fileName;
+            return ResponseEntity.ok(Map.of("url", imageUrl));
+        } catch (Exception e) {
+            e.printStackTrace(); // Log lỗi chi tiết ra console
+            return ResponseEntity.status(500).body(Map.of("message", "Lỗi upload ảnh: " + e.getMessage()));
+        }
+    }
+
+    @GetMapping("/blog/category-count")
+    public ResponseEntity<?> getBlogCategoryCount() {
+        return ResponseEntity.ok(blogService.getBlogCategoryCount());
+    }
 }

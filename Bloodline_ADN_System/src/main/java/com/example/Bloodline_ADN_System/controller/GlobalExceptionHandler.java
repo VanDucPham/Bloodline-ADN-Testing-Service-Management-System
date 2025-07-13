@@ -14,4 +14,14 @@ public class GlobalExceptionHandler {
         // Trả về HTTP 400 và message cho FE
         return ResponseEntity.badRequest().body(Map.of("message", ex.getMessage()));
     }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<?> handleRuntime(RuntimeException ex) {
+        return ResponseEntity.badRequest().body(Map.of("message", ex.getMessage()));
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> handleException(Exception ex) {
+        return ResponseEntity.status(500).body(Map.of("message", "Lỗi hệ thống: " + ex.getMessage()));
+    }
 }

@@ -1,7 +1,7 @@
 import './App.css';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faCoffee, faHome, faBars, faCheck } from '@fortawesome/free-solid-svg-icons';
+//import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+//import { faUser, faCoffee, faHome, faBars, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
 
 
@@ -17,6 +17,10 @@ import AppointmentBooking from './components/htmltest/tracking_customer/tracking
 import BlogDetail from './components/post-detail/BlogDetail';
 import DnaPost from './components/dna-testing/DnaPost';
 import AllPost from './components/allpost/allpost';
+import AboutUs from './components/aboutus/AboutUs';
+import QuestionADNApp from "./components/questionADN/QuestionADN";
+import ConsultationStatus from './components/ConsultationStatus';
+import ConsultationDemo from './components/ConsultationDemo';
 
 
 import CustomerAppointmentList from './components/htmltest/tracking_customer/tracking_user/CustomerApointmentList';
@@ -41,6 +45,7 @@ import ManagerLayout from './components/Manager/ManagerLayout';
 import ManagerStaff from './components/Manager/ManagerStaff';
 import CaseTracking from './components/Manager/CaseTracking';
 import BlogList from './components/allpost/BlogList';
+import ServiceDetail from './components/pricelist/ServiceDetail';
 
 
 // import SettingsPage from './components/admin/SettingsPage';
@@ -65,11 +70,19 @@ function App() {
          <Route path="/tracking_user" element={<AppointmentBooking />} />
           <Route path="/CustomerApointmentList" element={<CustomerAppointmentList />} />
           <Route path="/post" element={<AllPost />} />
+          <Route path="/allpost" element={<AllPost />} />
           <Route path="/post-detail/:section/:id" element={<BlogDetail />} />
+          <Route path="/post-detail/:id" element={<BlogDetail />} />
           <Route path="/dna" element={<DnaPost />} />
           <Route path="/blogList" element={<BlogList />} />
-          
-           
+
+          <Route path="/about-us" element={<AboutUs />} />
+          <Route path="/questionADN" element={<QuestionADNApp />} />
+          <Route path="/consultation-status" element={<ConsultationStatus />} />
+          <Route path="/consultation-demo" element={<ConsultationDemo />} />
+          <Route path="/service/:id" element={<ServiceDetail />} />
+
+
           <Route path="/admin-dashboard" element={<AdminDashboard activeSection="admin" />} />
         </Route>
 

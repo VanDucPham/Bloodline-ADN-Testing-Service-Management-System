@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface ServiceService {
     List<ServiceDTO> getAllServices();
     Optional<Service> findServiceById(Long ServiceId);
+    ServiceDTO getServiceById(Long id);
 }

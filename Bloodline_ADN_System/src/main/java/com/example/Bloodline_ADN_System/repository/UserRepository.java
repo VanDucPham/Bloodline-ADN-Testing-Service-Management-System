@@ -17,4 +17,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> getAllIsStaff();
 
     User findByStaffCode(String staffCode);
+
+    // Thêm method để tìm user bằng email (sử dụng làm username)
+    default Optional<User> findByUsername(String username) {
+        return findByEmail(username);
+    }
 }

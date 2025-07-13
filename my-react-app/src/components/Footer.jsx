@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './Footer.css';
 
 function Footer() {
@@ -25,7 +26,24 @@ function Footer() {
       <div className="footer-column">
         <h4 className="footer-title">ĐẶT LỊCH</h4>
         <p>Hãy để lại thông tin liên hệ, chuyên viên tư vấn của chúng tôi sẽ liên hệ lại ngay.</p>
-        
+        <Link to="/consultation-status" style={{
+          color: '#1890ff',
+          textDecoration: 'none',
+          fontWeight: '500',
+          fontSize: '14px',
+          display: 'block',
+          marginBottom: '8px'
+        }}>
+          › Kiểm tra trạng thái tư vấn
+        </Link>
+        <Link to="/consultation-demo" style={{
+          color: '#52c41a',
+          textDecoration: 'none',
+          fontWeight: '500',
+          fontSize: '14px'
+        }}>
+          › Demo chức năng tư vấn
+        </Link>
       </div>
 
       <div className="footer-column">
