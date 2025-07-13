@@ -9,8 +9,12 @@ import {
   Space,
   Popconfirm,
   message,
+  Typography,
 } from "antd";
+import { ExclamationCircleOutlined, DeleteOutlined } from "@ant-design/icons";
 import apiService from "../../service/api"; // sửa lại đúng path nếu khác
+
+const { Text, Paragraph } = Typography;
 
 const ServiceManager = () => {
   const [services, setServices] = useState([]);
@@ -71,14 +75,15 @@ const ServiceManager = () => {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (service) => {
     try {
-      await apiService.admin.deleteService(id);
-      message.success("Đã xóa dịch vụ!");
+      await apiService.admin.deleteService(service.serviceId);
+      message.success(`Đã xóa dịch vụ "${service.serviceName}"!`);
       fetchServices();
     } catch (error) {
       console.error("Lỗi khi xóa:", error);
-      message.error("Không thể xóa dịch vụ.");
+      const errorMessage = error.response?.data || error.message || "Không thể xóa dịch vụ. Có thể dịch vụ đang được sử dụng.";
+      message.error(errorMessage);
     }
   };
 
@@ -123,12 +128,28 @@ const ServiceManager = () => {
             Sửa
           </Button>
           <Popconfirm
-            title="Bạn chắc chắn muốn xóa dịch vụ này?"
-            onConfirm={() => handleDelete(record.serviceId)}
+            title={
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
+                  <ExclamationCircleOutlined style={{ color: '#faad14', marginRight: 8 }} />
+                  <Text strong>Xác nhận xóa dịch vụ</Text>
+                </div>
+                <Paragraph style={{ marginBottom: 8 }}>
+                  Bạn có chắc chắn muốn xóa dịch vụ <Text strong>"{record.serviceName}"</Text>?
+                </Paragraph>
+                <Paragraph type="warning" style={{ fontSize: '12px', marginBottom: 0 }}>
+                  ⚠️ Lưu ý: Hành động này không thể hoàn tác. Nếu dịch vụ đang được sử dụng, 
+                  việc xóa có thể ảnh hưởng đến các lịch hẹn hiện có.
+                </Paragraph>
+              </div>
+            }
+            onConfirm={() => handleDelete(record)}
             okText="Xóa"
             cancelText="Hủy"
+            okType="danger"
+            icon={<ExclamationCircleOutlined style={{ color: '#faad14' }} />}
           >
-            <Button type="link" danger>
+            <Button type="link" danger icon={<DeleteOutlined />}>
               Xóa
             </Button>
           </Popconfirm>
@@ -163,7 +184,7 @@ const ServiceManager = () => {
         onOk={handleSave}
         okText={editingService ? "Cập nhật" : "Thêm mới"}
         cancelText="Hủy"
-        destroyOnClose
+
       >
         <Form form={form} layout="vertical">
           <Form.Item

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import ServiceFeedback from './ServiceFeedback';
 import './Pricelist.css';
 
 function ServiceDetail() {
@@ -51,6 +52,11 @@ function ServiceDetail() {
           )}
         </ul>
         <button className="service-card-btn" onClick={() => navigate('/pricelist')}>Xem bảng giá</button>
+      </div>
+
+      {/* Thêm phần feedback */}
+      <div style={{ marginTop: '3rem' }}>
+        <ServiceFeedback serviceId={id} />
       </div>
     </div>
   );

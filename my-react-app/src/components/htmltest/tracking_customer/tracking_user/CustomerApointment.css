@@ -171,6 +171,24 @@
   color: #a8071a;
 }
 
+.card-btn.feedback {
+  background-color: #52c41a;
+  color: white;
+  box-shadow: 0 2px 4px rgba(82, 196, 26, 0.2);
+  transition: all 0.3s ease;
+}
+
+.card-btn.feedback:hover {
+  background-color: #389e0d;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(82, 196, 26, 0.3);
+}
+
+.card-btn.feedback:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(82, 196, 26, 0.2);
+}
+
 .modal-overlay {
   position: fixed;
   inset: 0;

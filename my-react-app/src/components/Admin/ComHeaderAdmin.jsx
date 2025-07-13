@@ -20,12 +20,8 @@ const ComHeaderAdmin = () => {
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
 
-  // Lấy tên admin động từ localStorage
-  const user = JSON.parse(localStorage.getItem("userInfo") || "{}");
-
-
 const menuItems = [
-      { key: "/admin/dashboard", icon: <DashboardOutlined />, label: "Dashboard" },
+      { key: "/admin", icon: <DashboardOutlined />, label: "Dashboard" },
     { key: "/admin/accounts", icon: <UserOutlined />, label: "Tài khoản" },
     { key: "/admin/services", icon: <AppstoreAddOutlined />, label: "Dịch vụ" },
     { key: "/admin/schedules", icon: <CalendarOutlined />, label: "Lịch làm việc" },

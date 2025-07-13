@@ -15,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @AllArgsConstructor
@@ -45,7 +46,14 @@ public class AuthController {
         return blogService.getAllBlogDTO();
     }
 
-
-
-
+    // Public: Lấy thông tin user theo ID (chỉ hiển thị tên)
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<?> getUserById(@PathVariable Long userId) {
+        try {
+            String userName = authService.getUserNameById(userId);
+            return ResponseEntity.ok(Map.of("name", userName));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
 }

@@ -209,7 +209,8 @@ const filteredAppointments = appointments.filter((a) =>
                   <FontAwesomeIcon icon={faTimes} /> Hủy
                 </button>
               )}
-              {appointment.appointmentStatus === "COMPLETED" && (
+              {/* Hiển thị nút feedback khi có result_value */}
+              {appointment.result && appointment.result.trim() !== '' && (
                 <button
                   className="card-btn feedback"
                   onClick={() => {
@@ -263,6 +264,31 @@ const filteredAppointments = appointments.filter((a) =>
                   <tr><td>Mã hồ sơ</td><td>{selectedAppointment.caseCode}</td></tr>
                 </tbody>
               </table>
+              
+              {/* Thêm nút feedback trong modal nếu có result_value */}
+              {selectedAppointment.result && selectedAppointment.result.trim() !== '' && (
+                <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+                  <button
+                    className="card-btn feedback"
+                    onClick={() => {
+                      setFeedbackAppointment(selectedAppointment);
+                      setShowFeedbackModal(true);
+                      closeModal(); // Đóng modal chi tiết
+                    }}
+                    style={{ 
+                      backgroundColor: '#52c41a', 
+                      color: 'white', 
+                      border: 'none', 
+                      padding: '8px 16px', 
+                      borderRadius: '4px', 
+                      cursor: 'pointer',
+                      fontSize: '14px'
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faCheckCircle} /> Gửi phản hồi
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className={`tab-content ${activeTab === 1 ? 'active' : ''}`}>
@@ -394,6 +420,7 @@ const filteredAppointments = appointments.filter((a) =>
               <FontAwesomeIcon icon={faTimes} />
             </button>
             <h2 className="modal-title">Gửi phản hồi cho lịch hẹn</h2>
+            {console.log('feedbackAppointment:', feedbackAppointment)}
             <Feedback
               appointment_id={feedbackAppointment.appointmentId}
               service_id={feedbackAppointment.serviceId}

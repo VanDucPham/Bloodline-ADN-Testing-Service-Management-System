@@ -29,12 +29,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/api/admin")
 @AllArgsConstructor
 public class AdminController {
 
+    private static final Logger logger = LoggerFactory.getLogger(AdminController.class);
     private final AdminServiceImpl adminService;
     private final UserRepository userRepository;
     private final ServiceList serviceList;
@@ -109,10 +112,17 @@ public class AdminController {
         return ResponseEntity.ok(serviceList.updateService(id,serviceDTO));
     }
 
-    @DeleteMapping("service/delete/{id}")
-    public ResponseEntity<String> deleteService(@PathVariable Long id) {
-        serviceList.deleteService(id);
-        return ResponseEntity.ok("Xóa dịch vụ thành công");
+    @DeleteMapping("/service/delete/{id}")
+    public ResponseEntity<?> deleteService(@PathVariable Long id) {
+        try {
+            serviceList.deleteService(id);
+            return ResponseEntity.ok("Xóa dịch vụ thành công");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Lỗi khi xóa dịch vụ: " + e.getMessage());
+        }
     }
 
     @GetMapping ("/profile")
@@ -176,7 +186,8 @@ public class AdminController {
             if (file.isEmpty()) {
                 return ResponseEntity.badRequest().body(Map.of("message", "File rỗng"));
             }
-            String fileName = System.currentTimeMillis() + "_" + StringUtils.cleanPath(file.getOriginalFilename());
+            String originalFilename = file.getOriginalFilename() != null ? file.getOriginalFilename() : "unknown";
+            String fileName = System.currentTimeMillis() + "_" + StringUtils.cleanPath(originalFilename);
             Path uploadPath = Paths.get("src/main/resources/static/images/blog");
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
@@ -186,7 +197,7 @@ public class AdminController {
             String imageUrl = "/images/blog/" + fileName;
             return ResponseEntity.ok(Map.of("url", imageUrl));
         } catch (Exception e) {
-            e.printStackTrace(); // Log lỗi chi tiết ra console
+            logger.error("Lỗi upload ảnh: ", e);
             return ResponseEntity.status(500).body(Map.of("message", "Lỗi upload ảnh: " + e.getMessage()));
         }
     }

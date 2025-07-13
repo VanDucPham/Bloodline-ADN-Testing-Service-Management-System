@@ -90,6 +90,7 @@ import AuthService from "../authService";
 import UserService from "../userService";
 import AdminService from "../adminService";
 import StaffService from "../staffservice"; // Import StaffService
+import FeedbackService from "../feedbackService"; // Import FeedbackService
 
 class ApiServiceManager {
   constructor() {
@@ -106,6 +107,7 @@ class ApiServiceManager {
     this.user = new UserService(this);
     this.admin = new AdminService(this);
     this.staff = new StaffService(this); 
+    this.feedback = new FeedbackService(this); // Thêm FeedbackService
 
     this.initializeRequestInterceptor();
     this.initializeResponseInterceptor();
