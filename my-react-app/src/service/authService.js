@@ -41,5 +41,8 @@ class AuthService extends BaseApiService {
     async getBlog() {
         return this.get('/auth/blog');
     }
+    async detailService(id){
+        return this.get(`/auth/detailService/${id}`);
+    }
 }
 export default AuthService

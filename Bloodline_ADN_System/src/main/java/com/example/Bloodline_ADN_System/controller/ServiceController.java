@@ -25,17 +25,10 @@ public class ServiceController {
         return ResponseEntity.ok(services); // Trả về 200 OK và list dịch vụ
     }
 
-    // API public để lấy danh sách dịch vụ (không cần authentication)
-    @GetMapping("/public")
-    public ResponseEntity<List<ServiceDTO>> getPublicServices() {
-        List<ServiceDTO> services = serviceService.getAllServices();
-        return ResponseEntity.ok(services);
-    }
+
+
+
 
     // API public lấy chi tiết dịch vụ theo id
-    @GetMapping("/public/{id}")
-    public ResponseEntity<ServiceDTO> getPublicServiceById(@PathVariable Long id) {
-        ServiceDTO service = serviceService.getServiceById(id);
-        return ResponseEntity.ok(service);
-    }
+
 }

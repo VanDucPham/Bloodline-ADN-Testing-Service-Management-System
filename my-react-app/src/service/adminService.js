@@ -75,5 +75,15 @@ class adminService extends BaseApiService {
    async addStaffAsigned(payload){
       return this.post('/admin/assign-staff', payload)
    }
+   
+  async uploadImage(file) {
+  const formData = new FormData();
+  formData.append("file", file);
+  return this.post('/admin/upload', formData, {
+    headers: { "Content-Type": "multipart/form-data" }
+  });
+}
+
+
 }
 export default adminService

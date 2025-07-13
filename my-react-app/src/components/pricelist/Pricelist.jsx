@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import ComModal from '../ComModal/ComModal';
 import Login from '../login/Login';
+import apiService from '../../service/api';
 
 function Pricelist() {
   const navigate = useNavigate();
@@ -30,50 +31,15 @@ function Pricelist() {
     const fetchServices = async () => {
       try {
         setLoading(true);
-        const response = await axios.get('http://localhost:8080/api/customer/service/public');
-        setServices(response.data);
+        const response = await apiService.user.getAllServicePrice();
+        setServices(response);
+        console.log(response)
         setError(null);
       } catch (err) {
         console.error('Lỗi khi tải danh sách dịch vụ:', err);
         setError('Không thể tải danh sách dịch vụ. Vui lòng thử lại sau.');
         // Fallback về dữ liệu tĩnh nếu API lỗi
-        setServices([
-          {
-            serviceId: 1,
-            serviceName: 'Xét nghiệm ADN cha con',
-            serviceDescription: 'Kết quả nhanh, chính xác, bảo mật tuyệt đối.',
-            servicePrice: 1500000,
-            imageUrl: '/images/adn-cha-con.jpg'
-          },
-          {
-            serviceId: 2,
-            serviceName: 'Xét nghiệm ADN mẹ con',
-            serviceDescription: 'Dành cho xác định quan hệ mẹ - con.',
-            servicePrice: 1500000,
-            imageUrl: '/images/adn-me-con.jpg'
-          },
-          {
-            serviceId: 3,
-            serviceName: 'Xét nghiệm ADN anh/chị/em ruột',
-            serviceDescription: 'Kiểm tra quan hệ huyết thống giữa anh/chị/em.',
-            servicePrice: 1800000,
-            imageUrl: '/images/adn-anh-em.jpg'
-          },
-          {
-            serviceId: 4,
-            serviceName: 'Xét nghiệm ADN hành chính',
-            serviceDescription: 'Dùng cho mục đích pháp lý, hành chính.',
-            servicePrice: 2500000,
-            imageUrl: '/images/adn-hanh-chinh.jpg'
-          },
-          {
-            serviceId: 5,
-            serviceName: 'Xét nghiệm ADN trước sinh (NIPT)',
-            serviceDescription: 'Không xâm lấn, an toàn cho mẹ và bé.',
-            servicePrice: 12000000,
-            imageUrl: '/images/adn-nipt.jpg'
-          }
-        ]);
+        
       } finally {
         setLoading(false);
       }
@@ -111,10 +77,10 @@ function Pricelist() {
         {services.map((service) => (
           <div className="service-card" key={service.serviceId}>
             <img
-              src={service.imageUrl || "https://via.placeholder.com/300x200?text=No+Image"}
+              src={service.imageUrl }
               alt={service.serviceName}
               className="service-card-img"
-              onError={e => (e.target.src = "https://via.placeholder.com/300x200?text=No+Image")}
+              
             />
             <div className="service-card-body">
               <div className="service-card-title" onClick={() => navigate(`/service/${service.serviceId}`)} style={{color: '#007bff', textDecoration: 'underline', cursor: 'pointer'}}>{service.serviceName}</div>

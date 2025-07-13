@@ -25,7 +25,8 @@ public class ServiceImpl implements ServiceService {
                         serviceEntity.getLimitPeople(),
                         serviceEntity.getServiceDescription(),
                         serviceEntity.getServiceId(),
-                        serviceEntity.getServicePrice()
+                        serviceEntity.getServicePrice(),
+                        serviceEntity.getImageUrl()
                 ))
                 .toList();
     }
@@ -40,11 +41,13 @@ public class ServiceImpl implements ServiceService {
     public ServiceDTO getServiceById(Long id) {
         Service service = serviceRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Service not found"));
-        return new ServiceDTO(
-                service.getServiceName(),
-                service.getServiceDescription(),
-                service.getServiceId(),
-                service.getServicePrice()
-        );
+        ServiceDTO dt = new ServiceDTO() ;
+        dt.setServiceName(service.getServiceName());
+        dt.setServiceDescription(service.getServiceDescription());
+        dt.setServicePrice(service.getServicePrice());
+        dt.setServiceId(service.getServiceId());
+
+
+        return dt ;
     }
 }

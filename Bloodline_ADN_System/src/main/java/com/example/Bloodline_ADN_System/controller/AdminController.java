@@ -24,8 +24,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-import java.util.Optional;
+import java.io.IOException;
+import java.util.*;
 //import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
@@ -35,7 +35,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -48,6 +47,8 @@ public class AdminController {
     private final BlogService blogService;
     private final UserService userService;
     private final ScheduleService scheduleService;
+
+
     @PostMapping("/create")
     public ResponseEntity<?> createUser(@RequestBody CreateUserRequest request) {
         adminService.createUser(request);
@@ -218,6 +219,34 @@ public class AdminController {
         } catch (Exception e) {
             e.printStackTrace(); // Log lỗi chi tiết ra console
             return ResponseEntity.status(500).body(Map.of("message", "Lỗi upload ảnh: " + e.getMessage()));
+        }
+    }
+
+    private static final String UPLOAD_DIR = "src/main/resources/static/ImagePage/";
+    @PostMapping("/upload")
+    public ResponseEntity<Map<String, String>> uploadImage(@RequestParam("file") MultipartFile file) {
+        try {
+            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+            Path uploadPath = Paths.get(UPLOAD_DIR);
+
+            // Tạo thư mục nếu chưa tồn tại
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            Path filePath = uploadPath.resolve(fileName);
+            Files.write(filePath, file.getBytes());
+
+            // URL để trả về client
+            String imageUrl = "/ImagePage/" + fileName;
+            Map<String, String> result = new HashMap<>();
+            result.put("url", imageUrl);
+
+            return ResponseEntity.ok(result);
+        } catch (IOException e) {
+            e.printStackTrace(); // in log lỗi cụ thể
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.singletonMap("error", "Upload failed"));
         }
     }
 

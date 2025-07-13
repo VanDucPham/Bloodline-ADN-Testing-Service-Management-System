@@ -9,6 +9,7 @@ import com.example.Bloodline_ADN_System.dto.ScheduleManager.request.AppoinmentAs
 import com.example.Bloodline_ADN_System.dto.ScheduleManager.response.CaseassignmentDTO;
 import com.example.Bloodline_ADN_System.dto.ScheduleManager.response.DayscheduleDTO;
 import com.example.Bloodline_ADN_System.dto.ScheduleManager.response.ShiftDTO;
+import com.example.Bloodline_ADN_System.dto.noneWhere.ServiceDTO;
 import com.example.Bloodline_ADN_System.repository.AppointmentRepository;
 import com.example.Bloodline_ADN_System.repository.TimeSlotLimitRepository;
 import com.example.Bloodline_ADN_System.repository.UserRepository;
@@ -26,6 +27,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 @Service
 public class ScheduleServiceImpl implements ScheduleService {
+
     @Autowired
     private  UserRepository userRepository;
     @Autowired
@@ -110,6 +112,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         return staff.stream().map(u -> new StaffDTO(u.getUserId(), u.getName(), u.getStaffCode())).collect(Collectors.toList());
 
     }
+
     @Override
     public void assignStaffToCase(List<AppoinmentAsignedStaffDTO> assignmentList) {
         for (AppoinmentAsignedStaffDTO assignment : assignmentList) {

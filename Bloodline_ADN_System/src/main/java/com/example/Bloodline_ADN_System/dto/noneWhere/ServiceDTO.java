@@ -16,18 +16,17 @@ public class ServiceDTO {
     private Long serviceId;
     private Integer Limit_people ;
     private Double servicePrice ;
+    private String imageUrl;
 
-    public ServiceDTO(Long serviceId, String serviceName, Integer Limit_people,String serviceDescription, Double servicePrice) {
-        this.serviceId = serviceId;
+    public ServiceDTO(String serviceName, Integer limitPeople, String serviceDescription, Long serviceId, Double servicePrice, String imageUrl) {
         this.serviceName = serviceName;
-        this.Limit_people = Limit_people;
+        this.Limit_people = limitPeople;
         this.serviceDescription = serviceDescription;
+        this.serviceId = serviceId;
         this.servicePrice = servicePrice;
+        this.imageUrl = imageUrl;
     }
 
 
-
-    public ServiceDTO(String serviceName, Integer limitPeople, String serviceDescription, Long serviceId, Double servicePrice) {
-    }
 }
 

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Pricelist.css';
+import apiService from '../../service/api';
 
 function ServiceDetail() {
   const { id } = useParams();
@@ -14,8 +15,8 @@ function ServiceDetail() {
     const fetchService = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`http://localhost:8080/api/customer/service/public/${id}`);
-        setService(response.data);
+        const response = await apiService.auth.detailService(id);
+        setService(response);
         setError(null);
       } catch {
         setError('Không thể tải chi tiết dịch vụ.');

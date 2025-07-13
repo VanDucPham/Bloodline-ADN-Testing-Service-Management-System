@@ -5,7 +5,9 @@ import com.example.Bloodline_ADN_System.dto.noneWhere.BlogDTO;
 import com.example.Bloodline_ADN_System.dto.Login.LoginRequest;
 import com.example.Bloodline_ADN_System.dto.Login.LoginResponse;
 import com.example.Bloodline_ADN_System.dto.noneWhere.RegisterRequest;
+import com.example.Bloodline_ADN_System.dto.noneWhere.ServiceDTO;
 import com.example.Bloodline_ADN_System.service.BlogService;
+import com.example.Bloodline_ADN_System.service.ServiceService;
 import com.example.Bloodline_ADN_System.service.impl.AuthServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,7 @@ public class AuthController {
 
     private final AuthServiceImpl authService;
     private final BlogService blogService;
+    private final ServiceService serviceService;
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
@@ -43,7 +46,18 @@ public class AuthController {
         return blogService.getAllBlogDTO();
     }
 
-
+    @GetMapping("/getService")
+    public ResponseEntity<List<ServiceDTO>> getPublicServices() {
+        List<ServiceDTO> services = serviceService.getAllServices();
+        System.out.println(services.size()
+        );
+        return ResponseEntity.ok(services);
+    }
+    @GetMapping("/detailService/{id}")
+    public ResponseEntity<ServiceDTO> getPublicServiceById(@PathVariable Long id) {
+        ServiceDTO service = serviceService.getServiceById(id);
+        return ResponseEntity.ok(service);
+    }
 
 
 }

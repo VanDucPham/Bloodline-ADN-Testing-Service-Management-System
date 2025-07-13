@@ -9,8 +9,11 @@ import {
   Space,
   Popconfirm,
   message,
+  Upload,
 } from "antd";
-import apiService from "../../service/api"; // sửa lại đúng path nếu khác
+import { UploadOutlined } from "@ant-design/icons";
+import axios from "axios";
+import apiService from "../../service/api"; // cập nhật path đúng
 
 const ServiceManager = () => {
   const [services, setServices] = useState([]);
@@ -19,7 +22,20 @@ const ServiceManager = () => {
   const [editingService, setEditingService] = useState(null);
   const [form] = Form.useForm();
 
-  // Fetch tất cả service từ API
+  // API upload ảnh
+  const uploadImage = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await axios.post("http://localhost:8080/api/images/upload", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return res.data.url; // ví dụ: "/ImagePage/abc123.jpg"
+  };
+
   const fetchServices = async () => {
     setLoading(true);
     try {
@@ -41,7 +57,19 @@ const ServiceManager = () => {
     setEditingService(service);
     setIsModalOpen(true);
     if (service) {
-      form.setFieldsValue(service);
+      form.setFieldsValue({
+        ...service,
+        imageFile: service.imageUrl
+          ? [
+              {
+                uid: "-1",
+                name: "current.jpg",
+                status: "done",
+                url: `http://localhost:8080${service.imageUrl}`,
+              },
+            ]
+          : [],
+      });
     } else {
       form.resetFields();
     }
@@ -54,22 +82,47 @@ const ServiceManager = () => {
   };
 
   const handleSave = async () => {
-    try {
-      const values = await form.validateFields();
-      if (editingService) {
-        await apiService.admin.updateService(editingService.serviceId, values);
-        message.success("Đã cập nhật dịch vụ!");
-      } else {
-        await apiService.admin.createService(values);
-        message.success("Đã thêm dịch vụ mới!");
-      }
-      closeModal();
-      fetchServices();
-    } catch (error) {
-      console.error("Lỗi khi lưu:", error);
-      message.error("Thao tác không thành công.");
+  try {
+    const values = await form.validateFields();
+
+    let imageUrl = editingService?.imageUrl || "";
+
+    if (
+      values.imageFile &&
+      values.imageFile.length > 0 &&
+      values.imageFile[0].originFileObj
+    ) {
+      const file = values.imageFile[0].originFileObj;
+
+      const response = await apiService.admin.uploadImage(file);
+      // Nếu backend trả về dạng { url: "/ImagePage/abc.jpg" }
+      imageUrl = response.data?.url || response.url;
     }
-  };
+
+    const payload = {
+      serviceName: values.serviceName,
+      servicePrice: values.servicePrice,
+      serviceDescription: values.serviceDescription,
+      imageUrl, // chính là link ảnh vừa upload
+      limitPeople: values.limitPeople,
+    };
+
+    if (editingService) {
+      await apiService.admin.updateService(editingService.serviceId, payload);
+      message.success("Đã cập nhật dịch vụ!");
+    } else {
+      await apiService.admin.createService(payload);
+      message.success("Đã thêm dịch vụ mới!");
+    }
+
+    closeModal();
+    fetchServices();
+  } catch (error) {
+    console.error("Lỗi khi lưu:", error);
+    message.error("Thao tác không thành công.");
+  }
+};
+
 
   const handleDelete = async (id) => {
     try {
@@ -102,7 +155,7 @@ const ServiceManager = () => {
       key: "imageUrl",
       render: (url) => (
         <img
-          src={url}
+          src={`http://localhost:8080${url}`}
           alt="Dịch vụ"
           width={60}
           style={{ borderRadius: 4, objectFit: "cover" }}
@@ -141,11 +194,7 @@ const ServiceManager = () => {
     <div style={{ background: "#fff", padding: 24, borderRadius: 8 }}>
       <h2>Quản lý Dịch vụ</h2>
       <p>Thêm, sửa, xóa các dịch vụ xét nghiệm ADN.</p>
-      <Button
-        type="primary"
-        onClick={() => openModal()}
-        style={{ marginBottom: 16 }}
-      >
+      <Button type="primary" onClick={() => openModal()} style={{ marginBottom: 16 }}>
         + Thêm dịch vụ
       </Button>
       <Table
@@ -199,11 +248,15 @@ const ServiceManager = () => {
           </Form.Item>
 
           <Form.Item
-            label="Hình ảnh (URL)"
-            name="imageUrl"
-            rules={[{ required: true, message: "Vui lòng nhập URL hình ảnh!" }]}
+            label="Hình ảnh"
+            name="imageFile"
+            valuePropName="fileList"
+            getValueFromEvent={(e) => Array.isArray(e) ? e : e?.fileList}
+            rules={[{ required: !editingService, message: "Vui lòng chọn ảnh!" }]}
           >
-            <Input placeholder="https://example.com/image.jpg" />
+            <Upload beforeUpload={() => false} listType="picture" maxCount={1}>
+              <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
+            </Upload>
           </Form.Item>
 
           <Form.Item

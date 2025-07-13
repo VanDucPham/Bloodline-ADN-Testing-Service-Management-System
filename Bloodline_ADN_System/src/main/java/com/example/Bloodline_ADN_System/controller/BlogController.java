@@ -1,6 +1,6 @@
 package com.example.Bloodline_ADN_System.controller;
 
-import com.example.Bloodline_ADN_System.dto.BlogDTO;
+import com.example.Bloodline_ADN_System.dto.noneWhere.BlogDTO;
 import com.example.Bloodline_ADN_System.service.BlogService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
