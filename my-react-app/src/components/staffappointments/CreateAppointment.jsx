@@ -9,7 +9,7 @@ const APPOINTMENT_TYPES = [
 ];
 const DELIVERY_METHODS = [
   { value: 'HOME_COLLECTION', label: 'Tự lấy mẫu tại nhà' },
-  { value: 'SELF_DROP_OFF', label: 'Tự mang mẫu đến cơ sở' },
+  { value: 'SELF_DROP_OFF', label: 'Đến cơ sở lấy mẫu cơ sở' },
 ];
 const STATUS_OPTIONS = [
   { value: 'SCHEDULED', label: 'Đã đặt' },
@@ -32,8 +32,8 @@ function CreateAppointment() {
     userId: '',
     serviceId: '',
     appointmentType: '',
-    appointmentDate: '',
-    appointmentTime: '',
+    // appointmentDate: '',
+    // appointmentTime: '',
     deliveryMethod: '',
     appointmentStatus: 'SCHEDULED',
     collectionStatus: 'ASSIGNED',
@@ -45,6 +45,14 @@ function CreateAppointment() {
   const [staffInfo, setStaffInfo] = useState(null);
   const [createdAppointmentId, setCreatedAppointmentId] = useState(null);
   const navigate = useNavigate();
+  const [caseFile, setCaseFile] = useState({
+    userId: '',
+    caseCode: '',
+    caseType: '',
+    serviceId: '',
+    status: 'ARCHIVED',
+  });
+
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -57,13 +65,13 @@ function CreateAppointment() {
     };
     fetchServices();
     // Lấy profile staff
-    const fetchStaffProfile = async () => {
+   const fetchStaffProfile = async () => {
       try {
         const res = await apiService.staff.getStaffProfile();
         console.log('Staff profile:', res);
-
         setStaffInfo(res);
         setForm(f => ({ ...f, userId: res.userId })); //tự động lấy userId
+        setCaseFile(cf => ({ ...cf, userId: res.userId })); // Đảm bảo caseFile cũng có userId
       } catch (e) {
         setStaffInfo(null);
       }
@@ -73,6 +81,12 @@ function CreateAppointment() {
 
   const handleChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    if (e.target.name === 'serviceId') {
+      setCaseFile(cf => ({ ...cf, serviceId: e.target.value }));
+    }
+    if (e.target.name === 'appointmentType') {
+      setCaseFile(cf => ({ ...cf, caseType: e.target.value })); // Đồng bộ loại hồ sơ
+    }
   };
 
   const handleSubmit = async e => {
@@ -80,24 +94,27 @@ function CreateAppointment() {
     setError('');
     setSuccess('');
     // Validate FE trước khi gửi lên BE
-    const today = new Date();
-    const selectedDate = new Date(form.appointmentDate);
-    if (!form.appointmentDate) {
-      setError('Vui lòng chọn ngày hẹn!');
-      return;
-    }
-    if (selectedDate <= today) {
-      setError('Lịch hẹn phải được đặt trước ít nhất 1 ngày!');
-      return;
-    }
+    // const today = new Date();
+    // const selectedDate = new Date(form.appointmentDate);
+    // if (!form.appointmentDate) {
+    //   setError('Vui lòng chọn ngày hẹn!');
+    //   return;
+    // }
+    // if (selectedDate <= today) {
+    //   setError('Lịch hẹn phải được đặt trước ít nhất 1 ngày!');
+    //   return;
+    // }
     if (form.appointmentType === 'ADMINISTRATIVE' && form.deliveryMethod === 'HOME_COLLECTION') {
       setError('Hành chính chỉ được chọn dịch vụ tại cơ sở!');
       return;
     }
     try {
-      await apiService.staff.createAppointment(form);
-      setSuccess('Đặt lịch thành công!');
-      setTimeout(() => navigate('/staff/appointment'), 1200);
+await apiService.staff.createAppointment({
+        appointment: form,
+        caseFile: caseFile
+      });
+            setSuccess('Đặt lịch thành công!');
+      setTimeout(() => navigate('/staff/appointments'), 1200);
     } catch (err) {
       // Nếu backend trả về lỗi khung giờ đã đầy thì hiển thị đúng thông báo
       //GlobalExceptionHandler class này đã xử lí
@@ -142,14 +159,19 @@ function CreateAppointment() {
             {APPOINTMENT_TYPES.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
           </select>
         </div>
+        {/* Loại hồ sơ sẽ tự động đồng bộ với loại lịch hẹn, không cho chọn riêng */}
         <div>
+          <label>Loại hồ sơ:</label>
+          <input type="text" value={caseFile.caseType ? (APPOINTMENT_TYPES.find(t => t.value === caseFile.caseType)?.label || caseFile.caseType) : ''} readOnly style={{ background: '#f0f0f0' }} />
+        </div>
+        {/* <div>
           <label>Ngày hẹn:</label>
           <input type="date" name="appointmentDate" value={form.appointmentDate} onChange={handleChange} required />
         </div>
         <div>
           <label>Giờ hẹn:</label>
           <input type="time" name="appointmentTime" value={form.appointmentTime} onChange={handleChange} required />
-        </div>
+        </div> */}
         <div>
           <label>Phương thức lấy mẫu:</label>
           <select name="deliveryMethod" value={form.deliveryMethod} onChange={handleChange} required>

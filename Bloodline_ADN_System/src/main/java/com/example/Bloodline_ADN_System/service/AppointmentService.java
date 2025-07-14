@@ -21,8 +21,6 @@ public interface AppointmentService {
 
 
     // --------------------- CUSTOMER CREATE APPOINTMENT ---------------------
-    AppointmentResponse<AppointmentDTO> createAppointmentByStaff(AppointmentDTO dto);
-
     @Transactional
     AppointmentResponse<AppointmentDTO> createAppointment(AppointmentRequest request);
 
@@ -44,8 +42,6 @@ public interface AppointmentService {
 
 
     Long findCaseIdByAppointmentId(Long id);
-
-    AppointmentDTO updateAppointmentProgress(Long id, Appointment.AppointmentStatus status);
 
     void updateAppointment(AppointmentDTO appointmentDTO, Long appointmentId);
 }

@@ -30,6 +30,8 @@ class BaseApiService {
             method: options.method || 'GET',
             url,
             headers: this.getHeaders(data, options.headers || {}),
+            responseType: options.responseType || 'json', // Thêm dòng này để xử lý pdf, âm thanh,...
+
            ...(options.method === 'GET' ? { params } : { data }) // <-- xử lý params đúng cho GET
         };
 

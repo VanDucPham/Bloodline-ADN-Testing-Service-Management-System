@@ -165,7 +165,7 @@ function Header() {
               )}
               {role === 'STAFF' && (
                 <>
-                  <li><button className="btn" onClick={() => navigate('/staff/appointment')}>Lịch hẹn</button></li>
+                  <li><button className="btn" onClick={() => navigate('/staff/appointments')}>Lịch hẹn</button></li>
                   <li><button className="btn" onClick={() => navigate('/staff/appointment/create')}>+ Tạo lịch</button></li>
                 </>
               )}

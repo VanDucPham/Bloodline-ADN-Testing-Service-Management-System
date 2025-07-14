@@ -2,13 +2,16 @@ package com.example.Bloodline_ADN_System.controller;
 
 import com.example.Bloodline_ADN_System.Entity.Appointment;
 import com.example.Bloodline_ADN_System.dto.ManagerService.ServiceManagerDTO;
+import com.example.Bloodline_ADN_System.dto.ResultDTO;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentDTO;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentRequest;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentResponse;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.ParticipantDTO;
 import com.example.Bloodline_ADN_System.dto.noneWhere.*;
 import com.example.Bloodline_ADN_System.service.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,12 +28,13 @@ public class StaffCaseFileController {
     private final ParticipantService participantService;
     private final ServiceList serviceList;
     private final UserService userService;
+    private final ResultService resultService;
 
     @GetMapping("/appointment")
     public ResponseEntity<List<AppointmentDTO>> filterAppointments(
             @RequestParam(required = false) Appointment.AppointmentStatus status,
             @RequestParam(required = false) Appointment.AppointmentType type,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
+            @RequestParam(name = "appointmentDate",required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
     ) {
         List<AppointmentDTO> appointments = appointmentService.filterAppointment(status, type, date);
         return ResponseEntity.ok(appointments);
@@ -42,7 +46,7 @@ public class StaffCaseFileController {
     }
 
     @PutMapping("/sample/update")
-    public ResponseEntity<SampleDTO> updateSample(@RequestBody SampleUpdateDTO dto){
+    public ResponseEntity<SampleDTO> updateSample(@RequestBody SampleUpdateDTO dto) throws JsonProcessingException {
         return ResponseEntity.ok(sampleService.updateSampleInfo(dto));
     }
 
@@ -53,8 +57,8 @@ public class StaffCaseFileController {
     }
 
     @PutMapping("/apointment/update/{id}")
-    public ResponseEntity<AppointmentDTO> updateAppointment(@PathVariable Long id, @RequestParam("status") Appointment.AppointmentStatus status,
-                                                            @RequestParam("collectionStatus") Appointment.CollectionStatus collectionStatus) {
+    public ResponseEntity<AppointmentDTO> updateAppointment(@PathVariable Long id, @RequestParam(value = "status", required = false) Appointment.AppointmentStatus status,
+                                                            @RequestParam(value = "collectionStatus", required = false) Appointment.CollectionStatus collectionStatus) {
         return ResponseEntity.ok(appointmentService.updateAppointmentProgress(id, status, collectionStatus));
     }
 
@@ -87,5 +91,22 @@ public class StaffCaseFileController {
         List<ParticipantDTO> savedParticipants = participantService.addParticipant(participantDTOs);
         return ResponseEntity.ok(savedParticipants);
     }
+
+    @PostMapping("/result/create")
+    public ResultDTO createResult(@RequestBody ResultDTO resultDTO){
+        resultService.createResult(resultDTO);
+        return resultDTO;
+    }
+
+    @GetMapping("/result/get/{appointmentId}")
+    public ResultDTO getResult(@PathVariable Long appointmentId){
+        return resultService.getResultByAppointmentId(appointmentId);
+    }
+
+    @GetMapping("/export-pdf/{appointmentId}")
+    public ResponseEntity<ByteArrayResource> exportPdf(@PathVariable Long appointmentId) {
+        return resultService.exportResultPdf(appointmentId);
+    }
+
 
 }

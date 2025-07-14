@@ -1,8 +1,9 @@
 package com.example.Bloodline_ADN_System.dto.noneWhere;
 
 import com.example.Bloodline_ADN_System.Entity.Sample;
-import lombok.Data;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 @Data
 public class SampleUpdateDTO {
     private Long sampleId;

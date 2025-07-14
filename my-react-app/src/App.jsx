@@ -46,6 +46,8 @@ import ManagerStaff from './components/Manager/ManagerStaff';
 import CaseTracking from './components/Manager/CaseTracking';
 import BlogList from './components/allpost/BlogList';
 import ServiceDetail from './components/pricelist/ServiceDetail';
+import StaffAppointments from './components/staffappointments/StaffAppointments';
+import CreateAppointment from './components/staffappointments/CreateAppointment';
 
 
 // import SettingsPage from './components/admin/SettingsPage';
@@ -83,6 +85,9 @@ function App() {
           <Route path="/service/:id" element={<ServiceDetail />} />
 
 
+
+           <Route path="/staff/appointments" element={<StaffAppointments />} />
+           <Route path="/staff/appointment/create" element={<CreateAppointment />} />
           <Route path="/admin-dashboard" element={<AdminDashboard activeSection="admin" />} />
         </Route>
 

@@ -89,7 +89,8 @@ import axios from "axios";
 import AuthService from "../authService";
 import UserService from "../userService";
 import AdminService from "../adminService";
-import StaffService from "../staffservice"; // Import StaffService
+import StaffService from "../staffservice"; 
+import ManagerService from "../managerService";
 
 class ApiServiceManager {
   constructor() {
@@ -106,6 +107,7 @@ class ApiServiceManager {
     this.user = new UserService(this);
     this.admin = new AdminService(this);
     this.staff = new StaffService(this); 
+    this.manager = new ManagerService(this);
 
     this.initializeRequestInterceptor();
     this.initializeResponseInterceptor();
@@ -244,6 +246,8 @@ class ApiServiceManager {
   async getBlogCategoryCount() {
     return this.get('/admin/blog/category-count');
   }
+
+
 }
 
 export default ApiServiceManager;

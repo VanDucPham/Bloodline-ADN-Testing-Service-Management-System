@@ -1,6 +1,8 @@
 package com.example.Bloodline_ADN_System.repository;
 
 import com.example.Bloodline_ADN_System.Entity.Appointment;
+import com.example.Bloodline_ADN_System.Entity.CaseFile;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
@@ -50,5 +53,15 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
             "WHERE FUNCTION('DATE_FORMAT', a.appointmentDate, '%Y-%m') = :year_month")
     List<Appointment> findByMonth(@Param("year_month") String yearMonth);
 
+    Optional<Appointment> findByCaseFile_CaseCode(String caseCode);
+
+    @EntityGraph(attributePaths = {
+            "caseFile",
+            "user",
+            "assignedStaff",
+            "participants.sample",
+            "result"
+    })
+    List<Appointment> findAll();
 
 }

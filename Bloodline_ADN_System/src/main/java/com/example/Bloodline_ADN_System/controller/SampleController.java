@@ -6,6 +6,7 @@ import com.example.Bloodline_ADN_System.dto.noneWhere.SampleStaffDTO;
 import com.example.Bloodline_ADN_System.dto.noneWhere.SampleUpdateDTO;
 import com.example.Bloodline_ADN_System.service.SampleService;
 import com.example.Bloodline_ADN_System.service.impl.SampleServiceImpl;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,7 +31,7 @@ public class SampleController {
     }
 
     @PutMapping("/update-info")
-    public ResponseEntity<SampleDTO> updateSampleInfo(@RequestBody SampleUpdateDTO dto) {
+    public ResponseEntity<SampleDTO> updateSampleInfo(@RequestBody SampleUpdateDTO dto) throws JsonProcessingException {
         return ResponseEntity.ok(sampleService.updateSampleInfo(dto));
     }
 }
