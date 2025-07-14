@@ -14,4 +14,8 @@ public interface FeedbackService {
     List<FeedbackResponse> getAllFeedback();
     void deleteFeedback(Long feedbackId);
     Map<String, Object> getFeedbackStats();
+    
+    // Public methods - không cần đăng nhập
+    List<FeedbackResponse> getFeedbackByServiceId(Long serviceId);
+    Map<String, Object> getFeedbackStatsByServiceId(Long serviceId);
 }

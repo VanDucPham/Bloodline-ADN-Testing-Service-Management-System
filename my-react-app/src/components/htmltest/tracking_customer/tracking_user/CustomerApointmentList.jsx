@@ -7,6 +7,7 @@ import {
 import './CustomerApointment.css';
 import { useNavigate } from 'react-router-dom';
 import apiService from '../../../../service/api';
+import Feedback from '../../../feedback/FeedBack';
 
 const AppointmentList = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -18,6 +19,8 @@ const AppointmentList = () => {
   const [editingParticipant, setEditingParticipant] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [filterStatus, setFilterStatus] = useState("ALL");
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [feedbackAppointment, setFeedbackAppointment] = useState(null);
 
   const navigate = useNavigate();
 
@@ -206,6 +209,18 @@ const filteredAppointments = appointments.filter((a) =>
                   <FontAwesomeIcon icon={faTimes} /> Hủy
                 </button>
               )}
+              {/* Hiển thị nút feedback khi có result_value */}
+              {appointment.result && appointment.result.trim() !== '' && (
+                <button
+                  className="card-btn feedback"
+                  onClick={() => {
+                    setFeedbackAppointment(appointment);
+                    setShowFeedbackModal(true);
+                  }}
+                >
+                  <FontAwesomeIcon icon={faCheckCircle} /> Gửi phản hồi
+                </button>
+              )}
             </div>
           </div>
   ))}
@@ -249,6 +264,31 @@ const filteredAppointments = appointments.filter((a) =>
                   <tr><td>Mã hồ sơ</td><td>{selectedAppointment.caseCode}</td></tr>
                 </tbody>
               </table>
+              
+              {/* Thêm nút feedback trong modal nếu có result_value */}
+              {selectedAppointment.result && selectedAppointment.result.trim() !== '' && (
+                <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+                  <button
+                    className="card-btn feedback"
+                    onClick={() => {
+                      setFeedbackAppointment(selectedAppointment);
+                      setShowFeedbackModal(true);
+                      closeModal(); // Đóng modal chi tiết
+                    }}
+                    style={{ 
+                      backgroundColor: '#52c41a', 
+                      color: 'white', 
+                      border: 'none', 
+                      padding: '8px 16px', 
+                      borderRadius: '4px', 
+                      cursor: 'pointer',
+                      fontSize: '14px'
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faCheckCircle} /> Gửi phản hồi
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className={`tab-content ${activeTab === 1 ? 'active' : ''}`}>
@@ -369,6 +409,23 @@ const filteredAppointments = appointments.filter((a) =>
               <button onClick={() => setShowEditModal(false)}>Hủy</button>
               <button onClick={handleSaveParticipant}>Lưu</button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {showFeedbackModal && feedbackAppointment && (
+        <div className="modal-overlay" onClick={() => setShowFeedbackModal(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setShowFeedbackModal(false)}>
+              <FontAwesomeIcon icon={faTimes} />
+            </button>
+            <h2 className="modal-title">Gửi phản hồi cho lịch hẹn</h2>
+            {console.log('feedbackAppointment:', feedbackAppointment)}
+            <Feedback
+              appointment_id={feedbackAppointment.appointmentId}
+              service_id={feedbackAppointment.serviceId}
+              user_id={feedbackAppointment.userId}
+            />
           </div>
         </div>
       )}

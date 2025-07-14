@@ -1,11 +1,24 @@
 package com.example.Bloodline_ADN_System.service.impl;
 
 import com.example.Bloodline_ADN_System.Entity.CaseFile;
+<<<<<<< HEAD
+=======
+import com.example.Bloodline_ADN_System.Entity.Participant;
+import com.example.Bloodline_ADN_System.Entity.Result;
+import com.example.Bloodline_ADN_System.Entity.Sample;
+>>>>>>> 616b0a89a72a70858c82b9a1709513e31559cb1a
 import com.example.Bloodline_ADN_System.Entity.Service;
 import com.example.Bloodline_ADN_System.dto.noneWhere.ParticipantResponeDTO;
 import com.example.Bloodline_ADN_System.dto.noneWhere.SampleDTO;
 import com.example.Bloodline_ADN_System.dto.TrackingAppoint.AppointmentResponseDTO;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentDTO;
+<<<<<<< HEAD
+=======
+import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentResponse;
+import com.example.Bloodline_ADN_System.repository.AppointmentRepository;
+import com.example.Bloodline_ADN_System.repository.ResultRepository;
+import com.example.Bloodline_ADN_System.repository.ServiceRepository;
+>>>>>>> 616b0a89a72a70858c82b9a1709513e31559cb1a
 import com.example.Bloodline_ADN_System.service.CustomerService;
 
 import java.util.ArrayList;
@@ -21,7 +34,9 @@ public class CustomerServiceImp implements CustomerService {
     private final ParticipantServiceImpl participantService;
     private final ServiceImpl service_service;
     private final SampleServiceImpl sampleService;
-    public CustomerServiceImp(AppointmentServiceImpl appointmentService, ServiceImpl serviceimp, CaseFileServiceImpl caseFileService, ParticipantServiceImpl participantService, ServiceImpl serviceService, SampleServiceImpl sampleService) {
+    private final ResultRepository resultRepository;
+    
+    public CustomerServiceImp(AppointmentServiceImpl appointmentService, ServiceImpl serviceimp, CaseFileServiceImpl caseFileService, ParticipantServiceImpl participantService, ServiceImpl serviceService, SampleServiceImpl sampleService, ResultRepository resultRepository) {
         this.appointmentService = appointmentService;
         this.serviceimp = serviceimp;
 
@@ -29,20 +44,19 @@ public class CustomerServiceImp implements CustomerService {
         this.participantService = participantService;
         service_service = serviceService;
         this.sampleService = sampleService;
+        this.resultRepository = resultRepository;
     }
 
     @Override
     public List<AppointmentResponseDTO> getAllAppointments(Long customerId) {
         List<AppointmentResponseDTO> newList = new ArrayList<>();
         List<AppointmentDTO> appointmentList = appointmentService.getAppointmentByUserId(customerId);
-//        CaseFile caseFile = caseFileService.findById(customerId);
-//
-//        String caseCode = caseFile != null ? caseFile.getCaseCode() : "";
-//        String caseType = caseFile != null ? String.valueOf(caseFile.getCaseType()) : "";
 
         for (AppointmentDTO appointment : appointmentList) {
             AppointmentResponseDTO dto = new AppointmentResponseDTO();
             dto.setAppointmentId(String.valueOf(appointment.getAppointmentId()));
+            dto.setServiceId(appointment.getServiceId()); // Thêm serviceId
+            dto.setUserId(appointment.getUserId()); // Thêm userId
             dto.setDate(appointment.getAppointmentDate());
             dto.setTime(appointment.getAppointmentTime());
             dto.setDelivery_method(appointment.getDeliveryMethod());
@@ -56,6 +70,15 @@ public class CustomerServiceImp implements CustomerService {
             dto.setCaseCode(caseCode);
             dto.setCaseType(caseType);
             dto.setStatusAppointment(String.valueOf(appointment.getAppointmentStatus()));
+
+            // ===== Lấy kết quả xét nghiệm từ bảng Result =====
+            Optional<Result> resultOptional = resultRepository.findByAppointment_AppointmentId(appointment.getAppointmentId());
+            if (resultOptional.isPresent()) {
+                Result result = resultOptional.get();
+                dto.setResult(result.getResultValue());
+            } else {
+                dto.setResult(null);
+            }
 
             // ===== Lấy danh sách participant theo appointment =====
             List<ParticipantResponeDTO> participantList = participantService.getParticipantByAppointmentId(appointment.getAppointmentId());
@@ -72,9 +95,6 @@ public class CustomerServiceImp implements CustomerService {
 
         return newList;
     }
-
-
-
 
     @Override
     public void updateAppointment(AppointmentDTO appointmentDTO, Long appointmentId) {

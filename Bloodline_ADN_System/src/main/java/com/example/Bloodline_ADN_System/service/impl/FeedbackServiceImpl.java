@@ -104,6 +104,44 @@ public class FeedbackServiceImpl implements FeedbackService {
         return feedbacks.stream().map(this::toDTO).collect(Collectors.toList());
     }
 
+    // Public: Xem feedback theo service (không cần đăng nhập)
+    @Override
+    public List<FeedbackResponse> getFeedbackByServiceId(Long serviceId) {
+        // Kiểm tra service có tồn tại không
+        if (!serviceRepository.existsById(serviceId)) {
+            throw new RuntimeException("Dịch vụ không tồn tại");
+        }
+        
+        List<Feedback> feedbacks = feedbackRepository.findByService_ServiceId(serviceId);
+        return feedbacks.stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
+    // Public: Thống kê feedback theo service (không cần đăng nhập)
+    @Override
+    public Map<String, Object> getFeedbackStatsByServiceId(Long serviceId) {
+        // Kiểm tra service có tồn tại không
+        if (!serviceRepository.existsById(serviceId)) {
+            throw new RuntimeException("Dịch vụ không tồn tại");
+        }
+        
+        List<Feedback> serviceFeedbacks = feedbackRepository.findByService_ServiceId(serviceId);
+        
+        long totalFeedbacks = serviceFeedbacks.size();
+        double avgRating = serviceFeedbacks.stream()
+                .mapToInt(Feedback::getRating)
+                .average()
+                .orElse(0.0);
+        
+        Map<Integer, Long> ratingDistribution = serviceFeedbacks.stream()
+                .collect(Collectors.groupingBy(Feedback::getRating, Collectors.counting()));
+        
+        return Map.of(
+            "totalFeedbacks", totalFeedbacks,
+            "averageRating", avgRating,
+            "ratingDistribution", ratingDistribution
+        );
+    }
+
     // Admin xóa feedback vi phạm
     @Override
     public void deleteFeedback(Long feedbackId) {

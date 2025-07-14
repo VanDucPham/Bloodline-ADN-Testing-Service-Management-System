@@ -7,4 +7,7 @@ public interface CaseFileRepository extends JpaRepository<CaseFile, Long> {
     boolean existsCaseFilesByCaseCode(String caseCode);
 
     CaseFile findByCaseCode(String caseCode);
+    
+    // Đếm số lượng case file theo service ID
+    long countByService_ServiceId(Long serviceId);
 }

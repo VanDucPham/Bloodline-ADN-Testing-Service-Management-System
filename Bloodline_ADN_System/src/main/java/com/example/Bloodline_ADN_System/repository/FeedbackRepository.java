@@ -9,4 +9,8 @@ import java.util.Optional;
 public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
     Optional<Feedback> findByAppointment_AppointmentId(Long appointmentId);
     List<Feedback> findByUser_UserId(Long userId);
+    List<Feedback> findByService_ServiceId(Long serviceId);
+    
+    // Đếm số lượng feedback theo service ID
+    long countByService_ServiceId(Long serviceId);
 }
