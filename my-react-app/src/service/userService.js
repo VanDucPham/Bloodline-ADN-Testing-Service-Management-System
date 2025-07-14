@@ -34,6 +34,10 @@ return this.post('/customer/appointment/check-availability', data)
     return this.put(`/customer/${id}/update`, data);
   }
 
+  async getResult(appointmentId){
+    return this.get(`/customer/result/get/${appointmentId}`);
+  }
+
 }
     
 

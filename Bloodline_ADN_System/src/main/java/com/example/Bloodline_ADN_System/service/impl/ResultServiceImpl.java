@@ -73,6 +73,7 @@ public class ResultServiceImpl implements ResultService {
     }
 
     //staff nhập kết quả
+    @Transactional
     public ResultDTO createResult(ResultDTO dto) {
         // 1. Kiểm tra dữ liệu hợp lệ bằng hàm đã có
         String validationMessage = validateAppointmentForResult(dto.getAppointmentId());
