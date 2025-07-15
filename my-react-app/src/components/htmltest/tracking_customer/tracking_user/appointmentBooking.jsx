@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './appointmentBooking.css';
 import apiService from '../../../../service/api';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { getAllowedAreas } from '../../../../service/adminService';
 import { Form, Input, Select, message } from 'antd';
 
@@ -64,6 +64,15 @@ function AppointmentBooking() {
   const [service, setService] = useState([]);
   const [selectedTime, setSelectedTime] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Khi mount, nếu có state serviceId truyền sang thì tự động set
+  useEffect(() => {
+    if (location.state && location.state.serviceId) {
+      setAppointment(prev => ({ ...prev, serviceId: location.state.serviceId }));
+      setCaseFile(prev => ({ ...prev, serviceId: location.state.serviceId }));
+    }
+  }, [location.state]);
 
   // Format price to VND
   const formatVND = (price) => {
@@ -121,7 +130,7 @@ function AppointmentBooking() {
         // Lấy danh sách tỉnh/thành phố duy nhất
         const cities = Array.from(new Set(data.map(a => a.city)));
         setCityOptions(cities);
-      } catch (err) {
+      } catch  {
         message.error('Không thể tải danh sách khu vực lấy mẫu!');
       } finally {
         setAddressLoading(false);
@@ -250,7 +259,7 @@ function AppointmentBooking() {
             collectionCity: values.city,
             collectionDistrict: values.district
           }));
-        } catch (err) {
+        } catch  {
           // Nếu validate lỗi thì không submit
           return;
         }
