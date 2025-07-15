@@ -9,6 +9,7 @@ import com.example.Bloodline_ADN_System.repository.*;
 import com.example.Bloodline_ADN_System.service.*;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -26,6 +27,8 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final CaseFileService caseFileService;
     private final TimeSlotLimitRepository timeSlotLimitRepository;
     private final ServiceRepository serviceRepository;
+    @Autowired
+    private DistanceService distanceService;
 
 
     // ---------------------CREATE APPOINTMENT FOR CASEFILE---------------------
@@ -140,6 +143,15 @@ public class AppointmentServiceImpl implements AppointmentService {
         AppointmentDTO dto = request.getAppointment();
         validateAppointmentDate(dto.getAppointmentDate());
         validateSlotAvailability(dto.getAppointmentDate(), dto.getAppointmentTime());
+
+        // --- Kiểm tra khoảng cách nếu là dịch vụ lấy mẫu tại nhà ---
+        if ("HOME_COLLECTION".equals(dto.getAppointmentType())) {
+            String customerAddress = dto.getCollectionAddress();
+            if (!distanceService.isValidDistance(customerAddress)) {
+                throw new RuntimeException("Khoảng cách không hợp lệ, yêu cầu nhập lại");
+            }
+        }
+        // --- End kiểm tra khoảng cách ---
 
         // 3. Create & Save Appointment
 

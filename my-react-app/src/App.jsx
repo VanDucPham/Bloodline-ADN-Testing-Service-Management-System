@@ -49,11 +49,14 @@ import ServiceDetail from './components/pricelist/ServiceDetail';
 import MyFeedbackList from './components/feedback/MyFeedbackList';
 import StaffAppointments from './components/staffappointments/StaffAppointments';
 import CreateAppointment from './components/staffappointments/CreateAppointment';
+import DistanceCalculator from './components/DistanceCalculator';
 
 
 // import SettingsPage from './components/admin/SettingsPage';
 // import ChangePassword from './components/admin/ChangePassword';
 // import Profile from './components/admin/Profile';
+
+import AdminLayout from './components/dashboards/AdminLayout';
 
 function App() {
   return (
@@ -78,6 +81,7 @@ function App() {
           <Route path="/post-detail/:id" element={<BlogDetail />} />
           <Route path="/dna" element={<DnaPost />} />
           <Route path="/blogList" element={<BlogList />} />
+          <Route path="/distance" element={<DistanceCalculator />} />
 
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/questionADN" element={<QuestionADNApp />} />
@@ -90,7 +94,7 @@ function App() {
 
            <Route path="/staff/appointments" element={<StaffAppointments />} />
            <Route path="/staff/appointment/create" element={<CreateAppointment />} />
-          <Route path="/admin-dashboard" element={<AdminDashboard activeSection="admin" />} />
+          <Route path="/admin-dashboard" element={<AdminLayout activeSection="admin" />} />
         </Route>
 
         {/* Admin Routes with layout */}

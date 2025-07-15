@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './appointmentBooking.css';
 import apiService from '../../../../service/api';
 import { useNavigate } from 'react-router-dom';
+import { getDistance } from '../../../../service/api/ApiServiceManage';
 
 function AppointmentBooking() {
   const [step, setStep] = useState(1);
@@ -116,7 +117,7 @@ function AppointmentBooking() {
         setValidateMessage(response);
         return false;
       }
-    } catch (error) {
+    } catch {
       setValidateMessage("Đã xảy ra lỗi kết nối. Vui lòng thử lại.");
       return false;
     }
@@ -187,55 +188,58 @@ function AppointmentBooking() {
   };
 
   const handleSubmit = async () => {
-  const updateAppointment = {
-    ...appointment, userId: user?.user_Id
-  };
-  const updatedCaseFile = {
-    ...caseFile,
-    userId: user?.user_Id
-  };
-
-  try {
-    const filteredSamples = samples.filter(s =>
-      s.participantCitizenId?.trim() !== '' && s.sampleType?.trim() !== ''
-    );
-
-    const payLoad = {
-      appointment: updateAppointment,
-      participants: participants,
-      samples: filteredSamples,
-      caseFile: updatedCaseFile
+    const updateAppointment = {
+      ...appointment, userId: user?.user_Id
+    };
+    const updatedCaseFile = {
+      ...caseFile,
+      userId: user?.user_Id
     };
 
-    // Nếu chọn VNPay
-    if (appointment.paymentMethod === "vnpay") {
-      const paymentRequest = {
-        amount: selectedService.servicePrice, // số tiền
-        orderInfo: `Thanh toán dịch vụ ${selectedService.serviceName}`,
-        txnRef: "ORDER" + Date.now(), // mã đơn hàng duy nhất
-        bankCode: "", // hoặc để trống
-        
+    try {
+      const filteredSamples = samples.filter(s =>
+        s.participantCitizenId?.trim() !== '' && s.sampleType?.trim() !== ''
+      );
+
+      const payLoad = {
+        appointment: updateAppointment,
+        participants: participants,
+        samples: filteredSamples,
+        caseFile: updatedCaseFile
       };
 
-      const res = await apiService.user.creatPaymentVnPay(paymentRequest);
-
-      if (res) {
-        window.location.href = res; // redirect đến trang thanh toán
+      // Nếu chọn VNPay
+      if (appointment.paymentMethod === "vnpay") {
+        const paymentRequest = {
+          amount: selectedService.servicePrice, // số tiền
+          orderInfo: `Thanh toán dịch vụ ${selectedService.serviceName}`,
+          txnRef: "ORDER" + Date.now(), // mã đơn hàng duy nhất
+          bankCode: "", // hoặc để trống
+        };
+        const res = await apiService.user.creatPaymentVnPay(paymentRequest);
+        if (res) {
+          window.location.href = res; // redirect đến trang thanh toán
+        }
+      } else {
+        // Các phương thức khác
+        await apiService.user.create_app(payLoad)
+          .then(() => {
+            alert("Lịch hẹn được đặt thành công!");
+            navigate("/tracking_user");
+          })
+          .catch((error) => {
+            // Hiển thị thông báo lỗi trả về từ backend
+            setValidateMessage(error.message || "Đặt lịch thất bại, vui lòng đặt lại");
+          });
       }
-    } else {
-      // Các phương thức khác
-      await apiService.user.create_app(payLoad);
-      alert("Lịch hẹn được đặt thành công!");
-      navigate("/tracking_user");
+    } catch (error) {
+      setValidateMessage(error.message || "Đặt lịch thất bại, vui lòng đặt lại");
     }
-
-  } catch (error) {
-    alert("Đặt lịch thất bại, vui lòng đặt lại");
-  }
-};
+  };
 
 
   const nextStep = async () => {
+    console.log('nextStep được gọi, step:', step, 'deliveryMethod:', appointment.deliveryMethod);
     if (step === 1 && !caseFile.caseType) {
       setValidateMessage('Vui lòng chọn loại hồ sơ.');
       return;
@@ -276,9 +280,21 @@ function AppointmentBooking() {
       setValidateMessage('Ngày sinh không được lớn hơn ngày hiện tại.');
       return;
     }
-    if (step === 4 && appointment.appointmentType === "HOME_COLLECTION") {
+    if (
+      step === 4 &&
+      (appointment.deliveryMethod === "HOME_COLLECTION" || appointment.deliveryMethod === "HOME_DELIVERY")
+    ) {
       if (samples.some(s => !s.participantCitizenId || !s.sampleType)) {
         setValidateMessage('Vui lòng nhập đầy đủ thông tin mẫu xét nghiệm.');
+        return;
+      }
+      // Kiểm tra khoảng cách trước khi cho qua bước tiếp theo
+      try {
+        console.log('Gọi kiểm tra khoảng cách với địa chỉ:', appointment.collectionAddress);
+        await getDistance(appointment.collectionAddress);
+        // Nếu hợp lệ, cho phép qua bước tiếp theo
+      } catch (err) {
+        setValidateMessage(err.message || 'Lỗi khi kiểm tra khoảng cách. Vui lòng thử lại.');
         return;
       }
     }

@@ -1,24 +1,22 @@
 package com.example.Bloodline_ADN_System.service.impl;
 
 import com.example.Bloodline_ADN_System.Entity.CaseFile;
-<<<<<<< HEAD
-=======
+
 import com.example.Bloodline_ADN_System.Entity.Participant;
 import com.example.Bloodline_ADN_System.Entity.Result;
 import com.example.Bloodline_ADN_System.Entity.Sample;
->>>>>>> 616b0a89a72a70858c82b9a1709513e31559cb1a
+
 import com.example.Bloodline_ADN_System.Entity.Service;
 import com.example.Bloodline_ADN_System.dto.noneWhere.ParticipantResponeDTO;
 import com.example.Bloodline_ADN_System.dto.noneWhere.SampleDTO;
 import com.example.Bloodline_ADN_System.dto.TrackingAppoint.AppointmentResponseDTO;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentDTO;
-<<<<<<< HEAD
-=======
+
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentResponse;
 import com.example.Bloodline_ADN_System.repository.AppointmentRepository;
 import com.example.Bloodline_ADN_System.repository.ResultRepository;
 import com.example.Bloodline_ADN_System.repository.ServiceRepository;
->>>>>>> 616b0a89a72a70858c82b9a1709513e31559cb1a
+
 import com.example.Bloodline_ADN_System.service.CustomerService;
 
 import java.util.ArrayList;
