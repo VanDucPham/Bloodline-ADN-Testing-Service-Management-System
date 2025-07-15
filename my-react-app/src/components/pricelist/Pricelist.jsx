@@ -7,6 +7,7 @@ import ComModal from '../ComModal/ComModal';
 import Login from '../login/Login';
 import apiService from '../../service/api';
 
+
 function Pricelist() {
   const navigate = useNavigate();
   const [services, setServices] = useState([]);
@@ -73,6 +74,7 @@ function Pricelist() {
   return (
     <div className="pricelist-section">
       <h2>BẢNG GIÁ DỊCH VỤ XÉT NGHIỆM ADN</h2>
+      
       <div className="service-card-list">
         {services.map((service) => (
           <div className="service-card" key={service.serviceId}>

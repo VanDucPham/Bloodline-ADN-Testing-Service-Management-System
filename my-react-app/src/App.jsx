@@ -1,5 +1,5 @@
 import './App.css';
-
+import { Navigate } from 'react-router-dom';
 //import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 //import { faUser, faCoffee, faHome, faBars, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
@@ -21,6 +21,7 @@ import AboutUs from './components/aboutus/AboutUs';
 import QuestionADNApp from "./components/questionADN/QuestionADN";
 import ConsultationStatus from './components/ConsultationStatus';
 import ConsultationDemo from './components/ConsultationDemo';
+import ServiceInfo from './components/serviceInfo/ServiceInfo';
 
 
 import CustomerAppointmentList from './components/htmltest/tracking_customer/tracking_user/CustomerApointmentList';
@@ -71,6 +72,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/pricelist" element={<Pricelist />} />
+          <Route path="/service-info" element={<ServiceInfo />} />
 
           <Route path="/user" element={<UserDashboard />} />
          <Route path="/tracking_user" element={<AppointmentBooking />} />

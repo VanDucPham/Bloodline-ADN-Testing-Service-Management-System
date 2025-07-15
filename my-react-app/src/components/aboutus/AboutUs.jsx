@@ -1,5 +1,5 @@
 // src/pages/AboutUs.jsx
-import React from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import './AboutUs.css';
 
 const aboutContent = {
@@ -24,26 +24,105 @@ Viện được xây dựng định hướng tới ứng dụng hoặc hỗ tr�
 };
 
 function AboutUs() {
+  const [visible, setVisible] = useState(false);
+  const [progress, setProgress] = useState([0, 0, 0]);
+  const sectionRef = useRef();
+
+  const stats = [
+    { label: 'Độ Chính Xác', value: 99.99, color: '#1976d2' },
+    { label: 'Bảo Mật Thông Tin Khách Hàng', value: 100, color: '#1976d2' },
+    { label: 'Tỉ Lệ Khách Hàng Hài Lòng', value: 95, color: '#1976d2' },
+  ];
+
+  // Animate progress and number
+  useEffect(() => {
+    if (!visible) return;
+    let frame;
+    const duration = 1200;
+    const start = performance.now();
+    function animate(now) {
+      const elapsed = now - start;
+      const percent = Math.min(elapsed / duration, 1);
+      setProgress(stats.map(s => s.value * percent));
+      if (percent < 1) frame = requestAnimationFrame(animate);
+    }
+    frame = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(frame);
+  }, [visible]);
+
+  // Intersection Observer
+  useEffect(() => {
+    const observer = new window.IntersectionObserver(
+      ([entry]) => setVisible(entry.isIntersecting),
+      { threshold: 0.3 }
+    );
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div className="aboutus-section">
-      <h2>{aboutContent.title}</h2>
-      <div className="aboutus-content">
-        <div className="aboutus-text">
-          {aboutContent.sections.map((section, index) => (
-            <div key={index} className="aboutus-block">
-              <h3>{section.heading}</h3>
-              <p>{section.content}</p>
-            </div>
-          ))}
-        </div>
-        <div className="aboutus-image">
-          <img
-            src={aboutContent.image}
-            alt="Phòng thí nghiệm Vietcare"
-            onError={(e) => (e.target.src = "https://via.placeholder.com/400x300?text=No+Image")}
-          />
+    <div>
+      <div className="aboutus-section">
+        <h2>{aboutContent.title}</h2>
+        <div className="aboutus-content">
+          <div className="aboutus-text">
+            {aboutContent.sections.map((section, index) => (
+              <div key={index} className="aboutus-block">
+                <h3>{section.heading}</h3>
+                <p>{section.content}</p>
+              </div>
+            ))}
+          </div>
+          <div className="aboutus-image">
+            <img
+              src={aboutContent.image}
+              alt="Phòng thí nghiệm Vietcare"
+              onError={(e) => (e.target.src = "https://via.placeholder.com/400x300?text=No+Image")}
+            />
+          </div>
         </div>
       </div>
+
+      {/* Phần Dịch vụ khoa học với progress bars */}
+      <section className="aboutus-services-section" ref={sectionRef}>
+        <div className="aboutus-services-content">
+          <div className="aboutus-services-text">
+            <h2>Dịch vụ khoa học của Vietcare</h2>
+            <p>
+              Nhằm đáp ứng nhu cầu của khách hàng, phòng thí nghiệm của viện Nghiên Cứu khoa học và Ứng dụng Công nghệ Vietcare đã được trang bị những thiết bị tối tân nhất như hệ thống realtime-PCR, giải trình tự gen và hệ gen phục vụ cho các xét nghiệm sinh học phân tử. Nhờ đó, làm tăng độ chính xác, tiết kiệm thời gian, và từng bước xây dựng lòng tin với khách hàng.
+            </p>
+            <div className="aboutus-stats">
+              {stats.map((s, i) => (
+                <div className="aboutus-stat" key={s.label}>
+                  <div className="aboutus-stat-label">{s.label}</div>
+                  <div className="aboutus-stat-value">
+                    {progress[i].toFixed(2)}%
+                  </div>
+                  <div className="aboutus-progress-bar">
+                    <div
+                      className="aboutus-progress"
+                      style={{
+                        width: `${progress[i]}%`,
+                        background: s.color,
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="aboutus-services-image">
+            <div className="aboutus-icon">
+              <i className="fas fa-hospital-alt"></i>
+            </div>
+            <img
+              src="/src/images/vien-nghien-cuu-vietcare-6.jpg"
+              alt="Vietcare Lab"
+              className="aboutus-services-img"
+            />
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
