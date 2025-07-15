@@ -15,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @AllArgsConstructor
@@ -28,6 +29,13 @@ public class AuthController {
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
         LoginResponse loginResponse = authService.login(loginRequest);
         return ResponseEntity.ok(loginResponse);
+    }
+
+    @PostMapping("/google-login")
+    public ResponseEntity<LoginResponse> loginWithGoogle(@RequestBody Map<String, String> request) {
+        String idToken = request.get("idToken");
+        LoginResponse response = authService.loginWithGoogle(idToken);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/register")

@@ -3,6 +3,8 @@ import './App.css';
 //import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 //import { faUser, faCoffee, faHome, faBars, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+
 
 
 
@@ -51,66 +53,67 @@ import CreateAppointment from './components/staffappointments/CreateAppointment'
 
 function App() {
   return (
-    <BrowserRouter>
+    //do gg cung cấp
+     <GoogleOAuthProvider clientId="367800881851-0vas7cftbs3afhorluk2u9ipp4btttm9.apps.googleusercontent.com"> 
+      <BrowserRouter>
+        <Routes>
+          {/* Public Routes */}
+          <Route element={<PublicLayout />}>
+            <Route path="/" element={<Homepage />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/pricelist" element={<Pricelist />} />
 
-      <Routes>
-
-        {/* Public Routes */}
-
-        <Route element={<PublicLayout />}>
-          <Route path="/" element={<Homepage />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/pricelist" element={<Pricelist />} />
-
-          <Route path="/user" element={<UserDashboard />} />
-         <Route path="/tracking_user" element={<AppointmentBooking />} />
-          <Route path="/CustomerApointmentList" element={<CustomerAppointmentList />} />
-          <Route path="/post" element={<AllPost />} />
-          <Route path="/allpost" element={<AllPost />} />
-          <Route path="/post-detail/:section/:id" element={<BlogDetail />} />
-          <Route path="/post-detail/:id" element={<BlogDetail />} />
-          <Route path="/dna" element={<DnaPost />} />
-          <Route path="/blogList" element={<BlogList />} />
-
-           
-           <Route path="/staff/appointments" element={<StaffAppointments />} />
-           <Route path="/staff/appointment/create" element={<CreateAppointment />} />
-          <Route path="/admin-dashboard" element={<AdminDashboard activeSection="admin" />} />
-        </Route>
-
-        {/* Admin Routes with layout */}
-        <Route path="/admin" element={<ComHeaderAdmin />}>
-          <Route path="accounts" element={<Accounts />} />
-          <Route path="feedbacks" element={<FeedBackManagerment />} />
-          <Route path="Dashboard" element={<RevenueManagement />} />
-          <Route path="settings" element={<SystemSettings />} />
-          <Route path="services" element={<ServiceManager />} />
-          <Route path="schedules" element={<FacilityScheduleSimple />} />
-          <Route path="blogs" element={<BlogManager />} />
+            <Route path="/user" element={<UserDashboard />} />
+            <Route path="/tracking_user" element={<AppointmentBooking />} />
+            <Route path="/CustomerApointmentList" element={<CustomerAppointmentList />} />
+            <Route path="/post" element={<AllPost />} />
+            <Route path="/allpost" element={<AllPost />} />
+            <Route path="/post-detail/:section/:id" element={<BlogDetail />} />
+            <Route path="/post-detail/:id" element={<BlogDetail />} />
+            <Route path="/dna" element={<DnaPost />} />
+            <Route path="/blogList" element={<BlogList />} />
 
 
-          {/* //  <Route path="dashboard" element={<DashboardPage />} /> */}
-          {/* <Route path="accounts" element={<AccountManager />} />
+            <Route path="/staff/appointments" element={<StaffAppointments />} />
+            <Route path="/staff/appointment/create" element={<CreateAppointment />} />
+            <Route path="/admin-dashboard" element={<AdminDashboard activeSection="admin" />} />
+          </Route>
+
+          {/* Admin Routes with layout */}
+          <Route path="/admin" element={<ComHeaderAdmin />}>
+            <Route path="accounts" element={<Accounts />} />
+            <Route path="feedbacks" element={<FeedBackManagerment />} />
+            <Route path="Dashboard" element={<RevenueManagement />} />
+            <Route path="settings" element={<SystemSettings />} />
+            <Route path="services" element={<ServiceManager />} />
+            <Route path="schedules" element={<FacilityScheduleSimple />} />
+            <Route path="blogs" element={<BlogManager />} />
+
+
+            {/* //  <Route path="dashboard" element={<DashboardPage />} /> */}
+            {/* <Route path="accounts" element={<AccountManager />} />
           
           <Route path="settings" element={<SettingsPage />} />
           <Route path="change-password" element={<ChangePassword />} />
           <Route path="profile" element={<Profile />} /> */}
-        </Route>
-        <Route path="/manager" element={<ManagerLayout />}>
-          <Route path="employees" element={<ManagerStaff />} />
-          <Route path="report" element={<FeedBackManagerment />} />
-          <Route path="Dashboard" element={<RevenueManagement />} />
-          <Route path="services" element={<ServiceManager />} />
-          <Route path="tracking" element={<CaseTracking />} />
-          <Route path="schedules" element={<FacilityScheduleSimple />} />
-          <Route path="blogs" element={<BlogManager />} />
+          </Route>
+          <Route path="/manager" element={<ManagerLayout />}>
+            <Route path="employees" element={<ManagerStaff />} />
+            <Route path="report" element={<FeedBackManagerment />} />
+            <Route path="Dashboard" element={<RevenueManagement />} />
+            <Route path="services" element={<ServiceManager />} />
+            <Route path="tracking" element={<CaseTracking />} />
+            <Route path="schedules" element={<FacilityScheduleSimple />} />
+            <Route path="blogs" element={<BlogManager />} />
 
-        </Route>
+          </Route>
 
-            
-      </Routes>
-    </BrowserRouter>
+
+        </Routes>
+      </BrowserRouter>
+    </GoogleOAuthProvider >
+
   );
 }
 

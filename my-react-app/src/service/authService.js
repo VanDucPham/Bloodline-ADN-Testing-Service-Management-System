@@ -17,6 +17,23 @@ class AuthService extends BaseApiService {
         }
         return response;
     }
+    // Google Login
+    async googleLogin(googleTokenData) {
+    const response = await this.post('/auth/google-login', googleTokenData);
+    
+    if (response.token) {
+        localStorage.setItem('authToken', response.token);
+        localStorage.setItem('userInfo', JSON.stringify({
+            token: response.token,
+            role: response.role,
+            fullName: response.fullName,
+            email: response.email
+        }));
+    }
+
+    return response;
+}
+
 
     async register(userData) { return this.post('/auth/register', userData); }
 

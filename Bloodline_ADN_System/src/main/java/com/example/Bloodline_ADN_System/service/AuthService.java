@@ -6,5 +6,6 @@ import com.example.Bloodline_ADN_System.dto.RegisterRequest;
 
 public interface AuthService {
     LoginResponse login(LoginRequest request);
+    LoginResponse loginWithGoogle(String idToken);;
     String RegisterUser(RegisterRequest registerRequest);
 }

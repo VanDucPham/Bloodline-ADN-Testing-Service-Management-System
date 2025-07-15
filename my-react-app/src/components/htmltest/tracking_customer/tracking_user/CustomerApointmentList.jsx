@@ -371,7 +371,6 @@ useEffect(() => {
           <td>Trạng thái</td>
           <td>{selectedAppointmentResult.status || '-'}</td>
         </tr>
-        {/* Thêm các trường chi tiết khác nếu có */}
       </tbody>
     </table>
   ) : (

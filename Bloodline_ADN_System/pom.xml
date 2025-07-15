@@ -77,8 +77,6 @@
 			<version>2.10.1</version>
 		</dependency>
 
-
-
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-api</artifactId>
@@ -116,9 +114,21 @@
 			<version>7.2.5</version>
 		</dependency>
 
+		<!--Login google-->
+		<dependency>
+			<groupId>com.google.api-client</groupId>
+			<artifactId>google-api-client</artifactId>
+			<version>1.34.1</version>
+		</dependency>
+
+		<!-- Gson Factory (bắt buộc cho GoogleIdTokenVerifier) -->
+		<dependency>
+			<groupId>com.google.http-client</groupId>
+			<artifactId>google-http-client-gson</artifactId>
+			<version>1.43.3</version>
+		</dependency>
 
 	</dependencies>
-
 
 
 	<build>

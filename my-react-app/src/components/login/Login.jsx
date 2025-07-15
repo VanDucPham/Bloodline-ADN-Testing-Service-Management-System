@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import apiService from "../../service/api";
+import { GoogleLogin } from '@react-oauth/google';
 
 
 import './Login.css';
@@ -47,17 +48,17 @@ function Login() {
         if (!validate()) return;
 
         try {
-            const response = await apiService.auth.login( {
+            const response = await apiService.auth.login({
                 email: formData.username,
                 password: formData.password
             });
-                
-          console.log(response)
-       
 
-localStorage.setItem('userInfo', JSON.stringify(response));
+            console.log(response)
 
-        
+
+            localStorage.setItem('userInfo', JSON.stringify(response));
+
+
             // Nếu login thành công thì chuyển trang
             navigate('/');
 
@@ -69,6 +70,22 @@ localStorage.setItem('userInfo', JSON.stringify(response));
             setLoginError(errorMsg);
         }
     };
+
+    // Xử lý đăng nhập Google
+    const handleGoogleSuccess = async (credentialResponse) => {
+        try {
+            const idToken = credentialResponse.credential;
+
+            const response = await apiService.auth.googleLogin({ idToken });
+
+            localStorage.setItem('userInfo', JSON.stringify(response));
+            navigate('/');
+        } catch (error) {
+            console.error("Google login failed", error);
+            setLoginError("Đăng nhập Google thất bại");
+        }
+    };
+
 
     return (
         <div className="login-bg">
@@ -101,6 +118,14 @@ localStorage.setItem('userInfo', JSON.stringify(response));
                 <p className="register-link">
                     Chưa có tài khoản? <Link to="/register">Đăng ký ngay</Link>
                 </p>
+                <div style={{ marginTop: "16px", textAlign: "center" }}>
+                    <GoogleLogin
+                        onSuccess={handleGoogleSuccess}
+                        onError={() => setLoginError("Đăng nhập Google thất bại")}
+                        useOneTap
+                    />
+                </div>
+
             </form>
         </div>
     );
