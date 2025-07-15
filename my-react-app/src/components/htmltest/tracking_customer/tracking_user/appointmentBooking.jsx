@@ -2,13 +2,20 @@ import React, { useEffect, useState } from 'react';
 import './appointmentBooking.css';
 import apiService from '../../../../service/api';
 import { useNavigate } from 'react-router-dom';
-import { getDistance } from '../../../../service/api/ApiServiceManage';
+import { getAllowedAreas } from '../../../../service/adminService';
+import { Form, Input, Select, message } from 'antd';
 
 function AppointmentBooking() {
   const [step, setStep] = useState(1);
   const [validateMessage, setValidateMessage] = useState('');
   const [minDate, setMinDate] = useState("");
   const [today, setToday] = useState("");
+  const [addressForm] = Form.useForm();
+  const [allowedAreas, setAllowedAreas] = useState([]);
+  const [cityOptions, setCityOptions] = useState([]);
+  const [districtOptions, setDistrictOptions] = useState([]);
+  const [addressLoading, setAddressLoading] = useState(false);
+
 
   const usedata = localStorage.getItem('userInfo');
   const user = usedata ? JSON.parse(usedata) : null;
@@ -104,6 +111,32 @@ function AppointmentBooking() {
     fetchService();
   }, []);
 
+  useEffect(() => {
+    // Fetch allowed areas for address dropdowns
+    const fetchAllowedAreas = async () => {
+      setAddressLoading(true);
+      try {
+        const data = await getAllowedAreas();
+        setAllowedAreas(data);
+        // Lấy danh sách tỉnh/thành phố duy nhất
+        const cities = Array.from(new Set(data.map(a => a.city)));
+        setCityOptions(cities);
+      } catch (err) {
+        message.error('Không thể tải danh sách khu vực lấy mẫu!');
+      } finally {
+        setAddressLoading(false);
+      }
+    };
+    fetchAllowedAreas();
+  }, []);
+
+  // Khi chọn tỉnh/thành phố, lọc quận/huyện tương ứng
+  const handleCityChange = (city) => {
+    addressForm.setFieldsValue({ district: undefined });
+    const districts = allowedAreas.filter(a => a.city === city).map(a => a.district);
+    setDistrictOptions(Array.from(new Set(districts)));
+  };
+
 
   const checkAvailability = async () => {
     try {
@@ -197,6 +230,32 @@ function AppointmentBooking() {
     };
 
     try {
+      if (appointment.deliveryMethod === 'HOME_COLLECTION') {
+        try {
+          const values = await addressForm.validateFields();
+          // Gọi API kiểm tra khu vực hợp lệ
+          const token = localStorage.getItem('authToken');
+          const res = await fetch(`/api/areas/check?city=${encodeURIComponent(values.city)}&district=${encodeURIComponent(values.district)}`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          const isAllowed = await res.json();
+          if (!isAllowed) {
+            message.error('Khu vực này chưa hỗ trợ lấy mẫu tại nhà. Vui lòng chọn khu vực khác!');
+            return;
+          }
+          // Lưu địa chỉ vào appointment
+          setAppointment(prev => ({
+            ...prev,
+            collectionAddress: values.addressDetail,
+            collectionCity: values.city,
+            collectionDistrict: values.district
+          }));
+        } catch (err) {
+          // Nếu validate lỗi thì không submit
+          return;
+        }
+      }
+
       const filteredSamples = samples.filter(s =>
         s.participantCitizenId?.trim() !== '' && s.sampleType?.trim() !== ''
       );
@@ -288,15 +347,6 @@ function AppointmentBooking() {
         setValidateMessage('Vui lòng nhập đầy đủ thông tin mẫu xét nghiệm.');
         return;
       }
-      // Kiểm tra khoảng cách trước khi cho qua bước tiếp theo
-      try {
-        console.log('Gọi kiểm tra khoảng cách với địa chỉ:', appointment.collectionAddress);
-        await getDistance(appointment.collectionAddress);
-        // Nếu hợp lệ, cho phép qua bước tiếp theo
-      } catch (err) {
-        setValidateMessage(err.message || 'Lỗi khi kiểm tra khoảng cách. Vui lòng thử lại.');
-        return;
-      }
     }
     if (step === 6 && !appointment.paymentMethod) {
       setValidateMessage('Vui lòng chọn phương thức thanh toán.');
@@ -334,7 +384,7 @@ function AppointmentBooking() {
       setSamples(prev => prev.slice(0, requiredCount));
     }
   }
-}, [step, selectedService]);
+}, [step, selectedService, participants.length]);
   return (
     <div>
       <header>
@@ -484,70 +534,95 @@ function AppointmentBooking() {
                   <strong>Lưu ý:</strong> Vui lòng đến cơ sở để lấy mẫu và đem đầy đủ giấy tờ cần thiết.
                 </div>
               )}
-              {(appointment?.deliveryMethod === "HOME_COLLECTION" || appointment?.deliveryMethod === "HOME_DELIVERY") && (
-                <>
-                  {appointment.deliveryMethod === "HOME_DELIVERY" && (
-                    <div style={{ marginBottom: '20px' }}>
-                      <label>Địa chỉ lấy mẫu tại nhà:</label>
-                      <input
-                        type="text"
-                        name="homeAddress"
-                        placeholder="Nhập địa chỉ nhà"
-                        value={appointment.collectionAddress || ''}
-                        onChange={(e) =>
-                          setAppointment({ ...appointment, collectionAddress: e.target.value })
-                        }
-                      />
-                    </div>
-                  )}
-                  {samples.map((sample, index) => {
-                    const participant = participants.find(p => p.citizenId === sample.participantCitizenId);
-                    return (
-                      <div key={index} className="sample-info">
-                        <label>Mẫu số {index + 1} của ai:</label>
-                        <select
-                          name="participantCitizenId"
-                          value={sample.participantCitizenId}
-                          onChange={(e) => handleSampleChange(index, e)}
+              {appointment?.deliveryMethod === "HOME_DELIVERY" && (
+                <div style={{ background: '#fff', padding: 16, borderRadius: 8, marginBottom: 16, boxShadow: '0 2px 8px #eee' }}>
+                  <h3>Địa chỉ lấy mẫu tại nhà</h3>
+                  <Form
+                    form={addressForm}
+                    layout="vertical"
+                    style={{ maxWidth: 900 }}
+                    initialValues={{ city: undefined, district: undefined }}
+                  >
+                    <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+                      <Form.Item name="addressDetail" label="Số nhà, đường, xã/phường..." rules={[{ required: true, message: 'Vui lòng nhập địa chỉ chi tiết' }]} style={{ flex: 2, minWidth: 220, marginBottom: 0 }}>
+                        <Input placeholder="Nhập số nhà, đường, xã/phường..." />
+                      </Form.Item>
+                      <Form.Item name="city" label="Tỉnh/Thành phố" rules={[{ required: true, message: 'Vui lòng chọn tỉnh/thành phố' }]} style={{ flex: 1, minWidth: 180, marginBottom: 0 }}>
+                        <Select
+                          showSearch
+                          placeholder="Chọn tỉnh/thành phố"
+                          loading={addressLoading}
+                          onChange={handleCityChange}
+                          filterOption={(input, option) => (option?.children ?? '').toLowerCase().includes(input.toLowerCase())}
                         >
-                          <option value="">-- Chọn người tham gia --</option>
-                          {participants.map((p, idx) => (
-                            <option key={idx} value={p.citizenId}>
-                              {p.name} - {p.citizenId}
-                            </option>
+                          {cityOptions.map(city => (
+                            <Select.Option key={city} value={city}>{city}</Select.Option>
                           ))}
-                        </select>
-                        {participant && (
-                          <div
-                            className="participant-details"
-                            style={{
-                              marginTop: '10px',
-                              padding: '10px',
-                              background: '#f9f9f9',
-                              borderRadius: '5px',
-                            }}
-                          >
-                            <p><strong>Họ tên:</strong> {participant.name}</p>
-                            <p><strong>Ngày sinh:</strong> {participant.birthDate}</p>
-                            <p><strong>Giới tính:</strong> {participant.gender}</p>
-                          </div>
-                        )}
-                        <label>Loại mẫu:</label>
-                        <select
-                          name="sampleType"
-                          value={sample.sampleType || ''}
-                          onChange={(e) => handleSampleChange(index, e)}
+                        </Select>
+                      </Form.Item>
+                      <Form.Item name="district" label="Quận/Huyện" rules={[{ required: true, message: 'Vui lòng chọn quận/huyện' }]} style={{ flex: 1, minWidth: 180, marginBottom: 0 }}>
+                        <Select
+                          showSearch
+                          placeholder="Chọn quận/huyện"
+                          loading={addressLoading}
+                          disabled={!addressForm.getFieldValue('city')}
+                          filterOption={(input, option) => (option?.children ?? '').toLowerCase().includes(input.toLowerCase())}
                         >
-                          <option value="">-- Chọn loại mẫu --</option>
-                          <option value="BLOOD">Máu</option>
-                          <option value="HAIR">Tóc</option>
-                          <option value="SALIVA">Niêm mạc</option>
-                        </select>
-                      </div>
-                    );
-                  })}
-                </>
+                          {districtOptions.map(district => (
+                            <Select.Option key={district} value={district}>{district}</Select.Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+                    </div>
+                  </Form>
+                </div>
               )}
+              {samples.map((sample, index) => {
+                const participant = participants.find(p => p.citizenId === sample.participantCitizenId);
+                return (
+                  <div key={index} className="sample-info">
+                    <label>Mẫu số {index + 1} của ai:</label>
+                    <select
+                      name="participantCitizenId"
+                      value={sample.participantCitizenId}
+                      onChange={(e) => handleSampleChange(index, e)}
+                    >
+                      <option value="">-- Chọn người tham gia --</option>
+                      {participants.map((p, idx) => (
+                        <option key={idx} value={p.citizenId}>
+                          {p.name} - {p.citizenId}
+                        </option>
+                      ))}
+                    </select>
+                    {participant && (
+                      <div
+                        className="participant-details"
+                        style={{
+                          marginTop: '10px',
+                          padding: '10px',
+                          background: '#f9f9f9',
+                          borderRadius: '5px',
+                        }}
+                      >
+                        <p><strong>Họ tên:</strong> {participant.name}</p>
+                        <p><strong>Ngày sinh:</strong> {participant.birthDate}</p>
+                        <p><strong>Giới tính:</strong> {participant.gender}</p>
+                      </div>
+                    )}
+                    <label>Loại mẫu:</label>
+                    <select
+                      name="sampleType"
+                      value={sample.sampleType || ''}
+                      onChange={(e) => handleSampleChange(index, e)}
+                    >
+                      <option value="">-- Chọn loại mẫu --</option>
+                      <option value="BLOOD">Máu</option>
+                      <option value="HAIR">Tóc</option>
+                      <option value="SALIVA">Niêm mạc</option>
+                    </select>
+                  </div>
+                );
+              })}
               <div className="form-actions">
                 <button onClick={prevStep}>Quay lại</button>
                 <button onClick={nextStep}>Tiếp theo</button>

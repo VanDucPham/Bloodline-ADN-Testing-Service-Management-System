@@ -10,10 +10,13 @@ import {
   Popconfirm,
   message,
   Upload,
+  Typography,
 } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
+import { DeleteOutlined, ExclamationCircleOutlined, UploadOutlined } from '@ant-design/icons';
 import axios from "axios";
 import apiService from "../../service/api"; // cập nhật path đúng
+
+const { Paragraph } = Typography;
 
 const ServiceManager = () => {
   const [services, setServices] = useState([]);
@@ -21,20 +24,6 @@ const ServiceManager = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingService, setEditingService] = useState(null);
   const [form] = Form.useForm();
-
-  // API upload ảnh
-  const uploadImage = async (file) => {
-    const formData = new FormData();
-    formData.append("file", file);
-
-    const res = await axios.post("http://localhost:8080/api/images/upload", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-
-    return res.data.url; // ví dụ: "/ImagePage/abc123.jpg"
-  };
 
   const fetchServices = async () => {
     setLoading(true);
@@ -126,8 +115,8 @@ const ServiceManager = () => {
 
   const handleDelete = async (id) => {
     try {
-      await apiService.admin.deleteService(service.serviceId);
-      message.success(`Đã xóa dịch vụ "${service.serviceName}"!`);
+      await apiService.admin.deleteService(id);
+      message.success(`Đã xóa dịch vụ!`);
       fetchServices();
     } catch (error) {
       console.error("Lỗi khi xóa:", error);
@@ -181,10 +170,10 @@ const ServiceManager = () => {
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
                   <ExclamationCircleOutlined style={{ color: '#faad14', marginRight: 8 }} />
-                  <Text strong>Xác nhận xóa dịch vụ</Text>
+                  <Typography.Text strong>Xác nhận xóa dịch vụ</Typography.Text>
                 </div>
                 <Paragraph style={{ marginBottom: 8 }}>
-                  Bạn có chắc chắn muốn xóa dịch vụ <Text strong>"{record.serviceName}"</Text>?
+                  Bạn có chắc chắn muốn xóa dịch vụ <Typography.Text strong>"{record.serviceName}"</Typography.Text>?
                 </Paragraph>
                 <Paragraph type="warning" style={{ fontSize: '12px', marginBottom: 0 }}>
                   ⚠️ Lưu ý: Hành động này không thể hoàn tác. Nếu dịch vụ đang được sử dụng, 
@@ -192,7 +181,7 @@ const ServiceManager = () => {
                 </Paragraph>
               </div>
             }
-            onConfirm={() => handleDelete(record)}
+            onConfirm={() => handleDelete(record.serviceId)}
             okText="Xóa"
             cancelText="Hủy"
             okType="danger"

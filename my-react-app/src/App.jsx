@@ -39,6 +39,7 @@ import BlogManager from './components/Admin/BlogManager';
 import ServiceManager from './components/Admin/ServiceManager';
 import SystemSettings from './components/Admin/SystemSetting';
 import FacilityScheduleSimple from './components/Admin/FacilityScheduleSimple';
+import AllowedAreaManager from './components/Admin/AllowedAreaManager';
 
 import PublicLayout from './components/PublicLaout/PublicLayout';
 import ManagerLayout from './components/Manager/ManagerLayout';
@@ -109,15 +110,9 @@ function App() {
           <Route path="services" element={<ServiceManager />} />
           <Route path="schedules" element={<FacilityScheduleSimple />} />
           <Route path="blogs" element={<BlogManager />} />
-
-
-          {/* //  <Route path="dashboard" element={<DashboardPage />} /> */}
-          {/* <Route path="accounts" element={<AccountManager />} />
-          
-          <Route path="settings" element={<SettingsPage />} />
-          <Route path="change-password" element={<ChangePassword />} />
-          <Route path="profile" element={<Profile />} /> */}
+          <Route path="areas" element={<AllowedAreaManager />} />
         </Route>
+         {/* Manager Routes with layout */}
         <Route path="/manager" element={<ManagerLayout />}>
           <Route path="employees" element={<ManagerStaff />} />
           <Route path="report" element={<ManagerFeedbackManagement />} />
@@ -126,7 +121,7 @@ function App() {
           <Route path="tracking" element={<CaseTracking />} />
           <Route path="schedules" element={<FacilityScheduleSimple />} />
           <Route path="blogs" element={<BlogManager />} />
-
+          <Route path="areas" element={<AllowedAreaManager />} />
         </Route>
 
 

@@ -7,6 +7,7 @@ import com.example.Bloodline_ADN_System.dto.noneWhere.SampleDTO;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.*;
 import com.example.Bloodline_ADN_System.repository.*;
 import com.example.Bloodline_ADN_System.service.*;
+import com.example.Bloodline_ADN_System.service.AllowedAreaService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final TimeSlotLimitRepository timeSlotLimitRepository;
     private final ServiceRepository serviceRepository;
     @Autowired
-    private DistanceService distanceService;
+    private AllowedAreaService allowedAreaService;
 
 
     // ---------------------CREATE APPOINTMENT FOR CASEFILE---------------------
@@ -144,14 +145,18 @@ public class AppointmentServiceImpl implements AppointmentService {
         validateAppointmentDate(dto.getAppointmentDate());
         validateSlotAvailability(dto.getAppointmentDate(), dto.getAppointmentTime());
 
-        // --- Kiểm tra khoảng cách nếu là dịch vụ lấy mẫu tại nhà ---
+        // --- Kiểm tra khu vực lấy mẫu tại nhà ---
         if ("HOME_COLLECTION".equals(dto.getAppointmentType())) {
-            String customerAddress = dto.getCollectionAddress();
-            if (!distanceService.isValidDistance(customerAddress)) {
-                throw new RuntimeException("Khoảng cách không hợp lệ, yêu cầu nhập lại");
+            String city = dto.getCollectionCity(); // Giả sử có trường city trong DTO
+            String district = dto.getCollectionDistrict(); // Giả sử có trường district trong DTO
+            if (city == null || city.trim().isEmpty() || district == null || district.trim().isEmpty()) {
+                throw new RuntimeException("Vui lòng chọn đầy đủ thành phố và quận/huyện lấy mẫu tại nhà.");
+            }
+            if (!allowedAreaService.isAllowed(city, district)) {
+                throw new RuntimeException("Khu vực này chưa hỗ trợ lấy mẫu tại nhà. Vui lòng chọn khu vực khác.");
             }
         }
-        // --- End kiểm tra khoảng cách ---
+        // --- End kiểm tra khu vực ---
 
         // 3. Create & Save Appointment
 

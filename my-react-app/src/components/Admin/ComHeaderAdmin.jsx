@@ -8,6 +8,7 @@ import {
   AppstoreAddOutlined,
   CalendarOutlined,
   FileTextOutlined,
+  EnvironmentOutlined, // Thêm icon bản đồ
 } from "@ant-design/icons";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import logo from "../../images/logo.jpg";
@@ -25,6 +26,7 @@ const menuItems = [
     { key: "/admin/accounts", icon: <UserOutlined />, label: "Tài khoản" },
     { key: "/admin/services", icon: <AppstoreAddOutlined />, label: "Dịch vụ" },
     { key: "/admin/schedules", icon: <CalendarOutlined />, label: "Lịch làm việc" },
+    { key: "/admin/areas", icon: <EnvironmentOutlined />, label: "Quản lý khu vực" }, // Thêm dòng này
     { key: "/admin/feedbacks", icon: <MessageOutlined />, label: "Phản hồi" },
     { key: "/admin/blogs", icon: <FileTextOutlined />, label: "Blog" },
     { key: "/admin/settings", icon: <SettingOutlined />, label: "Cài đặt" },
