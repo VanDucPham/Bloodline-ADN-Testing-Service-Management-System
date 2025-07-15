@@ -14,20 +14,13 @@ const menuItems = [
       { name: 'Hỏi đáp ADN huyết thống', path: '/questionADN' },
     ]
   },
-  { name: 'DỊCH VỤ' },
+  { name: 'DỊCH VỤ' , path: '/service-info' },
   { name: 'BẢNG GIÁ', path: '/pricelist' },
   {
     name: 'KIẾN THỨC',
     submenu: [
       { name: 'Tất cả bài viết', path: '/post' },
       { name: 'Xét nghiệm ADN' }
-    ]
-  },
-  {
-    name: 'DỰ ÁN',
-    submenu: [
-      { name: 'Dự án đang triển khai' },
-      { name: 'Thư viện kỹ thuật' }
     ]
   },
   { name: 'LIÊN HỆ', action: 'scroll' }
@@ -88,7 +81,9 @@ function Header() {
     <header className="main-header">
       <div className="header-top">
         <div className="header-logo-group">
-          <img src="Component/images/logo.jpg" alt="Vietcare Logo" className="logo" />
+          <div className="logo-wrapper">
+            <img src="/src/images/logo.jpg" alt="Vietcare Logo" className="logo" />
+          </div>
           <div className="brand-title">
             <span className="brand-main">Vietcare Lab</span>
             <span className="brand-sub">Xét nghiệm ADN - Chính xác & Bảo mật</span>

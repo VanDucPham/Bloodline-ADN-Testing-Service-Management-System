@@ -18,7 +18,7 @@ body {
   height: 50vh;
   width: 100vw;
   margin-left: calc(-50vw + 50%);
-  background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('/images/backgroup-2-scaled.jpg');
+  background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('/src/images/backgroup-2-scaled.jpg');
   background-size: cover;
   background-position: center;
   display: flex;
