@@ -45,5 +45,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     @Query("SELECT a.caseFile.caseId FROM Appointment a WHERE a.appointmentId = :appointmentId")
     Long findCaseIdByAppointmentId(@Param("appointmentId") Long appointmentId);
 
+    // Đếm số lượng appointment theo service ID
+    long countByService_ServiceId(Long serviceId);
 
 }

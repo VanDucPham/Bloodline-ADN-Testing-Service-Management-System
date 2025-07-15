@@ -18,7 +18,7 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private JwtService jwtService;
 
-    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
     @Override
     public LoginResponse login(LoginRequest request) {
         User user = userRepo.findByEmail(request.getEmail())
@@ -48,5 +48,12 @@ public class AuthServiceImpl implements AuthService {
         user.setStatusFromString("ACTIVE");
         userRepo.save(user);
         return "Thành Công";
+    }
+
+    // Lấy tên user theo ID (public)
+    public String getUserNameById(Long userId) {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User không tồn tại"));
+        return user.getName();
     }
 }

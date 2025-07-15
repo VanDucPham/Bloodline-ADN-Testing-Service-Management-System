@@ -30,7 +30,6 @@ import RevenueManagement from './components/Admin/RevenueManagement';
 
 // Admin layout & pages
 import ComHeaderAdmin from './components/Admin/ComHeaderAdmin';
-import AdminDashboard from './components/Admin/Accounts';
 import Accounts from './components/Admin/Accounts';
 // import DashboardPage from './components/admin/DashboardPage';
 // import AccountManager from './components/admin/AccountManager';
@@ -45,8 +44,10 @@ import PublicLayout from './components/PublicLaout/PublicLayout';
 import ManagerLayout from './components/Manager/ManagerLayout';
 import ManagerStaff from './components/Manager/ManagerStaff';
 import CaseTracking from './components/Manager/CaseTracking';
+import ManagerFeedbackManagement from './components/Manager/ManagerFeedbackManagement';
 import BlogList from './components/allpost/BlogList';
 import ServiceDetail from './components/pricelist/ServiceDetail';
+import MyFeedbackList from './components/feedback/MyFeedbackList';
 
 
 // import SettingsPage from './components/admin/SettingsPage';
@@ -82,14 +83,15 @@ function App() {
           <Route path="/consultation-status" element={<ConsultationStatus />} />
           <Route path="/consultation-demo" element={<ConsultationDemo />} />
           <Route path="/service/:id" element={<ServiceDetail />} />
+          <Route path="/my-feedback" element={<MyFeedbackList />} />
 
            
-          <Route path="/admin-dashboard" element={<AdminDashboard activeSection="admin" />} />
+        
         </Route>
 
         {/* Admin Routes with layout */}
         <Route path="/admin" element={<ComHeaderAdmin />}>
-          <Route index element={<Navigate to="Dashboard" replace />} /> 
+          <Route index element={<RevenueManagement />} />
           <Route path="accounts" element={<Accounts />} />
           <Route path="feedbacks" element={<FeedBackManagerment />} />
           <Route path="Dashboard" element={<RevenueManagement />} />
@@ -108,7 +110,7 @@ function App() {
         </Route>
         <Route path="/manager" element={<ManagerLayout />}>
           <Route path="employees" element={<ManagerStaff />} />
-          <Route path="report" element={<FeedBackManagerment />} />
+          <Route path="report" element={<ManagerFeedbackManagement />} />
           <Route path="Dashboard" element={<RevenueManagement />} />
           <Route path="services" element={<ServiceManager />} />
           <Route path="tracking" element={<CaseTracking />} />

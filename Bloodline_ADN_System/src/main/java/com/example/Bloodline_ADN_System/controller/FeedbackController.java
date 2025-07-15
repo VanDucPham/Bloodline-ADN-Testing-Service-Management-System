@@ -17,8 +17,16 @@ public class FeedbackController {
     private final FeedbackService feedbackService;
 
     // Customer: Tạo feedback (chỉ Customer mới được gọi)
-    @PostMapping("/create")
-    public ResponseEntity<FeedbackResponse> create(@RequestBody FeedbackDTO feedbackDTO, Authentication authentication) {
+    @PostMapping("/create/{appointmentId}/{serviceId}")
+    public ResponseEntity<FeedbackResponse> create(
+            @PathVariable Long appointmentId,
+            @PathVariable Long serviceId,
+            @RequestBody FeedbackDTO feedbackDTO, 
+            Authentication authentication) {
+        // Tự động set appointmentId và serviceId từ URL parameters
+        feedbackDTO.setAppointmentId(appointmentId);
+        feedbackDTO.setServiceId(serviceId);
+        
         FeedbackResponse response = feedbackService.createFeedback(feedbackDTO, authentication.getName());
         return ResponseEntity.ok(response);
     }
@@ -49,6 +57,19 @@ public class FeedbackController {
     public ResponseEntity<FeedbackResponse> getByAppointment(@PathVariable Long appointmentId) {
         FeedbackResponse response = feedbackService.getFeedbackByAppointmentId(appointmentId);
         return ResponseEntity.ok(response);
+    }
+
+    // Public: Xem feedback theo service (không cần đăng nhập)
+    @GetMapping("/service/{serviceId}")
+    public ResponseEntity<List<FeedbackResponse>> getFeedbackByService(@PathVariable Long serviceId) {
+        List<FeedbackResponse> responses = feedbackService.getFeedbackByServiceId(serviceId);
+        return ResponseEntity.ok(responses);
+    }
+
+    // Public: Xem thống kê feedback theo service (không cần đăng nhập)
+    @GetMapping("/service/{serviceId}/stats")
+    public ResponseEntity<?> getFeedbackStatsByService(@PathVariable Long serviceId) {
+        return ResponseEntity.ok(feedbackService.getFeedbackStatsByServiceId(serviceId));
     }
 
     // Admin: Xóa feedback vi phạm

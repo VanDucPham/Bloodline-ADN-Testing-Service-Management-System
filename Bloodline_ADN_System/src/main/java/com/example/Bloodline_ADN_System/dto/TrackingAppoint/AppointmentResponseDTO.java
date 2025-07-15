@@ -16,6 +16,8 @@ import java.util.List;
 @NoArgsConstructor
 public class AppointmentResponseDTO {
     private String appointmentId;
+    private Long serviceId; // Thêm trường serviceId để frontend có thể sử dụng cho feedback
+    private Long userId; // Thêm trường userId để frontend có thể sử dụng cho feedback
     private String CaseCode ;
     private String ServiceName ;
     private String CaseType ;
@@ -25,8 +27,7 @@ public class AppointmentResponseDTO {
     private  String delivery_method ;
     private String collection_Status ;
     private String kit_status ;
+    private String result; // Thêm trường result để lưu kết quả xét nghiệm
     List<ParticipantResponeDTO> participantResponseDTOS ;
     Payment Payment ;
-
-
 }

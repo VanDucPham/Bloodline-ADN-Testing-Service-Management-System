@@ -1,10 +1,10 @@
-// src/pages/FeedbackManagement.jsx
-import { Table, Card, Rate, Tag, Space, Button, Modal, Statistic, Row, Col, Progress, Tooltip, message } from 'antd';
+// src/pages/ManagerFeedbackManagement.jsx
+import { Table, Card, Rate, Space, Button, Modal, Statistic, Row, Col, Progress, Tooltip, message } from 'antd';
 import { useState, useEffect } from 'react';
-import { EyeOutlined, StarFilled, DeleteOutlined } from '@ant-design/icons';
+import { EyeOutlined, StarFilled } from '@ant-design/icons';
 import apiService from '../../service/api';
 
-function FeedbackManagement() {
+function ManagerFeedbackManagement() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedFeedback, setSelectedFeedback] = useState(null);
   const [feedbackData, setFeedbackData] = useState([]);
@@ -37,18 +37,6 @@ function FeedbackManagement() {
       message.error('Không thể tải dữ liệu feedback');
     } finally {
       setLoading(false);
-    }
-  };
-
-  // Xóa feedback
-  const handleDeleteFeedback = async (feedbackId) => {
-    try {
-      await apiService.feedback.deleteFeedback(feedbackId);
-      message.success('Đã xóa feedback thành công');
-      fetchFeedbackData(); // Refresh lại data
-    } catch (error) {
-      console.error('Lỗi khi xóa feedback:', error);
-      message.error('Không thể xóa feedback');
     }
   };
 
@@ -110,24 +98,16 @@ function FeedbackManagement() {
     {
       title: 'Thao tác',
       key: 'action',
-      width: 120,
+      width: 80,
       render: (_, record) => (
-        <Space>
-          <Button
-            type="text"
-            icon={<EyeOutlined />}
-            onClick={() => {
-              setSelectedFeedback(record);
-              setIsModalVisible(true);
-            }}
-          />
-          <Button
-            type="text"
-            danger
-            icon={<DeleteOutlined />}
-            onClick={() => handleDeleteFeedback(record.feedbackId)}
-          />
-        </Space>
+        <Button
+          type="text"
+          icon={<EyeOutlined />}
+          onClick={() => {
+            setSelectedFeedback(record);
+            setIsModalVisible(true);
+          }}
+        />
       ),
     },
   ];
@@ -171,7 +151,7 @@ function FeedbackManagement() {
                       percent={stats.totalFeedbacks ? ((stats.ratingDistribution[star] || 0) / stats.totalFeedbacks) * 100 : 0}
                       showInfo={false}
                       strokeColor="#faad14"
-                      size={12}
+                      strokeWidth={12}
                       style={{ marginTop: 6 }}
                     />
                     <div style={{ fontSize: 13, color: '#555', marginTop: 2 }}>
@@ -245,4 +225,4 @@ function FeedbackManagement() {
   );
 }
 
-export default FeedbackManagement;
+export default ManagerFeedbackManagement; 

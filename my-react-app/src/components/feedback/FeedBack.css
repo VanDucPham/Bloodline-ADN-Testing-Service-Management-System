@@ -10,6 +10,8 @@
 .feedback-form-container h2 {
   text-align: center;
   margin-bottom: 1rem;
+  color: #333;
+  font-size: 1.5rem;
 }
 
 .feedback-form-container form {
@@ -20,6 +22,8 @@
 .feedback-form-container label {
   margin-top: 0.8rem;
   font-weight: bold;
+  color: #555;
+  font-size: 14px;
 }
 
 .feedback-form-container input,
@@ -29,6 +33,22 @@
   border-radius: 6px;
   border: 1px solid #ccc;
   margin-top: 0.3rem;
+  margin-bottom: 1rem;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.feedback-form-container input:focus,
+.feedback-form-container textarea:focus,
+.feedback-form-container select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.feedback-form-container textarea {
+  resize: vertical;
+  min-height: 80px;
 }
 
 .feedback-form-container button {
@@ -39,8 +59,41 @@
   border: none;
   border-radius: 6px;
   cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s;
 }
 
-.feedback-form-container button:hover {
+.feedback-form-container button:hover:not(:disabled) {
   background-color: #0056b3;
+}
+
+.feedback-form-container button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.feedback-form-container .message {
+  margin-top: 1rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.feedback-form-container .message.success {
+  color: #52c41a;
+  background-color: #f6ffed;
+  border: 1px solid #b7eb8f;
+}
+
+.feedback-form-container .message.error {
+  color: #ff4d4f;
+  background-color: #fff2f0;
+  border: 1px solid #ffccc7;
+}
+
+.feedback-form-container .loading {
+  opacity: 0.7;
+  pointer-events: none;
 }
