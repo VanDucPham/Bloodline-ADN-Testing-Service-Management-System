@@ -86,15 +86,7 @@ class adminService extends BaseApiService {
 
 }
 
-// AllowedArea API (khu vực lấy mẫu)
-export async function getAllowedAreas() {
-  const token = localStorage.getItem('authToken');
-  const res = await fetch('/api/areas', {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-  if (!res.ok) throw new Error(await res.text());
-  return res.json();
-}
+
 
 export async function createAllowedArea(area) {
   const token = localStorage.getItem('authToken');

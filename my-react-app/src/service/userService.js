@@ -42,6 +42,9 @@ return this.post('/customer/appointment/check-availability', data)
   async createPay(data){
     return this.post('/auth/vnpay/create', data)
   }
+  async getAllowedAreas(){
+    return this.get('/areas/check')
+  }
 }
     
 

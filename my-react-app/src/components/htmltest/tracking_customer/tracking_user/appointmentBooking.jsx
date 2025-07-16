@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './appointmentBooking.css';
 import apiService from '../../../../service/api';
 import {  useLocation } from 'react-router-dom';
-import { getAllowedAreas } from '../../../../service/adminService';
+
 import { Form, Input, Select, message } from 'antd';
 
 function AppointmentBooking() {
@@ -125,7 +125,7 @@ function AppointmentBooking() {
     const fetchAllowedAreas = async () => {
       setAddressLoading(true);
       try {
-        const data = await getAllowedAreas();
+        const data = await apiService.user.getAllowedAreas();
         setAllowedAreas(data);
         // Lấy danh sách tỉnh/thành phố duy nhất
         const cities = Array.from(new Set(data.map(a => a.city)));

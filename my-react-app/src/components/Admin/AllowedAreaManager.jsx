@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { Table, Button, Modal, Form, Input, Switch, message, Popconfirm, Space, Tag } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import {
-  getAllowedAreas,
+ 
   createAllowedArea,
   updateAllowedArea,
   deleteAllowedArea
 } from '../../service/adminService';
+import apiService from '../../service/api';
 
 const initialForm = { city: '', district: '', active: true, note: '' };
 
@@ -20,7 +21,7 @@ function AllowedAreaManager() {
   const fetchAreas = async () => {
     setLoading(true);
     try {
-      const data = await getAllowedAreas();
+      const data = await apiService.user.getAllowedAreas();
       setAreas(data);
     } catch (err) {
       message.error('Lỗi tải danh sách khu vực: ' + err.message);
