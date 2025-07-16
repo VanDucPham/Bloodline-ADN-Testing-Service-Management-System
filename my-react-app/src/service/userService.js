@@ -44,13 +44,21 @@ return this.post('/customer/appointment/check-availability', data)
   async createPay(data){
     return this.post('/auth/vnpay/create', data)
   }
-  async getAllowedAreas(){
-    return this.get('/areas/check')
+  
+  // Lấy tất cả khu vực (cho quản trị)
+  async getAllowedAreas() {
+    return this.get('/areas');
+  }
+
+  // Kiểm tra khu vực hợp lệ (cho khách hàng)
+  async checkAllowedArea(city, district) {
+    return this.get(`/areas/check?city=${encodeURIComponent(city)}&district=${encodeURIComponent(district)}`);
   }
 
   async getResult(appointmentId){
     return this.get(`/customer/result/get/${appointmentId}`);
   }
+  
 
 }
     

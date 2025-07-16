@@ -94,7 +94,7 @@ const BlogManager = () => {
     form.resetFields();
     setUploadingImage([]);
   };
-
+  
   // Lưu bài viết (thêm mới hoặc cập nhật)
   const handleSave = async () => {
     setSaveLoading(true);
@@ -176,8 +176,10 @@ const BlogManager = () => {
   // Xử lý upload ảnh thực tế lên server
   const handleImageUpload = async ({ file }) => {
     try {
-      const res = await apiService.uploadBlogImage(file);
-      const url = res.data.url;
+      const res = await apiService.admin.uploadImage(file);
+      console.log("Uploaded image URL:", url);
+
+      const url = res.url;
       setUploadingImage([{ url, name: file.name }]);
       message.success('Upload ảnh thành công!');
     } catch (e) {

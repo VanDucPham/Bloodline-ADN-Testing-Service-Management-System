@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Modal, Form, Input, Switch, message, Popconfirm, Space, Tag } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import {
- 
-  createAllowedArea,
-  updateAllowedArea,
-  deleteAllowedArea
-} from '../../service/adminService';
+
 import apiService from '../../service/api';
 
 const initialForm = { city: '', district: '', active: true, note: '' };
@@ -49,10 +44,10 @@ function AllowedAreaManager() {
     try {
       const values = await form.validateFields();
       if (editing) {
-        await updateAllowedArea(editing.id, values);
+        await apiService.admin.updateAllowedArea(editing.id, values);
         message.success('Cập nhật khu vực thành công!');
       } else {
-        await createAllowedArea(values);
+        await apiService.admin.createAllowedArea(values);
         message.success('Thêm khu vực thành công!');
       }
       setModalOpen(false);
@@ -66,7 +61,7 @@ function AllowedAreaManager() {
 
   const handleDelete = async (id) => {
     try {
-      await deleteAllowedArea(id);
+      await apiService.admin.deleteAllowedArea(id);
       message.success('Xóa khu vực thành công!');
       fetchAreas();
     } catch (err) {
@@ -118,7 +113,7 @@ function AllowedAreaManager() {
         onCancel={() => { setModalOpen(false); setEditing(null); }}
         okText={editing ? 'Cập nhật' : 'Thêm mới'}
         cancelText="Hủy"
-        destroyOnClose
+        destroyOnHidden
       >
         <Form
           form={form}

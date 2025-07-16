@@ -10,14 +10,16 @@ import {
   Popconfirm,
   message,
   Upload,
+  Typography,
 } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
-import axios from "axios";
-import apiService from "../../service/api"; // cập nhật path đúng
-import { ExclamationCircleOutlined } from '@ant-design/icons';
-import { Typography } from 'antd';
+import {
+  UploadOutlined,
+  DeleteOutlined,
+  ExclamationCircleOutlined,
+} from "@ant-design/icons";
+import apiService from "../../service/api";
+
 const { Paragraph, Text: AntText } = Typography;
-import { DeleteOutlined } from "@ant-design/icons";
 
 const ServiceManager = () => {
   const [services, setServices] = useState([]);
@@ -25,21 +27,6 @@ const ServiceManager = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingService, setEditingService] = useState(null);
   const [form] = Form.useForm();
-
-
-  // API upload ảnh
-  const uploadImage = async (file) => {
-    const formData = new FormData();
-    formData.append("file", file);
-
-    const res = await axios.post("http://localhost:8080/api/images/upload", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-
-    return res.data.url; // ví dụ: "/ImagePage/abc123.jpg"
-  };
 
   const fetchServices = async () => {
     setLoading(true);
@@ -70,7 +57,9 @@ const ServiceManager = () => {
                 uid: "-1",
                 name: "current.jpg",
                 status: "done",
-                url: `http://localhost:8080${service.imageUrl}`,
+                url: service.imageUrl.startsWith("http")
+                  ? service.imageUrl
+                  : `http://localhost:8080${service.imageUrl}`,
               },
             ]
           : [],
@@ -87,47 +76,43 @@ const ServiceManager = () => {
   };
 
   const handleSave = async () => {
-  try {
-    const values = await form.validateFields();
+    try {
+      const values = await form.validateFields();
+      let imageUrl = editingService?.imageUrl || "";
 
-    let imageUrl = editingService?.imageUrl || "";
+      if (
+        values.imageFile &&
+        values.imageFile.length > 0 &&
+        values.imageFile[0].originFileObj
+      ) {
+        const file = values.imageFile[0].originFileObj;
+        const response = await apiService.admin.uploadImage(file);
+        imageUrl = response.data?.url || response.url;
+      }
 
-    if (
-      values.imageFile &&
-      values.imageFile.length > 0 &&
-      values.imageFile[0].originFileObj
-    ) {
-      const file = values.imageFile[0].originFileObj;
+      const payload = {
+        serviceName: values.serviceName,
+        servicePrice: values.servicePrice,
+        serviceDescription: values.serviceDescription,
+        imageUrl,
+        limitPeople: values.limitPeople,
+      };
 
-      const response = await apiService.admin.uploadImage(file);
-      // Nếu backend trả về dạng { url: "/ImagePage/abc.jpg" }
-      imageUrl = response.data?.url || response.url;
+      if (editingService) {
+        await apiService.admin.updateService(editingService.serviceId, payload);
+        message.success("Đã cập nhật dịch vụ!");
+      } else {
+        await apiService.admin.createService(payload);
+        message.success("Đã thêm dịch vụ mới!");
+      }
+
+      closeModal();
+      fetchServices();
+    } catch (error) {
+      console.error("Lỗi khi lưu:", error);
+      message.error("Thao tác không thành công.");
     }
-
-    const payload = {
-      serviceName: values.serviceName,
-      servicePrice: values.servicePrice,
-      serviceDescription: values.serviceDescription,
-      imageUrl, // chính là link ảnh vừa upload
-      limitPeople: values.limitPeople,
-    };
-
-    if (editingService) {
-      await apiService.admin.updateService(editingService.serviceId, payload);
-      message.success("Đã cập nhật dịch vụ!");
-    } else {
-      await apiService.admin.createService(payload);
-      message.success("Đã thêm dịch vụ mới!");
-    }
-
-    closeModal();
-    fetchServices();
-  } catch (error) {
-    console.error("Lỗi khi lưu:", error);
-    message.error("Thao tác không thành công.");
-  }
-};
-
+  };
 
   const handleDelete = async (service) => {
     try {
@@ -136,7 +121,10 @@ const ServiceManager = () => {
       fetchServices();
     } catch (error) {
       console.error("Lỗi khi xóa:", error);
-      const errorMessage = error.response?.data || error.message || "Không thể xóa dịch vụ. Có thể dịch vụ đang được sử dụng.";
+      const errorMessage =
+        error.response?.data ||
+        error.message ||
+        "Không thể xóa dịch vụ. Có thể dịch vụ đang được sử dụng.";
       message.error(errorMessage);
     }
   };
@@ -159,14 +147,19 @@ const ServiceManager = () => {
       title: "Hình ảnh",
       dataIndex: "imageUrl",
       key: "imageUrl",
-      render: (url) => (
-        <img
-          src={`http://localhost:8080${url}`}
-          alt="Dịch vụ"
-          width={60}
-          style={{ borderRadius: 4, objectFit: "cover" }}
-        />
-      ),
+      render: (url) => {
+        const fullUrl = url?.startsWith("http")
+          ? url
+          : `http://localhost:8080${url}`;
+        return (
+          <img
+            src={fullUrl}
+            alt="Dịch vụ"
+            width={60}
+            style={{ borderRadius: 4, objectFit: "cover" }}
+          />
+        );
+      },
     },
     {
       title: "Số người",
@@ -184,16 +177,24 @@ const ServiceManager = () => {
           <Popconfirm
             title={
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
-                  <ExclamationCircleOutlined style={{ color: '#faad14', marginRight: 8 }} />
+                <div
+                  style={{ display: "flex", alignItems: "center", marginBottom: 8 }}
+                >
+                  <ExclamationCircleOutlined
+                    style={{ color: "#faad14", marginRight: 8 }}
+                  />
                   <AntText strong>Xác nhận xóa dịch vụ</AntText>
                 </div>
                 <Paragraph style={{ marginBottom: 8 }}>
-                  Bạn có chắc chắn muốn xóa dịch vụ <AntText strong>"{record.serviceName}"</AntText>?
+                  Bạn có chắc chắn muốn xóa dịch vụ{" "}
+                  <AntText strong>"{record.serviceName}"</AntText>?
                 </Paragraph>
-                <Paragraph type="warning" style={{ fontSize: '12px', marginBottom: 0 }}>
-                  ⚠️ Lưu ý: Hành động này không thể hoàn tác. Nếu dịch vụ đang được sử dụng, 
-                  việc xóa có thể ảnh hưởng đến các lịch hẹn hiện có.
+                <Paragraph
+                  type="warning"
+                  style={{ fontSize: "12px", marginBottom: 0 }}
+                >
+                  ⚠️ Lưu ý: Hành động này không thể hoàn tác. Nếu dịch vụ đang được
+                  sử dụng, việc xóa có thể ảnh hưởng đến các lịch hẹn hiện có.
                 </Paragraph>
               </div>
             }
@@ -201,7 +202,7 @@ const ServiceManager = () => {
             okText="Xóa"
             cancelText="Hủy"
             okType="danger"
-            icon={<ExclamationCircleOutlined style={{ color: '#faad14' }} />}
+            icon={<ExclamationCircleOutlined style={{ color: "#faad14" }} />}
           >
             <Button type="link" danger icon={<DeleteOutlined />}>
               Xóa
@@ -216,7 +217,11 @@ const ServiceManager = () => {
     <div style={{ background: "#fff", padding: 24, borderRadius: 8 }}>
       <h2>Quản lý Dịch vụ</h2>
       <p>Thêm, sửa, xóa các dịch vụ xét nghiệm ADN.</p>
-      <Button type="primary" onClick={() => openModal()} style={{ marginBottom: 16 }}>
+      <Button
+        type="primary"
+        onClick={() => openModal()}
+        style={{ marginBottom: 16 }}
+      >
         + Thêm dịch vụ
       </Button>
       <Table
@@ -234,7 +239,6 @@ const ServiceManager = () => {
         onOk={handleSave}
         okText={editingService ? "Cập nhật" : "Thêm mới"}
         cancelText="Hủy"
-
       >
         <Form form={form} layout="vertical">
           <Form.Item
