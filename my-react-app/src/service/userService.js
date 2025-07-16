@@ -51,6 +51,7 @@ return this.post('/customer/appointment/check-availability', data)
   async getResult(appointmentId){
     return this.get(`/customer/result/get/${appointmentId}`);
   }
+  
 
 }
     
