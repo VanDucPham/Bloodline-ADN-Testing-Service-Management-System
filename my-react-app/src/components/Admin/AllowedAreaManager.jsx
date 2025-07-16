@@ -113,7 +113,7 @@ function AllowedAreaManager() {
         onCancel={() => { setModalOpen(false); setEditing(null); }}
         okText={editing ? 'Cập nhật' : 'Thêm mới'}
         cancelText="Hủy"
-        destroyOnClose
+        destroyOnHidden
       >
         <Form
           form={form}
