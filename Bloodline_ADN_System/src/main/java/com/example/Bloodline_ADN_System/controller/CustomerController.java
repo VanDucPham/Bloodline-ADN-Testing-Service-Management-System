@@ -37,7 +37,7 @@ public class CustomerController {
 
         return ResponseEntity.ok(response);
     }
-    @PutMapping("/{id}/change-password")
+    @PutMapping("/changePassword/{id}")
     public ResponseEntity<String> changePassword(@PathVariable Long id, @RequestBody ChangePasswordDTO dto) {
         userService.changePassword(id, dto);
         return ResponseEntity.ok("Mật khẩu cập nhật thành công");
