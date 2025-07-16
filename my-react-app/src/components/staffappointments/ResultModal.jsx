@@ -25,7 +25,7 @@ function ResultModal({ open, onClose, appointment, existingResult, onSaveResult,
     return (
       <Modal
         title={`Kết quả lịch hẹn #${appointment.appointmentId}`}
-        visible={open}
+        open={open}
         onCancel={onClose}
         footer={[
           <Button key="close" onClick={onClose}>
@@ -71,11 +71,11 @@ function ResultModal({ open, onClose, appointment, existingResult, onSaveResult,
   return (
     <Modal
       title={`Nhập kết quả cho lịch hẹn #${appointment.appointmentId}`}
-      visible={open}
+      open={open}
       onCancel={onClose}
       footer={null}
       centered
-      destroyOnClose
+      destroyOnHidden
     >
       <Form form={form} layout="vertical" onFinish={onSaveResult}>
         <Form.Item

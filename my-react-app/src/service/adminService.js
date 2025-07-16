@@ -126,4 +126,5 @@ export async function deleteAllowedArea(id) {
   return true;
 }
 
+
 export default adminService;
