@@ -15,11 +15,12 @@ public class VNPayService {
             vnp_Params.put("vnp_Command", VNPayConfig.vnp_Command);
             vnp_Params.put("vnp_TmnCode", VNPayConfig.vnp_TmnCode);
             vnp_Params.put("vnp_Amount", String.valueOf(req.getAmount() * 100));
-            vnp_Params.put("vnp_CurrCode", "VND");
-
             if (req.getBankCode() != null && !req.getBankCode().isEmpty()) {
                 vnp_Params.put("vnp_BankCode", req.getBankCode());
             }
+            vnp_Params.put("vnp_CurrCode", "VND");
+
+
 
             vnp_Params.put("vnp_TxnRef", req.getTxnRef());
             vnp_Params.put("vnp_OrderInfo", req.getOrderInfo());
@@ -42,7 +43,7 @@ public class VNPayService {
 
             // ✅ KHÔNG thêm vnp_SecureHashType vào params để hash
             vnp_Params.remove("vnp_SecureHashType");
-            vnp_Params.remove("vnp_SecureHash"); // cũng loại bỏ luôn nếu có
+            vnp_Params.remove("vnp_SecureHash");
 
             String hashData = VNPayUtils.hashData(vnp_Params);
             String secureHash = VNPayUtils.hmacSHA512(VNPayConfig.vnp_HashSecret, hashData);

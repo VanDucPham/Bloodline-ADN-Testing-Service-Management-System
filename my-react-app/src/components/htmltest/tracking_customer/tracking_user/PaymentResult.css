@@ -1,0 +1,50 @@
+.payment-result-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+  background: #f6fafd;
+}
+
+.payment-box {
+  background: white;
+  border-radius: 12px;
+  padding: 40px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 400px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.payment-box.success {
+  border-left: 8px solid #4caf50;
+}
+
+.payment-box.failed {
+  border-left: 8px solid #f44336;
+}
+
+.payment-box.processing {
+  border-left: 8px solid #2196f3;
+}
+
+.loader {
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #2196f3;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  margin: 0 auto 20px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.redirect-note {
+  color: #888;
+  margin-top: 20px;
+  font-size: 0.9rem;
+}

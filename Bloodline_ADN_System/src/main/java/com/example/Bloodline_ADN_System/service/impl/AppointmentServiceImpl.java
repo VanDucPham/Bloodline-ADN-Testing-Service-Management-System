@@ -2,9 +2,11 @@
 package com.example.Bloodline_ADN_System.service.impl;
 
 import com.example.Bloodline_ADN_System.Entity.*;
+import com.example.Bloodline_ADN_System.dto.PaymentDTO;
 import com.example.Bloodline_ADN_System.dto.noneWhere.ApiMessResponse;
 import com.example.Bloodline_ADN_System.dto.noneWhere.SampleDTO;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.*;
+import com.example.Bloodline_ADN_System.payment.PaymentRequest;
 import com.example.Bloodline_ADN_System.repository.*;
 import com.example.Bloodline_ADN_System.service.*;
 import jakarta.transaction.Transactional;
@@ -26,6 +28,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final CaseFileService caseFileService;
     private final TimeSlotLimitRepository timeSlotLimitRepository;
     private final ServiceRepository serviceRepository;
+    private final PaymentService paymentService;
 
 
     // ---------------------CREATE APPOINTMENT FOR CASEFILE---------------------
@@ -81,7 +84,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .orElseThrow(() -> new RuntimeException("Dịch vụ không tồn tại"));
 
         Appointment appointment = new Appointment();
-        //nếu có toEntity thì không cần set thủ công như thế này
+
         appointment.setUser(user);
         appointment.setService(service);
         appointment.setType(dto.getAppointmentType());
@@ -107,14 +110,15 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     private void validateSlotAvailability(LocalDate date, LocalTime time) {
         int count = appointmentRepository.countByAppointmentDateAndAppointmentTime(date, time);
-        if (count >= 3) {
+        if (count >= 5) {
             throw new IllegalArgumentException("Khung giờ đã đầy. Vui lòng chọn khung giờ khác.");
         }
     }
 
 
 
-    // --------------------- CUSTOMER CREATE FULL APPOINTMENT ---------------------
+    // --------------------- CUSTOMER CREATE FULL APPOINTMENT --------
+    // -------------
 
 
 
@@ -123,13 +127,6 @@ public class AppointmentServiceImpl implements AppointmentService {
     public AppointmentResponse<AppointmentDTO> createAppointment(AppointmentRequest request) {
         // 1. Save Case File
         caseFileDTO caseFiledto = request.getCaseFile();
-        System.out.println(request.getCaseFile().getUserId());
-        System.out.println(caseFiledto.getUserId());
-        userRepository.findAll().forEach(System.out::println);
-        System.out.println("userId: " + caseFiledto.getUserId() + ", type: " + caseFiledto.getUserId().getClass());
-        Optional<User> test = userRepository.findById(6L);
-        System.out.println("Found? " + test.isPresent());
-
         String caseCodegen = caseFileService.generateCaseCode(String.valueOf(caseFiledto.getCaseType())) ;
         caseFiledto.setCaseCode(caseCodegen);
         CaseFile caseFile = new CaseFile();
@@ -165,6 +162,11 @@ public class AppointmentServiceImpl implements AppointmentService {
         appointment.setCaseFile(caseFile);
         Appointment savedAppointment = appointmentRepository.save(appointment);
         AppointmentDTO savedDto = toDTO(savedAppointment);
+
+        PaymentRequest paymentDto = request.getPayment();
+        if ((paymentDto!= null )){
+            paymentService.createPayment(paymentDto, savedAppointment.getAppointmentId()) ;
+        }
 
 // 4. Save Participants
         List<Participant> participants = request.getParticipants().stream()

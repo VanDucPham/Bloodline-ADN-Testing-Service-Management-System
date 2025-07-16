@@ -47,7 +47,7 @@ public class AuthController {
         return blogService.getAllBlogDTO();
     }
 
-<<<<<<< HEAD
+
     @GetMapping("/getService")
     public ResponseEntity<List<ServiceDTO>> getPublicServices() {
         List<ServiceDTO> services = serviceService.getAllServices();
@@ -62,7 +62,7 @@ public class AuthController {
     }
 
 
-=======
+
     // Public: Lấy thông tin user theo ID (chỉ hiển thị tên)
     @GetMapping("/user/{userId}")
     public ResponseEntity<?> getUserById(@PathVariable Long userId) {
@@ -73,5 +73,5 @@ public class AuthController {
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }
     }
->>>>>>> 616b0a89a72a70858c82b9a1709513e31559cb1a
+
 }

@@ -14,6 +14,10 @@ import {
 import { UploadOutlined } from "@ant-design/icons";
 import axios from "axios";
 import apiService from "../../service/api"; // cập nhật path đúng
+import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { Typography } from 'antd';
+const { Paragraph, Text: AntText } = Typography;
+import { DeleteOutlined } from "@ant-design/icons";
 
 const ServiceManager = () => {
   const [services, setServices] = useState([]);
@@ -21,6 +25,7 @@ const ServiceManager = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingService, setEditingService] = useState(null);
   const [form] = Form.useForm();
+
 
   // API upload ảnh
   const uploadImage = async (file) => {
@@ -124,7 +129,7 @@ const ServiceManager = () => {
 };
 
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (service) => {
     try {
       await apiService.admin.deleteService(service.serviceId);
       message.success(`Đã xóa dịch vụ "${service.serviceName}"!`);
@@ -181,10 +186,10 @@ const ServiceManager = () => {
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
                   <ExclamationCircleOutlined style={{ color: '#faad14', marginRight: 8 }} />
-                  <Text strong>Xác nhận xóa dịch vụ</Text>
+                  <AntText strong>Xác nhận xóa dịch vụ</AntText>
                 </div>
                 <Paragraph style={{ marginBottom: 8 }}>
-                  Bạn có chắc chắn muốn xóa dịch vụ <Text strong>"{record.serviceName}"</Text>?
+                  Bạn có chắc chắn muốn xóa dịch vụ <AntText strong>"{record.serviceName}"</AntText>?
                 </Paragraph>
                 <Paragraph type="warning" style={{ fontSize: '12px', marginBottom: 0 }}>
                   ⚠️ Lưu ý: Hành động này không thể hoàn tác. Nếu dịch vụ đang được sử dụng, 
@@ -219,7 +224,7 @@ const ServiceManager = () => {
         columns={columns}
         rowKey="serviceId"
         loading={loading}
-        pagination={{ pageSize: 5 }}
+        pagination={{ pageSize: 10 }}
       />
 
       <Modal

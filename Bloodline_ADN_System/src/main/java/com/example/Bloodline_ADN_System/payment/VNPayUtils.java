@@ -25,20 +25,22 @@ public class VNPayUtils {
     }
 
     public static String hashData(Map<String, String> fields) {
-        List<String> fieldNames = new ArrayList<>(fields.keySet());
-        Collections.sort(fieldNames);
+        SortedMap<String, String> sortedFields = new TreeMap<>(fields); // tự động sort
         StringBuilder sb = new StringBuilder();
-        for (String name : fieldNames) {
-            String value = fields.get(name);
-            if (value != null && !value.isEmpty()) {
-                sb.append(name).append('=').append(value);
-                if (!name.equals(fieldNames.get(fieldNames.size() - 1))) {
-                    sb.append('&');
-                }
+        for (Map.Entry<String, String> entry : sortedFields.entrySet()) {
+            if (entry.getValue() != null && !entry.getValue().isEmpty()) {
+                sb.append(URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8));
+                sb.append('=');
+                sb.append(URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8));
+                sb.append('&');
             }
         }
+        if (sb.length() > 0) sb.setLength(sb.length() - 1); // xóa dấu '&' cuối cùng
         return sb.toString();
     }
+
+
+
 
 
 

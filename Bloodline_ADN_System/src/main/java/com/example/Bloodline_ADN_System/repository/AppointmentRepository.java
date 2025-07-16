@@ -46,7 +46,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     @Query("SELECT a.caseFile.caseId FROM Appointment a WHERE a.appointmentId = :appointmentId")
     Long findCaseIdByAppointmentId(@Param("appointmentId") Long appointmentId);
 
-<<<<<<< HEAD
+
     @Query("SELECT a FROM Appointment a " +
             "LEFT JOIN FETCH a.caseFile " +
             "LEFT JOIN FETCH a.user " +
@@ -64,9 +64,9 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
             "result"
     })
     List<Appointment> findAll();
-=======
+
     // Đếm số lượng appointment theo service ID
     long countByService_ServiceId(Long serviceId);
->>>>>>> 616b0a89a72a70858c82b9a1709513e31559cb1a
+
 
 }

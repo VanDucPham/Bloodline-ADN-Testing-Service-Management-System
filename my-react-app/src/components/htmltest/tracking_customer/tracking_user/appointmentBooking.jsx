@@ -200,34 +200,44 @@ function AppointmentBooking() {
       s.participantCitizenId?.trim() !== '' && s.sampleType?.trim() !== ''
     );
 
-    const payLoad = {
-      appointment: updateAppointment,
-      participants: participants,
-      samples: filteredSamples,
-      caseFile: updatedCaseFile
-    };
+   
+// ...existing code...
 
-    // Nếu chọn VNPay
-    if (appointment.paymentMethod === "vnpay") {
+// ...existing code...
+
+
       const paymentRequest = {
         amount: selectedService.servicePrice, // số tiền
         orderInfo: `Thanh toán dịch vụ ${selectedService.serviceName}`,
         txnRef: "ORDER" + Date.now(), // mã đơn hàng duy nhất
         bankCode: "", // hoặc để trống
+        paymentMethod: "BANK_TRANSFER"
         
       };
+      localStorage.setItem("appointment", JSON.stringify(updateAppointment));
+localStorage.setItem("caseFile", JSON.stringify(updatedCaseFile));
+localStorage.setItem("participants", JSON.stringify(participants));
+localStorage.setItem("sample", JSON.stringify(filteredSamples));
+      localStorage.setItem("payment", JSON.stringify(paymentRequest)) ;
+      console.log(paymentRequest)
 
-      const res = await apiService.user.creatPaymentVnPay(paymentRequest);
-
+      const res = await apiService.user.createPay(paymentRequest);
+      console.log(res)
       if (res) {
-        window.location.href = res; // redirect đến trang thanh toán
+       window.open(res, "_blank");
       }
-    } else {
-      // Các phương thức khác
-      await apiService.user.create_app(payLoad);
-      alert("Lịch hẹn được đặt thành công!");
-      navigate("/tracking_user");
-    }
+    //    const payLoad = {
+    //   appointment: updateAppointment,
+    //   participants: participants,
+    //   samples: filteredSamples,
+    //   caseFile: updatedCaseFile
+    // };
+ 
+    //   // Các phương thức khác
+    //   await apiService.user.create_app(payLoad);
+    //   alert("Lịch hẹn được đặt thành công!");
+    //   navigate("/tracking_user");
+    
 
   } catch (error) {
     alert("Đặt lịch thất bại, vui lòng đặt lại");

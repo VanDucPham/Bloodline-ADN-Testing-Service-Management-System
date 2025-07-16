@@ -39,6 +39,9 @@ return this.post('/customer/appointment/check-availability', data)
   async getAllServicePrice(){
     return this.get('/auth/getService')
   }
+  async createPay(data){
+    return this.post('/auth/vnpay/create', data)
+  }
 }
     
 

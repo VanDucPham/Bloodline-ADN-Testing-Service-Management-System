@@ -49,11 +49,8 @@ import ServiceDetail from './components/pricelist/ServiceDetail';
 import MyFeedbackList from './components/feedback/MyFeedbackList';
 import StaffAppointments from './components/staffappointments/StaffAppointments';
 import CreateAppointment from './components/staffappointments/CreateAppointment';
+import PaymentResult from './components/htmltest/tracking_customer/tracking_user/PaymentResult';
 
-
-// import SettingsPage from './components/admin/SettingsPage';
-// import ChangePassword from './components/admin/ChangePassword';
-// import Profile from './components/admin/Profile';
 
 function App() {
   return (
@@ -70,7 +67,7 @@ function App() {
           <Route path="/pricelist" element={<Pricelist />} />
 
           <Route path="/user" element={<UserDashboard />} />
-         <Route path="/tracking_user" element={<AppointmentBooking />} />
+          <Route path="/tracking_user" element={<AppointmentBooking />} />
           <Route path="/CustomerApointmentList" element={<CustomerAppointmentList />} />
           <Route path="/post" element={<AllPost />} />
           <Route path="/allpost" element={<AllPost />} />
@@ -88,9 +85,10 @@ function App() {
 
 
 
-           <Route path="/staff/appointments" element={<StaffAppointments />} />
-           <Route path="/staff/appointment/create" element={<CreateAppointment />} />
-          <Route path="/admin-dashboard" element={<AdminDashboard activeSection="admin" />} />
+          <Route path="/staff/appointments" element={<StaffAppointments />} />
+          <Route path="/staff/appointment/create" element={<CreateAppointment />} />
+          <Route path="/admin-dashboard" element={<RevenueManagement activeSection="admin" />} />
+          <Route path="/payment_return" element={<PaymentResult />} />
         </Route>
 
         {/* Admin Routes with layout */}

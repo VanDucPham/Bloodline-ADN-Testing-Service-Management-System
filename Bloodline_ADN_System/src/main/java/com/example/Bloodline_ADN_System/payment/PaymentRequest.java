@@ -8,5 +8,6 @@ public class PaymentRequest {
     private String orderInfo;
     private String txnRef;
     private String bankCode; // optional
-    private String language; // optional
+    private  String language ;
+  private String paymentMethod; // optional
 }

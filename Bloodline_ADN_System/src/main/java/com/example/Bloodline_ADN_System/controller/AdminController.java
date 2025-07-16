@@ -35,12 +35,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-<<<<<<< HEAD
-=======
+
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
->>>>>>> 616b0a89a72a70858c82b9a1709513e31559cb1a
+
 
 @RestController
 @RequestMapping("/api/admin")

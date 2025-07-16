@@ -18,6 +18,7 @@ public class VNPayController {
     public ResponseEntity<String> createPayment(@RequestBody PaymentRequest req, HttpServletRequest httpReq) {
         String ip = VNPayUtils.getIpAddress(httpReq);
         String paymentUrl = vnPayService.createPaymentUrl(req, ip);
+        System.out.println(paymentUrl);
         return ResponseEntity.ok(paymentUrl);
     }
 
