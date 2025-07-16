@@ -9,12 +9,14 @@ class UserService extends BaseApiService {
         const queryString = new URLSearchParams(params).toString();
         return this.get(`/user/all?${queryString}`);
     }
+    async changePassword(id,passwordData) {
+        return this.put(`/customer/changePassword/${id}`, passwordData);
+    }
     async getService(){
         return this.get('/customer/service')
     }
     async getUserById(id) { return this.get(`/user/${id}`); }
     async deleteUser(id) { return this.delete(`/user/${id}`); }
-    async changePassword(passwordData) { return this.post('/user/change-password', passwordData); }
     async create_app(appointment){
         return this.post('/customer/appointment/create', appointment) ;
     }

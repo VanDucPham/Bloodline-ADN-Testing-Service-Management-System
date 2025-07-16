@@ -54,6 +54,14 @@ function UserDashboard() {
   const [editData, setEditData] = useState(null);
   const [status, setStatus] = useState('');
   const [editing, setEditing] = useState(false);
+  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+  const [passwordStatus, setPasswordStatus] = useState('');
+
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -122,6 +130,8 @@ function UserDashboard() {
     </>
   );
 
+  
+
   const renderEditMode = () => (
     <form onSubmit={handleSave} className="form-grid">
       <input type="text" name="name" value={editData.name || ''} onChange={handleChange} className="profile-input" placeholder="Họ và tên *" required />
@@ -144,12 +154,90 @@ function UserDashboard() {
       </div>
     </form>
   );
+  const handlePasswordChange = (e) => {
+  setPasswordData({ ...passwordData, [e.target.name]: e.target.value });
+};
+
+const handleChangePassword = async (e) => {
+  e.preventDefault();
+
+  if (passwordData.newPassword !== passwordData.confirmPassword) {
+    setPasswordStatus('Mật khẩu mới và xác nhận không khớp');
+    return;
+  }
+  console.log('user.id:', user.userId);
+
+  try {
+    setPasswordStatus('Đang xử lý...');
+    await apiService.user.changePassword(user.userId, {  // lấy id từ user state
+      oldPassword: passwordData.currentPassword,
+      newPassword: passwordData.newPassword,
+    });
+    setPasswordStatus('Đổi mật khẩu thành công');
+    setTimeout(() => {
+      setPasswordData({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+      });
+      setShowChangePassword(false);
+      setPasswordStatus('');
+    }, 2000);
+  } catch (error) {
+    // Lấy message lỗi backend trả về
+  const msg = error.response?.data?.message || error.response?.data || error.message || 'Đổi mật khẩu thất bại';
+  setPasswordStatus(msg);
+  }
+};
+
+
 
   return (
     <div className="user-profile-container">
       {status && (
         <div className={`status-message ${status.includes('thành công') ? 'success' : 'error'}`}>{status}</div>
       )}
+      {showChangePassword && (
+  <div className="modal-overlay" onClick={() => setShowChangePassword(false)}>
+    <div className="modal-content small" onClick={e => e.stopPropagation()}>
+      <h3>Đổi mật khẩu</h3>
+      <form onSubmit={handleChangePassword}>
+        <label>Mật khẩu hiện tại:</label>
+        <input
+          type="password"
+          name="currentPassword"
+          value={passwordData.currentPassword}
+          onChange={handlePasswordChange}
+          required
+        />
+        <label>Mật khẩu mới:</label>
+        <input
+          type="password"
+          name="newPassword"
+          value={passwordData.newPassword}
+          onChange={handlePasswordChange}
+          required
+          minLength={6}
+        />
+        <label>Xác nhận mật khẩu mới:</label>
+        <input
+          type="password"
+          name="confirmPassword"
+          value={passwordData.confirmPassword}
+          onChange={handlePasswordChange}
+          required
+          minLength={6}
+        />
+        {passwordStatus && <p className="status-message">{passwordStatus}</p>}
+        <div className="modal-actions">
+          <button type="submit">Đổi mật khẩu</button>
+          <button type="button" onClick={() => setShowChangePassword(false)}>Hủy</button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
+
       <div className="user-profile-card">
         <div className="user-profile-avatar">
           <img src={user.avatar} alt="Avatar" onError={(e) => (e.target.src = '/default-avatar.png')} />
@@ -161,6 +249,7 @@ function UserDashboard() {
       {!editing && (
         <div className="user-profile-actions">
           <button onClick={handleEdit}>Chỉnh sửa thông tin</button>
+          <button onClick={() => setShowChangePassword(true)}>Đổi mật khẩu</button>
           <button className="logout-btn">Đăng xuất</button>
           <button className="back-btn" onClick={() => navigate(-1)}>Quay về</button>
         </div>
