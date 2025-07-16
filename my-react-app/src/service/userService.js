@@ -9,12 +9,14 @@ class UserService extends BaseApiService {
         const queryString = new URLSearchParams(params).toString();
         return this.get(`/user/all?${queryString}`);
     }
+    async changePassword(id,passwordData) {
+        return this.put(`/customer/changePassword/${id}`, passwordData);
+    }
     async getService(){
         return this.get('/customer/appointment/services')
     }
     async getUserById(id) { return this.get(`/user/${id}`); }
     async deleteUser(id) { return this.delete(`/user/${id}`); }
-    async changePassword(passwordData) { return this.post('/user/change-password', passwordData); }
     async create_app(appointment){
         return this.post('/customer/appointment/create', appointment) ;
     }
@@ -42,6 +44,14 @@ return this.post('/customer/appointment/check-availability', data)
   async createPay(data){
     return this.post('/auth/vnpay/create', data)
   }
+  async getAllowedAreas(){
+    return this.get('/areas/check')
+  }
+
+  async getResult(appointmentId){
+    return this.get(`/customer/result/get/${appointmentId}`);
+  }
+
 }
     
 

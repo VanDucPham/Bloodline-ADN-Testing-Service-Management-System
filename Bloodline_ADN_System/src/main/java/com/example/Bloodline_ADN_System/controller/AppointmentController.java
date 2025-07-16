@@ -4,7 +4,6 @@ import com.example.Bloodline_ADN_System.Entity.Appointment;
 import com.example.Bloodline_ADN_System.dto.ManagerService.ServiceManagerDTO;
 import com.example.Bloodline_ADN_System.dto.noneWhere.ApiMessResponse;
 import com.example.Bloodline_ADN_System.dto.noneWhere.AppointmentCheckRequest;
-import com.example.Bloodline_ADN_System.dto.noneWhere.ServiceDTO;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentDTO;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentRequest;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentResponse;

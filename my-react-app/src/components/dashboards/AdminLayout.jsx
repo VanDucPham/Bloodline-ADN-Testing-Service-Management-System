@@ -1,7 +1,8 @@
 import React from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
- import { FaUserCog, FaFlask, FaClipboardList, FaBlog, FaChartBar, FaSignOutAlt, FaHome } from 'react-icons/fa';
+import { NavLink, Outlet, Routes, Route } from 'react-router-dom';
+import { FaUserCog, FaFlask, FaClipboardList, FaBlog, FaChartBar, FaSignOutAlt, FaHome, FaMapMarkedAlt } from 'react-icons/fa';
 import './AdminLayout.css';
+import AllowedAreaManager from '../Admin/AllowedAreaManager';
 
 const AdminLayout = () => {
   return (
@@ -21,6 +22,12 @@ const AdminLayout = () => {
           <NavLink to="services" activeClassName="active">
             <FaClipboardList /> Quản lý dịch vụ
           </NavLink>
+          <NavLink to="schedule" activeClassName="active">
+            <FaClipboardList /> Lịch làm việc
+          </NavLink>
+          <NavLink to="areas" activeClassName="active">
+            <FaMapMarkedAlt /> Quản lý khu vực
+          </NavLink>
           <NavLink to="blogs" activeClassName="active">
             <FaBlog /> Blog & Tin tức
           </NavLink>
@@ -39,7 +46,10 @@ const AdminLayout = () => {
         </header>
 
         <section className="content-wrapper">
-          <Outlet />
+          <Routes>
+            <Route path="areas" element={<AllowedAreaManager />} />
+            <Route path="*" element={<Outlet />} />
+          </Routes>
         </section>
       </main>
     </div>

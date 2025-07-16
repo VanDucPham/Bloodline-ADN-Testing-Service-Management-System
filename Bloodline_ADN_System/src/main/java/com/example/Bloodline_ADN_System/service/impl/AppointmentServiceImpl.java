@@ -9,8 +9,10 @@ import com.example.Bloodline_ADN_System.dto.managerCaseFile.*;
 import com.example.Bloodline_ADN_System.payment.PaymentRequest;
 import com.example.Bloodline_ADN_System.repository.*;
 import com.example.Bloodline_ADN_System.service.*;
+import com.example.Bloodline_ADN_System.service.AllowedAreaService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -29,6 +31,8 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final TimeSlotLimitRepository timeSlotLimitRepository;
     private final ServiceRepository serviceRepository;
     private final PaymentService paymentService;
+    @Autowired
+    private AllowedAreaService allowedAreaService;
 
 
     // ---------------------CREATE APPOINTMENT FOR CASEFILE---------------------
@@ -84,7 +88,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .orElseThrow(() -> new RuntimeException("Dịch vụ không tồn tại"));
 
         Appointment appointment = new Appointment();
-
+        //nếu có toEntity thì không cần set thủ công như thế này
         appointment.setUser(user);
         appointment.setService(service);
         appointment.setType(dto.getAppointmentType());
@@ -137,6 +141,19 @@ public class AppointmentServiceImpl implements AppointmentService {
         AppointmentDTO dto = request.getAppointment();
         validateAppointmentDate(dto.getAppointmentDate());
         validateSlotAvailability(dto.getAppointmentDate(), dto.getAppointmentTime());
+
+        // --- Kiểm tra khu vực lấy mẫu tại nhà ---
+        if ("HOME_COLLECTION".equals(dto.getAppointmentType())) {
+            String city = dto.getCollectionCity(); // Giả sử có trường city trong DTO
+            String district = dto.getCollectionDistrict(); // Giả sử có trường district trong DTO
+            if (city == null || city.trim().isEmpty() || district == null || district.trim().isEmpty()) {
+                throw new RuntimeException("Vui lòng chọn đầy đủ thành phố và quận/huyện lấy mẫu tại nhà.");
+            }
+            if (!allowedAreaService.isAllowed(city, district)) {
+                throw new RuntimeException("Khu vực này chưa hỗ trợ lấy mẫu tại nhà. Vui lòng chọn khu vực khác.");
+            }
+        }
+        // --- End kiểm tra khu vực ---
 
         // 3. Create & Save Appointment
 

@@ -84,6 +84,46 @@ class adminService extends BaseApiService {
   });
 }
 
-
 }
-export default adminService
+
+
+
+export async function createAllowedArea(area) {
+  const token = localStorage.getItem('authToken');
+  const res = await fetch('/api/areas', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify(area)
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+export async function updateAllowedArea(id, area) {
+  const token = localStorage.getItem('authToken');
+  const res = await fetch(`/api/areas/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify(area)
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+export async function deleteAllowedArea(id) {
+  const token = localStorage.getItem('authToken');
+  const res = await fetch(`/api/areas/${id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return true;
+}
+
+export default adminService;

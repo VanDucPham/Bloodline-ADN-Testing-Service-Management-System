@@ -44,6 +44,8 @@ public class AppointmentDTO {
     private String deliveryMethod;
 
     private String collectionAddress ;
+    private String collectionCity;     // Thành phố lấy mẫu
+    private String collectionDistrict; // Quận/Huyện lấy mẫu
 
     // Ghi chú
     private String appointmentNote;

@@ -2,10 +2,10 @@
 import React, { useState, useEffect } from 'react';
 import './Pricelist.css';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import ComModal from '../ComModal/ComModal';
 import Login from '../login/Login';
 import apiService from '../../service/api';
+
 
 function Pricelist() {
   const navigate = useNavigate();
@@ -21,7 +21,7 @@ function Pricelist() {
       // Đã đăng nhập thành công từ modal
       setShowLoginModal(false);
       if (pendingService) {
-        navigate('/tracking_user', { state: { service: pendingService } });
+        navigate('/tracking_user', { state: { serviceId: pendingService } });
         setPendingService(null);
       }
     }
@@ -73,6 +73,7 @@ function Pricelist() {
   return (
     <div className="pricelist-section">
       <h2>BẢNG GIÁ DỊCH VỤ XÉT NGHIỆM ADN</h2>
+      
       <div className="service-card-list">
         {services.map((service) => (
           <div className="service-card" key={service.serviceId}>
@@ -97,9 +98,9 @@ function Pricelist() {
                 className="service-card-btn"
                 onClick={() => {
                   if (localStorage.getItem('authToken')) {
-                    navigate('/tracking_user', { state: { service: service.serviceName } });
+                    navigate('/tracking_user', { state: { serviceId: service.serviceId } });
                   } else {
-                    setPendingService(service.serviceName);
+                    setPendingService(service.serviceId);
                     setShowLoginModal(true);
                   }
                 }}

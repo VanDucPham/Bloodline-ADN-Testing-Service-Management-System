@@ -12,7 +12,7 @@ export default function PublicLayout() {
       <main style={{ minHeight: '80vh', padding: '20px' }}>
         <Outlet />
       </main>
-      <footer style={{ background: '#f1f1f1', textAlign: 'center', padding: '16px' }}>
+      <footer style={{ background: '#e6e6e6ff', textAlign: 'center', padding: '16px' }}>
         © 2025 Vietcare Lab. All rights reserved.
       </footer>
     </>

@@ -91,8 +91,8 @@ import UserService from "../userService";
 import AdminService from "../adminService";
 
 import FeedbackService from "../feedbackService"; // Import FeedbackService
-import StaffService from "../staffservice"; 
 import ManagerService from "../managerService";
+import StaffService from "../staffservice";
 
 class ApiServiceManager {
   constructor() {
@@ -250,7 +250,24 @@ class ApiServiceManager {
     return this.get('/admin/blog/category-count');
   }
 
+}
 
+// Đo khoảng cách: chỉ kiểm tra hợp lệ địa chỉ (chứa 'Thủ Đức')
+export async function getDistance(customerAddress) {
+  const token = localStorage.getItem('authToken');
+  const response = await fetch(
+    `/api/distance/to-customer?customerAddress=${encodeURIComponent(customerAddress)}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || 'Khoảng cách không hợp lệ, yêu cầu nhập lại');
+  }
+  return true;
 }
 
 export default ApiServiceManager;
