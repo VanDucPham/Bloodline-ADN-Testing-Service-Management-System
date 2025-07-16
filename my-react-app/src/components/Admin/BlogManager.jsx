@@ -176,12 +176,13 @@ const BlogManager = () => {
   // Xử lý upload ảnh thực tế lên server
   const handleImageUpload = async ({ file }) => {
     try {
-      const res = await apiService.admin.uploadImage(file);
-      console.log("Uploaded image URL:", url);
+     const res = await apiService.admin.uploadImage(file);
+const url = res.data?.url || res.url; // đảm bảo lấy đúng field
+console.log("Uploaded image URL:", url);
 
-      const url = res.url;
-      setUploadingImage([{ url, name: file.name }]);
-      message.success('Upload ảnh thành công!');
+setUploadingImage([{ url, name: file.name }]);
+message.success('Upload ảnh thành công!');
+
     } catch (e) {
       message.error(e?.response?.data?.message || 'Lỗi upload ảnh');
     }
