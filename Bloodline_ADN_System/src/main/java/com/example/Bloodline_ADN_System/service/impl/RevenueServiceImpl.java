@@ -1,6 +1,5 @@
 package com.example.Bloodline_ADN_System.service.impl;
 
-import com.example.Bloodline_ADN_System.Entity.Payment;
 import com.example.Bloodline_ADN_System.dto.RevenueDTO;
 import com.example.Bloodline_ADN_System.dto.MonthlyRevenueDTO;
 import com.example.Bloodline_ADN_System.dto.ServiceRevenueDTO;
@@ -62,14 +61,29 @@ public class RevenueServiceImpl implements RevenueService {
         // ========================================
         // 5. TÍNH DOANH THU CAO NHẤT VÀ THẤP NHẤT
         // ========================================
-        // Công thức: Lấy MAX và MIN từ doanh thu theo tháng
+        // Công thức: Lấy MAX và MIN từ doanh thu theo tháng, chỉ trong khoảng thời gian được chọn
         List<Object[]> monthlyData = paymentRepository.getRevenueByMonth();
-        if (!monthlyData.isEmpty()) {
-            Double maxRevenue = monthlyData.stream()
+        // Lọc các tháng nằm trong khoảng startDate, endDate
+        List<Object[]> filteredMonthlyData = new ArrayList<>();
+        if (monthlyData != null && !monthlyData.isEmpty() && startDate != null && endDate != null) {
+            for (Object[] row : monthlyData) {
+                int year = ((Number) row[0]).intValue();
+                int month = ((Number) row[1]).intValue();
+                // Tạo ngày đầu tháng và cuối tháng
+                java.time.LocalDateTime firstDay = java.time.LocalDateTime.of(year, month, 1, 0, 0);
+                java.time.LocalDateTime lastDay = firstDay.plusMonths(1).minusSeconds(1);
+                // Nếu tháng này giao với khoảng thời gian được chọn
+                if (!(lastDay.isBefore(startDate) || firstDay.isAfter(endDate))) {
+                    filteredMonthlyData.add(row);
+                }
+            }
+        }
+        if (!filteredMonthlyData.isEmpty()) {
+            Double maxRevenue = filteredMonthlyData.stream()
                     .mapToDouble(row -> ((Number) row[2]).doubleValue())
                     .max()
                     .orElse(0.0);
-            Double minRevenue = monthlyData.stream()
+            Double minRevenue = filteredMonthlyData.stream()
                     .mapToDouble(row -> ((Number) row[2]).doubleValue())
                     .min()
                     .orElse(0.0);
@@ -79,9 +93,10 @@ public class RevenueServiceImpl implements RevenueService {
             revenueDTO.setMaxRevenueMonth(0.0);
             revenueDTO.setMinRevenueMonth(0.0);
         }
-        
         // Lấy dữ liệu theo tháng
-        revenueDTO.setMonthlyData(convertToMonthlyRevenueDTO(monthlyData));
+        if (monthlyData != null) {
+            revenueDTO.setMonthlyData(convertToMonthlyRevenueDTO(monthlyData));
+        }
         
         // Lấy dữ liệu theo service
         revenueDTO.setServiceRevenue(convertToServiceRevenueDTO(paymentRepository.getRevenueByService()));
@@ -174,7 +189,7 @@ public class RevenueServiceImpl implements RevenueService {
         Double previousRevenue = paymentRepository.sumAmountByDateRange(previousStart, previousEnd);
         
         // Tính phần trăm tăng trưởng
-        Double growthPercent = 0.0;
+        double growthPercent = 0.0;
         if (previousRevenue != null && previousRevenue > 0 && currentRevenue != null) {
             growthPercent = ((currentRevenue - previousRevenue) / previousRevenue) * 100;
         }

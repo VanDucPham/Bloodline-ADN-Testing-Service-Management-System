@@ -1,5 +1,5 @@
 import './App.css';
-
+import { Navigate } from 'react-router-dom';
 //import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 //import { faUser, faCoffee, faHome, faBars, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
@@ -21,6 +21,7 @@ import AboutUs from './components/aboutus/AboutUs';
 import QuestionADNApp from "./components/questionADN/QuestionADN";
 import ConsultationStatus from './components/ConsultationStatus';
 import ConsultationDemo from './components/ConsultationDemo';
+import ServiceInfo from './components/serviceInfo/ServiceInfo';
 
 
 import CustomerAppointmentList from './components/htmltest/tracking_customer/tracking_user/CustomerApointmentList';
@@ -38,6 +39,7 @@ import BlogManager from './components/Admin/BlogManager';
 import ServiceManager from './components/Admin/ServiceManager';
 import SystemSettings from './components/Admin/SystemSetting';
 import FacilityScheduleSimple from './components/Admin/FacilityScheduleSimple';
+import AllowedAreaManager from './components/Admin/AllowedAreaManager';
 
 import PublicLayout from './components/PublicLaout/PublicLayout';
 import ManagerLayout from './components/Manager/ManagerLayout';
@@ -50,7 +52,10 @@ import MyFeedbackList from './components/feedback/MyFeedbackList';
 import StaffAppointments from './components/staffappointments/StaffAppointments';
 import CreateAppointment from './components/staffappointments/CreateAppointment';
 import PaymentResult from './components/htmltest/tracking_customer/tracking_user/PaymentResult';
+import DistanceCalculator from './components/DistanceCalculator';
 
+
+import AdminLayout from './components/dashboards/AdminLayout';
 
 function App() {
   return (
@@ -65,6 +70,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/pricelist" element={<Pricelist />} />
+          <Route path="/service-info" element={<ServiceInfo />} />
 
           <Route path="/user" element={<UserDashboard />} />
           <Route path="/tracking_user" element={<AppointmentBooking />} />
@@ -75,6 +81,7 @@ function App() {
           <Route path="/post-detail/:id" element={<BlogDetail />} />
           <Route path="/dna" element={<DnaPost />} />
           <Route path="/blogList" element={<BlogList />} />
+          <Route path="/distance" element={<DistanceCalculator />} />
 
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/questionADN" element={<QuestionADNApp />} />
@@ -89,6 +96,9 @@ function App() {
           <Route path="/staff/appointment/create" element={<CreateAppointment />} />
           <Route path="/admin-dashboard" element={<RevenueManagement activeSection="admin" />} />
           <Route path="/payment_return" element={<PaymentResult />} />
+           <Route path="/staff/appointments" element={<StaffAppointments />} />
+           <Route path="/staff/appointment/create" element={<CreateAppointment />} />
+          <Route path="/admin-dashboard" element={<AdminLayout activeSection="admin" />} />
         </Route>
 
         {/* Admin Routes with layout */}
@@ -101,15 +111,9 @@ function App() {
           <Route path="services" element={<ServiceManager />} />
           <Route path="schedules" element={<FacilityScheduleSimple />} />
           <Route path="blogs" element={<BlogManager />} />
-
-
-          {/* //  <Route path="dashboard" element={<DashboardPage />} /> */}
-          {/* <Route path="accounts" element={<AccountManager />} />
-          
-          <Route path="settings" element={<SettingsPage />} />
-          <Route path="change-password" element={<ChangePassword />} />
-          <Route path="profile" element={<Profile />} /> */}
+          <Route path="areas" element={<AllowedAreaManager />} />
         </Route>
+         {/* Manager Routes with layout */}
         <Route path="/manager" element={<ManagerLayout />}>
           <Route path="employees" element={<ManagerStaff />} />
           <Route path="report" element={<ManagerFeedbackManagement />} />
@@ -118,7 +122,7 @@ function App() {
           <Route path="tracking" element={<CaseTracking />} />
           <Route path="schedules" element={<FacilityScheduleSimple />} />
           <Route path="blogs" element={<BlogManager />} />
-
+          <Route path="areas" element={<AllowedAreaManager />} />
         </Route>
 
 
