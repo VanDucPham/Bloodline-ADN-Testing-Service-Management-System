@@ -21,6 +21,9 @@ const AppointmentList = () => {
   const [filterStatus, setFilterStatus] = useState("ALL");
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [feedbackAppointment, setFeedbackAppointment] = useState(null);
+  //lấy kết quả
+  const [selectedAppointmentResult, setSelectedAppointmentResult] = useState(null);
+
 
   const navigate = useNavigate();
 
@@ -46,7 +49,7 @@ const AppointmentList = () => {
   const toggleTheme = () => setIsDarkMode(!isDarkMode);
 
   const openModal = (appointment) => {
-    setSelectedAppointment(appointment);
+    setSelectedAppointment(appointment); 
     setModalOpen(true);
   };
 
@@ -150,6 +153,36 @@ const filteredAppointments = appointments.filter((a) =>
     setShowEditModal(true);
   };
 
+  // useEffect mới để lấy kết quả khi selectedAppointment thay đổi
+useEffect(() => {
+  if (selectedAppointment) {
+    const fetchResult = async () => {
+      try {
+        const result = await apiService.user.getResult(selectedAppointment.appointmentId);
+        setSelectedAppointmentResult(result);
+      } catch (error) {
+        setSelectedAppointmentResult(null);
+        console.error('Lỗi khi lấy kết quả:', error);
+      }
+    };
+    fetchResult();
+  } else {
+    setSelectedAppointmentResult(null);
+  }
+}, [selectedAppointment]);
+
+  // Fetch kết quả cho lịch hẹn đã chọn
+  const fetchResultForAppointment = async (appointmentId) => {
+  try {
+    const result = await apiService.user.getResult(appointmentId);
+    setSelectedAppointmentResult(result);
+  } catch (error) {
+    setSelectedAppointmentResult(null);
+    console.error('Lỗi khi lấy kết quả:', error);
+  }
+};
+
+
   return (
     <div className={`appointment-container ${isDarkMode ? "dark" : ""}`}>
       <div className="header">
@@ -239,6 +272,7 @@ const filteredAppointments = appointments.filter((a) =>
               <div className={`tab ${activeTab === 0 ? 'active' : ''}`} onClick={() => changeTab(0)}>Thông tin lịch hẹn</div>
               <div className={`tab ${activeTab === 1 ? 'active' : ''}`} onClick={() => changeTab(1)}>Người tham gia & Mẫu</div>
               <div className={`tab ${activeTab === 2 ? 'active' : ''}`} onClick={() => changeTab(2)}>Thanh toán</div>
+              <div className={`tab ${activeTab === 3 ? 'active' : ''}`} onClick={() => changeTab(3)}>Chi tiết kết quả</div>
             </div>
 
             <div className={`tab-content ${activeTab === 0 ? 'active' : ''}`}>
@@ -257,7 +291,7 @@ const filteredAppointments = appointments.filter((a) =>
                   <tr>
   <td>Kết luận xét nghiệm</td>
   <td style={{ fontWeight: 'bold', color: selectedAppointment.result ? '#2c3e50' : '#999' }}>
-    {selectedAppointment.result || 'Chưa có kết quả'}
+    {selectedAppointmentResult?.resultValue  || 'Chưa có kết quả'}
   </td>
 </tr>
 
@@ -357,6 +391,33 @@ const filteredAppointments = appointments.filter((a) =>
                 </tbody>
               </table>
             </div>
+            <div className={`tab-content ${activeTab === 3 ? 'active' : ''}`}>
+  {selectedAppointmentResult ? (
+    <table className="detail-table">
+      <tbody>
+        <tr>
+          <td>Kết quả</td>
+          <td>{selectedAppointmentResult.resultValue || 'Không có dữ liệu'}</td>
+        </tr>
+        <tr>
+          <td>Ghi chú</td>
+          <td>{selectedAppointmentResult.notes || '-'}</td>
+        </tr>
+        <tr>
+          <td>Ngày phân tích</td>
+          <td>{selectedAppointmentResult.resultDate ? new Date(selectedAppointmentResult.resultDate).toLocaleString() : '-'}</td>
+        </tr>
+        <tr>
+          <td>Trạng thái</td>
+          <td>{selectedAppointmentResult.status || '-'}</td>
+        </tr>
+      </tbody>
+    </table>
+  ) : (
+    <p>Chưa có dữ liệu kết quả.</p>
+  )}
+</div>
+
           </div>
         </div>
       )}

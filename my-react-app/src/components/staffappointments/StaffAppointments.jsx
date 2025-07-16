@@ -3,7 +3,6 @@ import apiService from '../../service/api';
 import './StaffAppointments.css';
 import moment from 'moment';
 import ParticipantModal from './ParticipantModal';
-import { DatePicker } from 'antd';
 import ResultModal from './ResultModal';
 
 

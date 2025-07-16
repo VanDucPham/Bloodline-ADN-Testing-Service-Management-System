@@ -2,9 +2,11 @@ package com.example.Bloodline_ADN_System.controller;
 
 import com.example.Bloodline_ADN_System.dto.noneWhere.ApiMessResponse;
 import com.example.Bloodline_ADN_System.dto.noneWhere.ChangePasswordDTO;
+import com.example.Bloodline_ADN_System.dto.*;
 import com.example.Bloodline_ADN_System.dto.TrackingAppoint.AppointmentResponseDTO;
 import com.example.Bloodline_ADN_System.dto.TrackingAppoint.UpdateParticipant;
 import com.example.Bloodline_ADN_System.dto.noneWhere.UserUpdateDTO;
+import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentDTO;
 import com.example.Bloodline_ADN_System.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,6 +27,7 @@ public class CustomerController {
     private final SampleService sampleServiceImpl;
     private final CustomerService customerService;
     private final ParticipantService participantService;
+    private final ResultService resultService;
 
     @PutMapping
     public ResponseEntity<UserUpdateDTO> updateUser(Authentication authentication, @RequestBody UserUpdateDTO updatedUser) {
@@ -67,6 +70,11 @@ public class CustomerController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ApiMessResponse(false, "Lỗi server khi cập nhật"));
         }
+    }
+
+    @GetMapping("/result/get/{appointmentId}")
+    public ResultDTO getResult(@PathVariable Long appointmentId){
+        return resultService.getResultByAppointmentId(appointmentId);
     }
 
 }

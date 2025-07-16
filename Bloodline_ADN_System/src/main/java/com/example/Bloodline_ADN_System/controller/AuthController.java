@@ -32,6 +32,13 @@ public class AuthController {
         return ResponseEntity.ok(loginResponse);
     }
 
+    @PostMapping("/google-login")
+    public ResponseEntity<LoginResponse> loginWithGoogle(@RequestBody Map<String, String> request) {
+        String idToken = request.get("idToken");
+        LoginResponse response = authService.loginWithGoogle(idToken);
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody RegisterRequest registerRequest) {
         return ResponseEntity.ok(authService.RegisterUser(registerRequest));

@@ -45,6 +45,11 @@ return this.post('/customer/appointment/check-availability', data)
   async getAllowedAreas(){
     return this.get('/areas/check')
   }
+
+  async getResult(appointmentId){
+    return this.get(`/customer/result/get/${appointmentId}`);
+  }
+
 }
     
 
