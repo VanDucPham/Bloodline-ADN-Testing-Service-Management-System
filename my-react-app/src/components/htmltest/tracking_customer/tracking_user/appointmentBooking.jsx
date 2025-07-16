@@ -47,6 +47,7 @@ function AppointmentBooking() {
   const [caseFile, setCaseFile] = useState({
     userId: '',
     caseCode: '',
+    limit_people : '',
     caseType: '',
     serviceId: '',
     status: 'ARCHIVED'
@@ -78,6 +79,7 @@ function AppointmentBooking() {
 
         const response = await apiService.user.getService();
         const timeSlot = await apiService.user.getTimeSlot();
+        console.log(response)
         setTimeSlot(timeSlot);
         setService(response);
       } catch (error) {
@@ -100,6 +102,7 @@ function AppointmentBooking() {
     };
     fetchService();
   }, []);
+
 
   const checkAvailability = async () => {
     try {
@@ -184,35 +187,53 @@ function AppointmentBooking() {
   };
 
   const handleSubmit = async () => {
-    const updateAppointment = {
-      ...appointment, userId: user?.user_Id
-    };
-    const updatedCaseFile = {
-      ...caseFile,
-      userId: user?.user_Id
-    };
-    try {
-      const filteredSamples = samples.filter(s =>
-        s.participantCitizenId?.trim() !== '' && s.sampleType?.trim() !== ''
-      );
-      console.log(filteredSamples)
-      console.log(participants)
-      console.log(updateAppointment)
-      console.log(updatedCaseFile)
-      const payLoad = {
-        appointment: updateAppointment,
-        participants: participants,
-        samples: filteredSamples,
-        caseFile: updatedCaseFile
-      };
-      
-      await apiService.user.create_app(payLoad);
-      alert('Lịch hẹn được đặt thành công!');
-      navigate("/tracking_user");
-    } catch (error) {
-      alert("Đặt lịch thất bại, vui lòng đặt lại");
-    }
+  const updateAppointment = {
+    ...appointment, userId: user?.user_Id
   };
+  const updatedCaseFile = {
+    ...caseFile,
+    userId: user?.user_Id
+  };
+
+  try {
+    const filteredSamples = samples.filter(s =>
+      s.participantCitizenId?.trim() !== '' && s.sampleType?.trim() !== ''
+    );
+
+    const payLoad = {
+      appointment: updateAppointment,
+      participants: participants,
+      samples: filteredSamples,
+      caseFile: updatedCaseFile
+    };
+
+    // Nếu chọn VNPay
+    if (appointment.paymentMethod === "vnpay") {
+      const paymentRequest = {
+        amount: selectedService.servicePrice, // số tiền
+        orderInfo: `Thanh toán dịch vụ ${selectedService.serviceName}`,
+        txnRef: "ORDER" + Date.now(), // mã đơn hàng duy nhất
+        bankCode: "", // hoặc để trống
+        
+      };
+
+      const res = await apiService.user.creatPaymentVnPay(paymentRequest);
+
+      if (res) {
+        window.location.href = res; // redirect đến trang thanh toán
+      }
+    } else {
+      // Các phương thức khác
+      await apiService.user.create_app(payLoad);
+      alert("Lịch hẹn được đặt thành công!");
+      navigate("/tracking_user");
+    }
+
+  } catch (error) {
+    alert("Đặt lịch thất bại, vui lòng đặt lại");
+  }
+};
+
 
   const nextStep = async () => {
     if (step === 1 && !caseFile.caseType) {
@@ -272,11 +293,37 @@ function AppointmentBooking() {
   const prevStep = () => setStep(step - 1);
 
   const selectedService = service.find(s => s.serviceId === parseInt(appointment.serviceId));
+  useEffect(() => {
+  if (step === 3 && selectedService?.limitPeople) {
+    const requiredCount = selectedService.limitPeople;
 
+    // Nếu số người hiện tại nhỏ hơn thì thêm vào
+    if (participants.length < requiredCount) {
+      const diff = requiredCount - participants.length;
+      const additional = Array.from({ length: diff }, () => ({
+        name: '',
+        relationship: '',
+        citizenId: '',
+        address: '',
+        birthDate: '',
+        gender: '',
+      }));
+      setParticipants(prev => [...prev, ...additional]);
+      setSamples(prev => [...prev, ...Array.from({ length: diff }, () => ({ participantCitizenId: '', sampleType: '' }))]);
+    }
+
+    // Nếu nhiều hơn thì cắt bớt
+    if (participants.length > requiredCount) {
+      setParticipants(prev => prev.slice(0, requiredCount));
+      setSamples(prev => prev.slice(0, requiredCount));
+    }
+  }
+}, [step, selectedService]);
   return (
     <div>
       <header>
-        <h1>Đặt lịch hẹn xét nghiệm ADN</h1>
+        <h1 style={{ color: '#eeeff1ff' }}>Đặt lịch hẹn xét nghiệm ADN</h1>
+
       </header>
       <div className="step-container">
         <div className="step-nav">
@@ -286,7 +333,7 @@ function AppointmentBooking() {
               className={`step ${stepNumber === step ? 'active' : stepNumber < step ? 'completed' : ''}`}
               data-step={stepNumber}
             >
-              <span className="step-number">{stepNumber}</span>.{' '}
+              {/* Loại bỏ số thứ tự, chỉ giữ lại tên bước */}
               {['Chọn loại hồ sơ', 'Thông tin dịch vụ', 'Người tham gia', 'Mẫu xét nghiệm', 'Xác nhận', 'Thanh toán'][stepNumber - 1]}
             </div>
           ))}
@@ -375,6 +422,8 @@ function AppointmentBooking() {
           {step === 3 && (
             <div className="form-section">
               <h2>3. Người tham gia</h2>
+              <p>Vui lòng nhập thông tin cho <strong>{selectedService?.limitPeople}</strong> người tham gia.</p>
+
               {participants.map((participant, index) => (
                 <div key={index} className="participant">
                   <label>Họ tên:</label>
@@ -392,7 +441,10 @@ function AppointmentBooking() {
                   </select>
                   <label>Quan hệ:</label>
                   <input type="text" name="relationship" placeholder="Cha, con, mẹ..." value={participant.relationship} onChange={(e) => handleParticipantChange(index, e)} />
-                  <button className="btn-add" onClick={addParticipant}>+ Thêm người</button>
+                  {index === participants.length - 1 && participants.length < selectedService?.limitPeople && (
+  <button className="btn-add" onClick={addParticipant}>+ Thêm người</button>
+)}
+
                   <button
                     className="btn-remove"
                     onClick={() => removeParticipant(index)}
