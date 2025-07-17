@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.Optional;
 
 @Service
@@ -63,6 +64,14 @@ public class UserServiceImpl implements UserService {
     public Optional<User> findUserById(Long id) {
         return userRepository.findById(id);
     }
+
+    @Override
+    public Long getUserIdFromPrincipal(Principal principal) {
+        return userRepository.findByEmail(principal.getName())
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy user với email: " + principal.getName()))
+                .getUserId();
+    }
+
 
     private UserUpdateDTO toDTO(User user) {
         UserUpdateDTO dto = new UserUpdateDTO();

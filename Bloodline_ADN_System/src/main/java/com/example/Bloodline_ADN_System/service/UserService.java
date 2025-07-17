@@ -4,6 +4,7 @@ import com.example.Bloodline_ADN_System.Entity.User;
 import com.example.Bloodline_ADN_System.dto.ChangePasswordDTO;
 import com.example.Bloodline_ADN_System.dto.UserUpdateDTO;
 
+import java.security.Principal;
 import java.util.Optional;
 
 public interface UserService {
@@ -11,7 +12,7 @@ public interface UserService {
     void changePassword(Long userId, ChangePasswordDTO changePasswordDTO);
     Optional<User> getUserById(Long id);
     UserUpdateDTO getUserByEmail(String email);
-
+    Long getUserIdFromPrincipal(Principal principal);
 
     Optional<User> findUserById(Long id);
 }

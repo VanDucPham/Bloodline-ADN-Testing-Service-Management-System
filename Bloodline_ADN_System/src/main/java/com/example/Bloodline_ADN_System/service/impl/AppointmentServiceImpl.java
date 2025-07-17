@@ -325,6 +325,18 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .collect(Collectors.toList());
     }
 
+    //Lọc cho nhân viên
+    public List<AppointmentDTO> filterAppointmentForStaff(Appointment.AppointmentStatus status,
+                                                          Appointment.AppointmentType type,
+                                                          LocalDate date,
+                                                          Long staffId) {
+        return appointmentRepository.findByFiltersForStaff(staffId, status, type, date)
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
+
     @Override
     public AppointmentDTO updateAppointmentProgress(Long id, Appointment.AppointmentStatus status, Appointment.CollectionStatus collectionStatus) {
         Appointment appointment = appointmentRepository.findById(id)

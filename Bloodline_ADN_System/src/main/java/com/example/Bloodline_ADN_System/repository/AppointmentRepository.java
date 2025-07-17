@@ -2,6 +2,7 @@ package com.example.Bloodline_ADN_System.repository;
 
 import com.example.Bloodline_ADN_System.Entity.Appointment;
 import com.example.Bloodline_ADN_System.Entity.CaseFile;
+import com.example.Bloodline_ADN_System.Entity.User;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -36,6 +37,17 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     List<Appointment> findByFilters(@Param("status") Appointment.AppointmentStatus status,
                                     @Param("type") Appointment.AppointmentType type,
                                     @Param("date") LocalDate date);
+
+    @Query("SELECT a FROM Appointment a " +
+            "WHERE a.assignedStaff.userId = :staffId " +
+            "AND (:status IS NULL OR a.status = :status) " +
+            "AND (:type IS NULL OR a.type = :type) " +
+            "AND (:date IS NULL OR a.appointmentDate = :date)")
+    List<Appointment> findByFiltersForStaff(@Param("staffId") Long staffId,
+                                            @Param("status") Appointment.AppointmentStatus status,
+                                            @Param("type") Appointment.AppointmentType type,
+                                            @Param("date") LocalDate date);
+
 
     int countByAppointmentDateAndAppointmentTime(LocalDate appointmentDate, LocalTime appointmentTime);
 
