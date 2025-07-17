@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import apiService from '../../service/api';
-import './StaffAppointments.css';
+import './StaffAppointment.css';
 import moment from 'moment';
 import ParticipantModal from './ParticipantModal';
 import ResultModal from './ResultModal';

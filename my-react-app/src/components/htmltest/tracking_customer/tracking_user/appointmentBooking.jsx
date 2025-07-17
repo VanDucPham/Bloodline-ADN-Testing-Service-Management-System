@@ -3,7 +3,8 @@ import './appointmentBooking.css';
 import apiService from '../../../../service/api';
 import {  useLocation } from 'react-router-dom';
 
-import { Form, Input, Select, message } from 'antd';
+import { Form, Input, Select, message, Tooltip, Spin } from 'antd';
+import { InfoCircleOutlined, LoadingOutlined, CheckCircleOutlined } from '@ant-design/icons';
 
 function AppointmentBooking() {
   const [step, setStep] = useState(1);
@@ -15,6 +16,8 @@ function AppointmentBooking() {
   const [cityOptions, setCityOptions] = useState([]);
   const [districtOptions, setDistrictOptions] = useState([]);
   const [addressLoading, setAddressLoading] = useState(false);
+  const [loadingService, setLoadingService] = useState(false);
+  const [loadingAreas, setLoadingAreas] = useState(false);
 
 
   const usedata = localStorage.getItem('userInfo');
@@ -83,24 +86,24 @@ function AppointmentBooking() {
   // Fetch Service API
   useEffect(() => {
     const fetchService = async () => {
+      setLoadingService(true);
       try {
         const userData = localStorage.getItem("userInfo");
         const userItem = userData ? JSON.parse(userData) : null;
-
         if (userItem?.user_Id) {
           setAppointment(prev => ({
             ...prev,
             userId: userItem.user_Id
           }));
         }
-
         const response = await apiService.user.getService();
         const timeSlot = await apiService.user.getTimeSlot();
-        console.log(response)
         setTimeSlot(timeSlot);
         setService(response);
       } catch (error) {
-        console.log("Không thể tải các dịch vụ lên được", error);
+        message.error("Không thể tải các dịch vụ lên được");
+      } finally {
+        setLoadingService(false);
       }
 
       const now = new Date();
@@ -123,7 +126,7 @@ function AppointmentBooking() {
   useEffect(() => {
     // Fetch allowed areas for address dropdowns
     const fetchAllowedAreas = async () => {
-      setAddressLoading(true);
+      setLoadingAreas(true);
       try {
         const data = await apiService.user.getAllowedAreas();
         setAllowedAreas(data);
@@ -133,7 +136,7 @@ function AppointmentBooking() {
       } catch  {
         message.error('Không thể tải danh sách khu vực lấy mẫu!');
       } finally {
-        setAddressLoading(false);
+        setLoadingAreas(false);
       }
     };
     fetchAllowedAreas();
@@ -242,31 +245,32 @@ function AppointmentBooking() {
     };
 
     try {
-      if (appointment.deliveryMethod === 'HOME_COLLECTION') {
-        try {
-          const values = await  addressForm.validateFields();
-          // Gọi API kiểm tra khu vực hợp lệ
-          const token = localStorage.getItem('authToken');
-          const res = await fetch(`/api/areas/check?city=${encodeURIComponent(values.city)}&district=${encodeURIComponent(values.district)}`, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-          const isAllowed = await res.json();
-          if (!isAllowed) {
-            message.error('Khu vực này chưa hỗ trợ lấy mẫu tại nhà. Vui lòng chọn khu vực khác!');
-            return;
-          }
-          // Lưu địa chỉ vào appointment
-          setAppointment(prev => ({
-            ...prev,
-            collectionAddress: values.addressDetail,
-            collectionCity: values.city,
-            collectionDistrict: values.district
-          }));
-        } catch  {
-          // Nếu validate lỗi thì không submit
-          return;
-        }
-      }
+      // if (appointment.deliveryMethod === '') {
+      //   try {
+
+      //     const values = await  addressForm.validateFields();
+      //     // Gọi API kiểm tra khu vực hợp lệ
+      //     const token = localStorage.getItem('authToken');
+      //     const res = await fetch(`/api/areas/check?city=${encodeURIComponent(values.city)}&district=${encodeURIComponent(values.district)}`, {
+      //       headers: { Authorization: `Bearer ${token}` }
+      //     });
+      //     const isAllowed = await res.json();
+      //     if (!isAllowed) {
+      //       message.error('Khu vực này chưa hỗ trợ lấy mẫu tại nhà. Vui lòng chọn khu vực khác!');
+      //       return;
+      //     }
+      //     // Lưu địa chỉ vào appointment
+      //     setAppointment(prev => ({
+      //       ...prev,
+      //       collectionAddress: values.addressDetail,
+      //       collectionCity: values.city,
+      //       collectionDistrict: values.district
+      //     }));
+      //   } catch  {
+      //     // Nếu validate lỗi thì không submit
+      //     return;
+      //   }
+      // }
 
       const filteredSamples = samples.filter(s =>
         s.participantCitizenId?.trim() !== '' && s.sampleType?.trim() !== ''
@@ -316,32 +320,27 @@ localStorage.setItem("sample", JSON.stringify(filteredSamples));
 
 
   const nextStep = async () => {
-    console.log('nextStep được gọi, step:', step, 'deliveryMethod:', appointment.deliveryMethod);
     if (step === 1 && !caseFile.caseType) {
       setValidateMessage('Vui lòng chọn loại hồ sơ.');
       return;
     }
- if (step === 2) {
-  if (!appointment.serviceId) {
-    setValidateMessage("Vui lòng chọn dịch vụ.");
-    return;
-  }
-
-  if (
-    appointment.deliveryMethod === "SELF_DROP_OFF" &&
-    (!appointment.appointmentDate || !appointment.appointmentTime)
-  ) {
-    setValidateMessage("Vui lòng chọn ngày giờ hẹn khi đến cơ sở.");
-    return;
-  }
-
-  // ... thêm các điều kiện riêng nếu cần
-}
-
-    if (appointment.deliveryMethod === 'HOME_COLLECTION' && caseFile.caseType === 'ADMINISTRATIVE') {
-      setValidateMessage('Thủ tục hành chính chỉ được lấy mẫu tại cơ sở.');
-      return;
+    if (step === 2) {
+      if (!appointment.serviceId) {
+        setValidateMessage("Vui lòng chọn dịch vụ.");
+        return;
+      }
+      if (
+        appointment.deliveryMethod === "SELF_DROP_OFF" &&
+        (!appointment.appointmentDate || !appointment.appointmentTime)
+      ) {
+        setValidateMessage("Vui lòng chọn ngày giờ hẹn khi đến cơ sở.");
+        return;
+      }
     }
+    // if (appointment.deliveryMethod !== 'SELF_DROP_OFF' && caseFile.caseType === 'ADMINISTRATIVE') {
+    //   setValidateMessage('Thủ tục hành chính chỉ được lấy mẫu tại cơ sở.');
+    //   return;
+    // }
     if (step === 2 && appointment.deliveryMethod ==="SELF_DROP_OFF") {
       const available = await checkAvailability();
       if (!available) {
@@ -349,19 +348,18 @@ localStorage.setItem("sample", JSON.stringify(filteredSamples));
         return;
       }
     }
-    if (step === 3 && participants.some(p => !p.name || !p.birthDate || !p.gender || !p.relationship)) {
-      setValidateMessage('Vui lòng nhập đầy đủ thông tin người tham gia.');
-      return;
+    if (step === 3) {
+      const errors = participants.map(validateParticipant);
+      setParticipantErrors(errors);
+      if (errors.some(e => Object.keys(e).length > 0)) {
+        setValidateMessage('Vui lòng nhập đầy đủ thông tin người tham gia.');
+        return;
+      }
     }
-    if (step === 3 && participants.some(p => p.birthDate > today)) {
-      setValidateMessage('Ngày sinh không được lớn hơn ngày hiện tại.');
-      return;
-    }
-    if (
-      step === 4 &&
-      (appointment.deliveryMethod === "HOME_COLLECTION" || appointment.deliveryMethod === "HOME_DELIVERY")
-    ) {
-      if (samples.some(s => !s.participantCitizenId || !s.sampleType)) {
+    if (step === 4) {
+      const errors = samples.map(validateSample);
+      setSampleErrors(errors);
+      if (errors.some(e => Object.keys(e).length > 0)) {
         setValidateMessage('Vui lòng nhập đầy đủ thông tin mẫu xét nghiệm.');
         return;
       }
@@ -374,7 +372,10 @@ localStorage.setItem("sample", JSON.stringify(filteredSamples));
     setStep(step + 1);
   };
 
-  const prevStep = () => setStep(step - 1);
+  const prevStep = () => {
+    setValidateMessage('');
+    setStep(step - 1);
+  };
 
   const selectedService = service.find(s => s.serviceId === parseInt(appointment.serviceId));
   useEffect(() => {
@@ -403,6 +404,37 @@ localStorage.setItem("sample", JSON.stringify(filteredSamples));
     }
   }
 }, [step, selectedService, participants.length]);
+
+  // Validate realtime cho participant
+  const validateParticipant = (participant) => {
+    const errors = {};
+    if (!participant.name) errors.name = 'Vui lòng nhập họ tên';
+    if (!participant.birthDate) errors.birthDate = 'Vui lòng nhập ngày sinh';
+    else if (participant.birthDate > today) errors.birthDate = 'Ngày sinh không hợp lệ';
+    if (!participant.citizenId) errors.citizenId = 'Vui lòng nhập CCCD';
+    if (!participant.gender) errors.gender = 'Vui lòng chọn giới tính';
+    if (!participant.relationship) errors.relationship = 'Vui lòng nhập quan hệ';
+    return errors;
+  };
+  // Validate realtime cho sample
+  const validateSample = (sample) => {
+    const errors = {};
+    if (!sample.participantCitizenId) errors.participantCitizenId = 'Chọn người tham gia';
+    if (!sample.sampleType) errors.sampleType = 'Chọn loại mẫu';
+    return errors;
+  };
+  // Validate realtime cho từng bước
+  const [participantErrors, setParticipantErrors] = useState([]);
+  const [sampleErrors, setSampleErrors] = useState([]);
+  useEffect(() => {
+    if (step === 3) {
+      setParticipantErrors(participants.map(validateParticipant));
+    }
+    if (step === 4) {
+      setSampleErrors(samples.map(validateSample));
+    }
+  }, [participants, samples, step]);
+
   return (
     <div>
       <header>
@@ -416,8 +448,10 @@ localStorage.setItem("sample", JSON.stringify(filteredSamples));
               className={`step ${stepNumber === step ? 'active' : stepNumber < step ? 'completed' : ''}`}
               data-step={stepNumber}
             >
-              <span className="step-number">{stepNumber}</span>.{' '}
-              {['Chọn loại hồ sơ', 'Thông tin dịch vụ', 'Người tham gia', 'Mẫu xét nghiệm', 'Xác nhận', 'Thanh toán'][stepNumber - 1]}
+              {stepNumber < step ? <CheckCircleOutlined style={{ color: '#52c41a', marginRight: 4 }} /> : null}
+              <Tooltip title={['Chọn loại hồ sơ', 'Thông tin dịch vụ', 'Người tham gia', 'Mẫu xét nghiệm', 'Xác nhận', 'Thanh toán'][stepNumber - 1]}>
+                {['Chọn loại hồ sơ', 'Thông tin dịch vụ', 'Người tham gia', 'Mẫu xét nghiệm', 'Xác nhận', 'Thanh toán'][stepNumber - 1]}
+              </Tooltip>
             </div>
           ))}
         </div>
@@ -426,19 +460,19 @@ localStorage.setItem("sample", JSON.stringify(filteredSamples));
         </div>
       </div>
       <div className="container">
-        <div className="form-container">
+        <div className="form-container improved-form-layout">
           {validateMessage && <div className="validate-message">{validateMessage}</div>}
           {step === 1 && (
             <div className="form-section">
-              <h2>1. Chọn loại hồ sơ</h2>
+              <h2>1. Chọn loại hồ sơ <Tooltip title="Chọn mục đích hồ sơ"><InfoCircleOutlined /></Tooltip></h2>
               <label>Loại hồ sơ:</label>
-              <select value={caseFile.caseType} onChange={handleInputChange}>
+              <select value={caseFile.caseType} onChange={handleInputChange} className="styled-select">
                 <option value="">-- Chọn loại hồ sơ --</option>
                 <option value="ADMINISTRATIVE">Hành chính</option>
                 <option value="CIVIL">Dân sự</option>
               </select>
               <div className="form-actions">
-                <button onClick={nextStep}>Tiếp theo</button>
+                <button className="btn-primary" onClick={nextStep} disabled={!caseFile.caseType}>Tiếp theo</button>
               </div>
             </div>
           )}
@@ -448,17 +482,19 @@ localStorage.setItem("sample", JSON.stringify(filteredSamples));
               <div className="row">
                 <div>
                   <label>Chọn dịch vụ:</label>
-                  <select value={appointment.serviceId} onChange={handleServiceChange}>
-                    <option value="">-- Chọn dịch vụ --</option>
-                    {service.map(service => (
-                      <option key={service.serviceId} value={service.serviceId}>{service.serviceName}</option>
-                    ))}
-                  </select>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <select value={appointment.serviceId} onChange={handleServiceChange} className="styled-select">
+                      <option value="">-- Chọn dịch vụ --</option>
+                      {service.map(service => (
+                        <option key={service.serviceId} value={service.serviceId}>{service.serviceName}</option>
+                      ))}
+                    </select>
+                    {loadingService && <Spin indicator={<LoadingOutlined spin />} style={{ marginLeft: 8 }} />}
+                  </div>
                 </div>
               </div>
-             
               <label>Hình thức lấy mẫu:</label>
-              <select value={appointment.deliveryMethod} onChange={handleDeliveryChange}>
+              <select value={appointment.deliveryMethod} onChange={handleDeliveryChange} className="styled-select">
                 <option value="">-- Chọn hình thức --</option>
                 <option value="SELF_DROP_OFF">Tại cơ sở</option>
                 <option
@@ -474,60 +510,64 @@ localStorage.setItem("sample", JSON.stringify(filteredSamples));
                   Nhân viên đến lấy tận nhà
                 </option>
               </select>
-                { appointment.deliveryMethod ==="SELF_DROP_OFF" && (
-                    <><label>Chọn ngày hẹn:</label>
-              <input type="date" value={appointment.appointmentDate} min={minDate} onChange={handleDateChange} />
-              <div className="grid grid-cols-2 gap-3">
-                {timeSlot.map((slot) => (
-                  <button
-                    key={slot.startTime}
-                    onClick={() => handleTimeChange(slot.startTime)}
-                    type="button"
-                    className={`border rounded-lg p-2 transition duration-200 text-center ${selectedTime === slot.startTime
-                      ? 'bg-blue-500 text-white font-semibold'
-                      : 'bg-white hover:bg-blue-100'
-                      }`}
-                  >
-                    {slot.startTime.substring(0, 5)} - {slot.endTime.substring(0, 5)}
-                  </button>
-                ))}
-              </div></>
-                          
-
-                )}
-             
+              { appointment.deliveryMethod ==="SELF_DROP_OFF" && (
+                <><label>Chọn ngày hẹn:</label>
+                <input type="date" value={appointment.appointmentDate} min={minDate} onChange={handleDateChange} className="styled-input" />
+                <div className="grid grid-cols-2 gap-3">
+                  {timeSlot.map((slot) => (
+                    <button
+                      key={slot.startTime}
+                      onClick={() => handleTimeChange(slot.startTime)}
+                      type="button"
+                      className={`border rounded-lg p-2 transition duration-200 text-center ${selectedTime === slot.startTime
+                        ? 'bg-blue-500 text-white font-semibold'
+                        : 'bg-white hover:bg-blue-100'
+                        }`}
+                    >
+                      {slot.startTime.substring(0, 5)} - {slot.endTime.substring(0, 5)}
+                    </button>
+                  ))}
+                </div></>
+              )}
               <div className="form-actions">
-                <button onClick={prevStep}>Quay lại</button>
-                <button onClick={nextStep}>Tiếp theo</button>
+                <button className="btn-secondary" onClick={prevStep}>Quay lại</button>
+                <button className="btn-primary" onClick={nextStep} disabled={!appointment.serviceId || !appointment.deliveryMethod}>Tiếp theo</button>
               </div>
             </div>
           )}
           {step === 3 && (
             <div className="form-section">
-              <h2>3. Người tham gia</h2>
+              <h2>3. Người tham gia <Tooltip title="Nhập thông tin từng người"><InfoCircleOutlined /></Tooltip></h2>
               <p>Vui lòng nhập thông tin cho <strong>{selectedService?.limitPeople}</strong> người tham gia.</p>
-
               {participants.map((participant, index) => (
                 <div key={index} className="participant">
                   <label>Họ tên:</label>
-                  <input type="text" name="name" placeholder="Nhập họ tên" value={participant.name} onChange={(e) => handleParticipantChange(index, e)} />
+                  <input type="text" name="name" placeholder="Nhập họ tên" value={participant.name} onChange={(e) => handleParticipantChange(index, e)} className="styled-input" />
+                  {participantErrors[index]?.name && <div className="input-error">{participantErrors[index].name}</div>}
                   <label>Ngày sinh:</label>
-                  <input type="date" name="birthDate" value={participant.birthDate} max={today} onChange={(e) => handleParticipantChange(index, e)} />
+                  <input type="date" name="birthDate" value={participant.birthDate} max={today} onChange={(e) => handleParticipantChange(index, e)} className="styled-input" />
+                  {participantErrors[index]?.birthDate && <div className="input-error">{participantErrors[index].birthDate}</div>}
                   <label>Căn cước công dân :</label>
-                  <input name="citizenId" value={participant.citizenId} onChange={(e) => handleParticipantChange(index, e)} />
+                  <input name="citizenId" value={participant.citizenId} onChange={(e) => handleParticipantChange(index, e)} className="styled-input" />
+                  {participantErrors[index]?.citizenId && <div className="input-error">{participantErrors[index].citizenId}</div>}
                   <label>Giới tính:</label>
-                  <select name="gender" value={participant.gender} onChange={(e) => handleParticipantChange(index, e)}>
+                  <select name="gender" value={participant.gender} onChange={(e) => handleParticipantChange(index, e)} className="styled-select">
                     <option value="">-- Chọn giới tính --</option>
                     <option value="MALE">Nam</option>
                     <option value="FEMALE">Nữ</option>
                     <option value="OTHER">Khác</option>
                   </select>
-                  <label>Quan hệ:</label>
-                  <input type="text" name="relationship" placeholder="Cha, con, mẹ..." value={participant.relationship} onChange={(e) => handleParticipantChange(index, e)} />
+                  {participantErrors[index]?.gender && <div className="input-error">{participantErrors[index].gender}</div>}
+                  <label>Quan hệ:
+                    <Tooltip title="Ví dụ: Cha, con, mẹ...">
+                      <InfoCircleOutlined style={{ marginLeft: 4 }} />
+                    </Tooltip>
+                  </label>
+                  <input type="text" name="relationship" placeholder="Cha, con, mẹ..." value={participant.relationship} onChange={(e) => handleParticipantChange(index, e)} className="styled-input" />
+                  {participantErrors[index]?.relationship && <div className="input-error">{participantErrors[index].relationship}</div>}
                   {index === participants.length - 1 && participants.length < selectedService?.limitPeople && (
-  <button className="btn-add" onClick={addParticipant}>+ Thêm người</button>
-)}
-
+                    <button className="btn-add" onClick={addParticipant}>+ Thêm người</button>
+                  )}
                   <button
                     className="btn-remove"
                     onClick={() => removeParticipant(index)}
@@ -539,8 +579,8 @@ localStorage.setItem("sample", JSON.stringify(filteredSamples));
                 </div>
               ))}
               <div className="form-actions">
-                <button onClick={prevStep}>Quay lại</button>
-                <button onClick={nextStep}>Tiếp theo</button>
+                <button className="btn-secondary" onClick={prevStep}>Quay lại</button>
+                <button className="btn-primary" onClick={nextStep} disabled={participantErrors.some(e => Object.keys(e).length > 0)}>Tiếp theo</button>
               </div>
             </div>
           )}
@@ -552,7 +592,7 @@ localStorage.setItem("sample", JSON.stringify(filteredSamples));
                   <strong>Lưu ý:</strong> Vui lòng đến cơ sở để lấy mẫu và đem đầy đủ giấy tờ cần thiết.
                 </div>
               )}
-              {appointment?.deliveryMethod === "HOME_DELIVERY" && (
+              {(appointment?.deliveryMethod === "HOME_DELIVERY"  || appointment?.deliveryMethod === "HOME_COLLECTION") && (
                 <div style={{ background: '#fff', padding: 16, borderRadius: 8, marginBottom: 16, boxShadow: '0 2px 8px #eee' }}>
                   <h3>Địa chỉ lấy mẫu tại nhà</h3>
                   <Form
@@ -569,7 +609,7 @@ localStorage.setItem("sample", JSON.stringify(filteredSamples));
                         <Select
                           showSearch
                           placeholder="Chọn tỉnh/thành phố"
-                          loading={addressLoading}
+                          loading={loadingAreas}
                           onChange={handleCityChange}
                           filterOption={(input, option) => (option?.children ?? '').toLowerCase().includes(input.toLowerCase())}
                         >
@@ -582,7 +622,7 @@ localStorage.setItem("sample", JSON.stringify(filteredSamples));
                         <Select
                           showSearch
                           placeholder="Chọn quận/huyện"
-                          loading={addressLoading}
+                          loading={loadingAreas}
                           disabled={!addressForm.getFieldValue('city')}
                           filterOption={(input, option) => (option?.children ?? '').toLowerCase().includes(input.toLowerCase())}
                         >
@@ -604,6 +644,7 @@ localStorage.setItem("sample", JSON.stringify(filteredSamples));
                       name="participantCitizenId"
                       value={sample.participantCitizenId}
                       onChange={(e) => handleSampleChange(index, e)}
+                      className="styled-select"
                     >
                       <option value="">-- Chọn người tham gia --</option>
                       {participants.map((p, idx) => (
@@ -612,6 +653,7 @@ localStorage.setItem("sample", JSON.stringify(filteredSamples));
                         </option>
                       ))}
                     </select>
+                    {sampleErrors[index]?.participantCitizenId && <div className="input-error">{sampleErrors[index].participantCitizenId}</div>}
                     {participant && (
                       <div
                         className="participant-details"
@@ -632,18 +674,20 @@ localStorage.setItem("sample", JSON.stringify(filteredSamples));
                       name="sampleType"
                       value={sample.sampleType || ''}
                       onChange={(e) => handleSampleChange(index, e)}
+                      className="styled-select"
                     >
                       <option value="">-- Chọn loại mẫu --</option>
                       <option value="BLOOD">Máu</option>
                       <option value="HAIR">Tóc</option>
                       <option value="SALIVA">Niêm mạc</option>
                     </select>
+                    {sampleErrors[index]?.sampleType && <div className="input-error">{sampleErrors[index].sampleType}</div>}
                   </div>
                 );
               })}
               <div className="form-actions">
-                <button onClick={prevStep}>Quay lại</button>
-                <button onClick={nextStep}>Tiếp theo</button>
+                <button className="btn-secondary" onClick={prevStep}>Quay lại</button>
+                <button className="btn-primary" onClick={nextStep} disabled={sampleErrors.some(e => Object.keys(e).length > 0)}>Tiếp theo</button>
               </div>
             </div>
           )}
@@ -659,8 +703,8 @@ localStorage.setItem("sample", JSON.stringify(filteredSamples));
                 <p><strong>Hình thức lấy mẫu:</strong> {appointment.deliveryMethod}</p>
               </div>
               <div className="form-actions">
-                <button onClick={prevStep}>Quay lại</button>
-                <button onClick={nextStep}>Tiếp theo</button>
+                <button className="btn-secondary" onClick={prevStep}>Quay lại</button>
+                <button className="btn-primary" onClick={nextStep}>Tiếp theo</button>
               </div>
             </div>
           )}
@@ -675,21 +719,54 @@ localStorage.setItem("sample", JSON.stringify(filteredSamples));
                 <p><strong>Tổng chi phí:</strong> <span className="price">{selectedService ? formatVND(selectedService.servicePrice) : ''}</span></p>
               </div>
               <label>Phương thức thanh toán:</label>
-              <select value={appointment.paymentMethod} onChange={handlePaymentMethodChange}>
+              <select value={appointment.paymentMethod} onChange={handlePaymentMethodChange} className="styled-select">
                 <option value="">-- Chọn phương thức --</option>
                 <option value="vnpay">VNPay</option>
-                <option value="momo">Momo</option>
-                <option value="bank">Chuyển khoản ngân hàng</option>
-                <option value="offline">Thanh toán tại cơ sở</option>
+               
               </select>
               <div className="form-actions" style={{ marginTop: '20px' }}>
-                <button onClick={prevStep}>Quay lại</button>
-                <button className="btn-primary" onClick={handleSubmit}>Xác nhận thanh toán</button>
+                <button className="btn-secondary" onClick={prevStep}>Quay lại</button>
+                <button className="btn-primary" onClick={handleSubmit} >Xác nhận thanh toán</button>
               </div>
             </div>
           )}
         </div>
       </div>
+      <style>{`
+        .step-nav { display: flex; justify-content: space-between; margin-bottom: 16px; }
+        .step { padding: 8px 16px; border-radius: 8px; background: #f0f2f5; margin-right: 8px; font-weight: 500; display: flex; align-items: center; transition: background 0.2s; }
+        .step.active { background: #1890ff; color: #fff; }
+        .step.completed { background: #52c41a; color: #fff; }
+        .progress-bar { height: 6px; background: #e6f7ff; border-radius: 3px; margin-bottom: 24px; }
+        .progress { height: 100%; background: #1890ff; border-radius: 3px; transition: width 0.3s; }
+        .btn-primary { background: #1890ff; color: #fff; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 600; margin-left: 8px; cursor: pointer; transition: background 0.2s; }
+        .btn-primary:disabled { background: #b3d8fd; cursor: not-allowed; }
+        .btn-secondary { background: #f0f2f5; color: #333; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; margin-right: 8px; }
+        .btn-add { background: #52c41a; color: #fff; border: none; padding: 6px 14px; border-radius: 6px; font-weight: 500; margin-top: 8px; cursor: pointer; }
+        .btn-remove { background: #e57373; color: #fff; border: none; padding: 6px 14px; border-radius: 6px; font-weight: 500; margin-top: 8px; cursor: pointer; }
+        .styled-input, .styled-select { border: 1px solid #d9d9d9; border-radius: 6px; padding: 8px 14px; margin-bottom: 8px; width: 100%; font-size: 15px; box-sizing: border-box; }
+        .styled-input:focus, .styled-select:focus { border-color: #1890ff; outline: none; }
+        .input-error { color: #e57373; font-size: 13px; margin-bottom: 4px; margin-top: -2px; }
+        .validate-message { color: #e57373; background: #fff3f3; border: 1px solid #ffeaea; border-radius: 6px; padding: 8px 12px; margin-bottom: 12px; }
+        .form-actions { display: flex; justify-content: flex-end; margin-top: 16px; gap: 8px; }
+        .form-container.improved-form-layout { max-width: 700px; margin: 0 auto; background: #fff; border-radius: 12px; box-shadow: 0 2px 16px #e6e6e6; padding: 32px 24px; }
+        .form-section { margin-bottom: 32px; }
+        .form-section label { display: block; font-weight: 500; margin-bottom: 4px; margin-top: 12px; }
+        .participant, .sample-info { display: flex; flex-wrap: wrap; gap: 16px; background: #f8fafd; border-radius: 8px; padding: 16px 12px; margin-bottom: 18px; box-shadow: 0 1px 4px #f0f0f0; }
+        .participant > label, .sample-info > label { flex-basis: 100%; margin-bottom: 0; }
+        .participant > input, .participant > select, .sample-info > select, .sample-info > input { flex: 1 1 220px; min-width: 180px; margin-bottom: 0; }
+        .participant-details { flex-basis: 100%; }
+        .confirmation-card, .summary { background: #f6f8fa; border-radius: 8px; padding: 18px 16px; margin-bottom: 18px; box-shadow: 0 1px 4px #f0f0f0; }
+        @media (max-width: 900px) {
+          .form-container.improved-form-layout { padding: 16px 4px; }
+        }
+        @media (max-width: 600px) {
+          .step-nav { flex-direction: column; }
+          .step { margin-bottom: 8px; margin-right: 0; }
+          .form-section { padding: 8px; }
+          .participant, .sample-info { flex-direction: column; gap: 8px; padding: 10px 4px; }
+        }
+      `}</style>
     </div>
   );
 }

@@ -1,13 +1,15 @@
-staff-appointments-container {
+/* === Layout Container === */
+.staff-appointments-container {
   max-width: 1200px;
   margin: 30px auto;
   padding: 24px;
-  background: #f8fcff;
+  background: #f8f9fa;
   border-radius: 12px;
   box-shadow: 0 0 12px rgba(0, 123, 255, 0.08);
   font-family: 'Segoe UI', sans-serif;
 }
 
+/* === Header === */
 .staff-appointments-container h2 {
   color: #0077b6;
   font-size: 24px;
@@ -15,6 +17,7 @@ staff-appointments-container {
   margin-bottom: 24px;
 }
 
+/* === Table Styles === */
 .staff-appointments-table-wrapper {
   overflow-x: auto;
   margin-top: 20px;
@@ -52,6 +55,7 @@ staff-appointments-container {
   background-color: #f0faff;
 }
 
+/* === Participant & Sample Info Boxes === */
 .staff-participant-info,
 .staff-sample-info {
   margin-top: 30px;
@@ -67,16 +71,34 @@ staff-appointments-container {
   margin-bottom: 16px;
 }
 
+/* === Form Inputs === */
 .participant-form input,
 .participant-form select,
-.participant-form textarea {
-  padding: 8px 10px;
-  margin: 4px;
-  border: 1px solid #a8dadc;
+.participant-form textarea,
+.staff-appointments-container input[type="text"],
+.staff-appointments-container input[type="date"],
+.staff-appointments-container input[type="datetime-local"],
+.staff-appointments-container select,
+.sample-create-form input,
+.sample-create-form select,
+.sample-create-form textarea,
+.sample-edit-form input,
+.sample-edit-form select {
+  padding: 8px;
   border-radius: 6px;
+  border: 1px solid #a8dadc;
+  background-color: #f1fcff;
   width: auto;
 }
 
+.staff-appointments-container input:focus,
+.staff-appointments-container select:focus {
+  outline: none;
+  border-color: #00b4d8;
+  background-color: #ffffff;
+}
+
+/* === Participant Row Form === */
 .participant-form .participant-row {
   display: flex;
   flex-wrap: wrap;
@@ -85,20 +107,27 @@ staff-appointments-container {
   align-items: center;
 }
 
-.participant-form button {
-  padding: 6px 10px;
-  background: #00b4d8;
-  color: white;
+/* === Form Buttons === */
+.participant-form button,
+.sample-create-form button,
+.sample-edit-form button {
+  padding: 8px 16px;
+  background: #0077b6;
+  color: #ffffff;
   border: none;
   border-radius: 6px;
+  font-weight: bold;
   cursor: pointer;
   transition: background 0.3s ease;
 }
 
-.participant-form button:hover {
-  background: #0077b6;
+.participant-form button:hover,
+.sample-create-form button:hover,
+.sample-edit-form button:hover {
+  background-color: #023e8a;
 }
 
+/* === Sample Forms === */
 .sample-create-form,
 .sample-edit-form {
   display: flex;
@@ -107,37 +136,7 @@ staff-appointments-container {
   margin-top: 20px;
 }
 
-.sample-create-form input,
-.sample-create-form select,
-.sample-create-form textarea,
-.sample-edit-form input,
-.sample-edit-form select {
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #90e0ef;
-  background-color: #ffffff;
-  width: 100%;
-}
-
-.sample-create-form button,
-.sample-edit-form button {
-  width: fit-content;
-  padding: 8px 16px;
-  margin-right: 8px;
-  border: none;
-  border-radius: 6px;
-  background-color: #0077b6;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.sample-create-form button:hover,
-.sample-edit-form button:hover {
-  background-color: #023e8a;
-}
-
+/* === Messages === */
 .success-msg {
   color: #2d6a4f;
   background-color: #d8f3dc;
@@ -154,21 +153,4 @@ staff-appointments-container {
   margin-top: 10px;
   border-left: 5px solid #d00000;
   border-radius: 6px;
-}
-
-.staff-appointments-container input[type="text"],
-.staff-appointments-container input[type="date"],
-.staff-appointments-container input[type="datetime-local"],
-.staff-appointments-container select {
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #ade8f4;
-  background-color: #f1fcff;
-}
-
-.staff-appointments-container input:focus,
-.staff-appointments-container select:focus {
-  outline: none;
-  border-color: #00b4d8;
-  background-color: #ffffff;
 }

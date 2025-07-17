@@ -1,12 +1,7 @@
 package com.example.Bloodline_ADN_System.service.impl;
 
-import com.example.Bloodline_ADN_System.Entity.CaseFile;
+import com.example.Bloodline_ADN_System.Entity.*;
 
-import com.example.Bloodline_ADN_System.Entity.Participant;
-import com.example.Bloodline_ADN_System.Entity.Result;
-import com.example.Bloodline_ADN_System.Entity.Sample;
-
-import com.example.Bloodline_ADN_System.Entity.Service;
 import com.example.Bloodline_ADN_System.dto.noneWhere.ParticipantResponeDTO;
 import com.example.Bloodline_ADN_System.dto.noneWhere.SampleDTO;
 import com.example.Bloodline_ADN_System.dto.TrackingAppoint.AppointmentResponseDTO;
@@ -14,6 +9,7 @@ import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentDTO;
 
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentResponse;
 import com.example.Bloodline_ADN_System.repository.AppointmentRepository;
+import com.example.Bloodline_ADN_System.repository.PaymentRepository;
 import com.example.Bloodline_ADN_System.repository.ResultRepository;
 import com.example.Bloodline_ADN_System.repository.ServiceRepository;
 
@@ -30,17 +26,18 @@ public class CustomerServiceImp implements CustomerService {
     private final ServiceImpl serviceimp;
     private final CaseFileServiceImpl caseFileService;
     private final ParticipantServiceImpl participantService;
-    private final ServiceImpl service_service;
+    private final PaymentRepository paymentRepository;
     private final SampleServiceImpl sampleService;
     private final ResultRepository resultRepository;
     
-    public CustomerServiceImp(AppointmentServiceImpl appointmentService, ServiceImpl serviceimp, CaseFileServiceImpl caseFileService, ParticipantServiceImpl participantService, ServiceImpl serviceService, SampleServiceImpl sampleService, ResultRepository resultRepository) {
+    public CustomerServiceImp(AppointmentServiceImpl appointmentService, ServiceImpl serviceimp, CaseFileServiceImpl caseFileService, ParticipantServiceImpl participantService, ServiceImpl serviceService, PaymentRepository paymentRepository, SampleServiceImpl sampleService, ResultRepository resultRepository) {
         this.appointmentService = appointmentService;
         this.serviceimp = serviceimp;
 
         this.caseFileService = caseFileService;
         this.participantService = participantService;
-        service_service = serviceService;
+        this.paymentRepository = paymentRepository;
+
         this.sampleService = sampleService;
         this.resultRepository = resultRepository;
     }
@@ -68,6 +65,9 @@ public class CustomerServiceImp implements CustomerService {
             dto.setCaseCode(caseCode);
             dto.setCaseType(caseType);
             dto.setStatusAppointment(String.valueOf(appointment.getAppointmentStatus()));
+
+            Payment pm = paymentRepository.findById(appointment.getAppointmentId()).orElse(null);
+            dto.setPayment(pm);
 
             // ===== Lấy kết quả xét nghiệm từ bảng Result =====
             Optional<Result> resultOptional = resultRepository.findByAppointment_AppointmentId(appointment.getAppointmentId());
