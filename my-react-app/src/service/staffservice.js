@@ -6,7 +6,13 @@ class StaffService extends BaseApiService {
         return this.get('/staff/appointment', { params });
     }
 
+    async getAppointmentById(appointmentId) {
+        return this.get(`/staff/appointment/${appointmentId}`); 
+    }
 
+    async getServiceById(serviceId) {
+        return this.get(`/staff/service/${serviceId}`);
+    }
     /**
      * Cập nhật trạng thái lịch hẹn và/hoặc trạng thái thu mẫu.
      * Nếu chỉ muốn cập nhật 1 trường, truyền trường còn lại là giá trị hiện tại.
@@ -60,6 +66,9 @@ class StaffService extends BaseApiService {
         return this.get(`/staff/export-pdf/${appointmentId}`, { responseType: 'blob' });//blob xử lí nhị phân
     }
 
+    async createPayment(appointmentId, paymentData) {
+        return this.post(`/staff/payment/${appointmentId}`, paymentData);
+    }
 }
 
 export default StaffService;

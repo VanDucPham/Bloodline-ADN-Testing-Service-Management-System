@@ -39,6 +39,7 @@ import CreateAppointment from './components/staffappointments/CreateAppointment'
 import PaymentResult from './components/htmltest/tracking_customer/tracking_user/PaymentResult';
 import DistanceCalculator from './components/DistanceCalculator';
 import AdminLayout from './components/dashboards/AdminLayout';
+import Payment from './components/staffappointments/Payment';
 
 function App() {
     return (
@@ -73,6 +74,7 @@ function App() {
                         <Route path="/admin-dashboard" element={<AdminLayout activeSection="admin" />} />
                         <Route path="/payment_return" element={<PaymentResult />} />
                         <Route path="/distance" element={<DistanceCalculator />} />
+                        <Route path="/payment/:appointmentId" element={<Payment />} />
                     </Route>
 
                     {/* Admin Routes */}

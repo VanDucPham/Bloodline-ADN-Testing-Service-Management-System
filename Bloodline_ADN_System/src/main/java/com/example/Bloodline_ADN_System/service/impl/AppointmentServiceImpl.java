@@ -380,6 +380,10 @@ public class AppointmentServiceImpl implements AppointmentService {
         appointmentRepository.save(appointment);
     }
 
+    public AppointmentDTO getAppointmentById(Long id) {
+        return toDTO(appointmentRepository.getAppointmentsByAppointmentId(id));
+    }
+
 
 
     public AppointmentDTO toDTO(Appointment appointment) {

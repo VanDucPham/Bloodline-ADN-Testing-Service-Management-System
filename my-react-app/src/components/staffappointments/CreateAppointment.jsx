@@ -109,12 +109,17 @@ function CreateAppointment() {
       return;
     }
     try {
-await apiService.staff.createAppointment({
+const response = await apiService.staff.createAppointment({
         appointment: form,
         caseFile: caseFile
       });
+      const appointmentId = response?.appointmentId || response?.data?.appointmentId;
+  if (!appointmentId) {
+    setError('Không lấy được mã lịch hẹn sau khi tạo!');
+    return;
+  }
             setSuccess('Đặt lịch thành công!');
-      setTimeout(() => navigate('/staff/appointments'), 1200);
+      setTimeout(() => navigate(`/payment/${appointmentId}`), 1200);
     } catch (err) {
       // Nếu backend trả về lỗi khung giờ đã đầy thì hiển thị đúng thông báo
       //GlobalExceptionHandler class này đã xử lí

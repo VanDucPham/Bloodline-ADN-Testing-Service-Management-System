@@ -24,7 +24,7 @@ public interface AppointmentService {
     @Transactional
     AppointmentResponse<AppointmentDTO> createAppointment(AppointmentRequest request);
 
-
+    AppointmentDTO getAppointmentById(Long id);
     boolean isUserIdExist(Long userId);
 
     List<AppointmentDTO> getAllAppointment();
