@@ -230,9 +230,12 @@ function AppointmentBooking() {
   };
 
   const handleSubmit = async () => {
-    const updateAppointment = {
-      ...appointment, userId: user?.user_Id
-    };
+   const updateAppointment = {
+  ...appointment,
+  userId: user?.user_Id,
+  appointmentDate: appointment.appointmentDate || null, // chuyển "" thành null
+  appointmentTime: appointment.appointmentTime || null
+};
     const updatedCaseFile = {
       ...caseFile,
       userId: user?.user_Id
@@ -241,7 +244,7 @@ function AppointmentBooking() {
     try {
       if (appointment.deliveryMethod === 'HOME_COLLECTION') {
         try {
-          const values = await addressForm.validateFields();
+          const values = await  addressForm.validateFields();
           // Gọi API kiểm tra khu vực hợp lệ
           const token = localStorage.getItem('authToken');
           const res = await fetch(`/api/areas/check?city=${encodeURIComponent(values.city)}&district=${encodeURIComponent(values.district)}`, {
