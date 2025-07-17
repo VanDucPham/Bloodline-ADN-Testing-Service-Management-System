@@ -1,4 +1,3 @@
-
 package com.example.Bloodline_ADN_System.service.impl;
 
 import com.example.Bloodline_ADN_System.Entity.*;
@@ -78,8 +77,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         // 2. Validate
         AppointmentDTO dto = request.getAppointment();
-//        validateAppointmentDate(dto.getAppointmentDate());
+        validateAppointmentDate(dto.getAppointmentDate(), dto.getDeliveryMethod());
         validateSlotAvailability(dto.getAppointmentDate(), dto.getAppointmentTime());
+
+
 
         User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
@@ -105,19 +106,39 @@ public class AppointmentServiceImpl implements AppointmentService {
         return new AppointmentResponse<>("Đặt lịch thành công", toDTO(saved));
     }
 
-    private void validateAppointmentDate(LocalDate date) {
-        LocalDate today = LocalDate.now();
-        if (!date.isAfter(today)) {
-            throw new IllegalArgumentException("Lịch hẹn phải được đặt trước ít nhất 1 ngày.");
+    private void validateAppointmentDate(LocalDate date, String deliveryMethod) {
+        // For home collection/delivery, date can be null
+        if (date == null && ("HOME_COLLECTION".equals(deliveryMethod) || "HOME_DELIVERY".equals(deliveryMethod))) {
+            return; // Skip validation for home collection/delivery without specific date
+        }
+        // For facility appointments or when date is provided, validate it
+        if (date != null) {
+            LocalDate today = LocalDate.now();
+            if (!date.isAfter(today)) {
+                throw new IllegalArgumentException("Lịch hẹn phải được đặt trước ít nhất 1 ngày.");
+            }
+        } else {
+            throw new IllegalArgumentException("Ngày hẹn không được để trống cho lịch hẹn tại cơ sở.");
         }
     }
 
     private void validateSlotAvailability(LocalDate date, LocalTime time) {
+        if (time == null || date == null) {
+            // Không có thời gian, không kiểm tra slot
+            return;
+        }
+
+        if (date == null) {
+            // Có thời gian nhưng không có ngày => lỗi
+            throw new IllegalArgumentException("Ngày hẹn không được để trống nếu có giờ hẹn.");
+        }
+
         int count = appointmentRepository.countByAppointmentDateAndAppointmentTime(date, time);
         if (count >= 5) {
             throw new IllegalArgumentException("Khung giờ đã đầy. Vui lòng chọn khung giờ khác.");
         }
     }
+
 
 
 
@@ -139,7 +160,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         // 2. Validate
         AppointmentDTO dto = request.getAppointment();
-        validateAppointmentDate(dto.getAppointmentDate());
+        validateAppointmentDate(dto.getAppointmentDate(), dto.getDeliveryMethod());
         validateSlotAvailability(dto.getAppointmentDate(), dto.getAppointmentTime());
 
         // --- Kiểm tra khu vực lấy mẫu tại nhà ---
@@ -170,7 +191,10 @@ public class AppointmentServiceImpl implements AppointmentService {
         appointment.setUser(user);
         appointment.setService(service);
         appointment.setType(dto.getAppointmentType());
-        appointment.setAppointmentDate(dto.getAppointmentDate());
+        if(dto.getAppointmentDate() != null) {
+            appointment.setAppointmentDate(dto.getAppointmentDate());
+        }
+
         appointment.setCollectionAddress(dto.getCollectionAddress());
         appointment.setAppointmentTime(dto.getAppointmentTime());
         appointment.setDeliveryMethod(Appointment.DeliveryMethod.valueOf(dto.getDeliveryMethod()));
