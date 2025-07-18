@@ -338,7 +338,7 @@ const AppointmentList = () => {
                       <tr><td>Trạng thái lấy mẫu tại nhà:</td><td>Nhân viên đang đến</td></tr>
                     )}
                     {selectedAppointment.delivery_method === "HOME_COLLECTION" && (
-                      <tr><td>Trạng thái kit:</td><td>Kit đã được đang được gửi đến</td></tr>
+                      <tr><td>Trạng thái kit:</td><td>Kit đã  đang được gửi đến</td></tr>
                     )}
                     <tr>
                       <td>Kết luận xét nghiệm</td>
@@ -396,7 +396,7 @@ const AppointmentList = () => {
                         <td>{p.relationship}</td>
                         <td>{p.sampleDTO?.sampleType || 'Chưa có'}</td>
                         <td>{p.sampleDTO?.status || 'Chưa thu thập'}</td>
-                        <td>chưa có kết quả</td>
+                        <td>{p.sampleDTO?.result || 'chưa có kết quả'}</td>
                         {(selectedAppointment.delivery_method ==="HOME_COLLECTION" && selectedAppointment.statusAppointment ==="SCHEDULED")&&(
                           <td>
                             <button
@@ -425,13 +425,17 @@ const AppointmentList = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {selectedAppointment.payment ? (
+                    {selectedAppointment.paymentDTO ? (
                       <tr>
-                        <td>{selectedAppointment.payment.id}</td>
-                        <td>{selectedAppointment.payment.amount}</td>
-                        <td>{selectedAppointment.payment.method}</td>
-                        <td>{selectedAppointment.payment.status}</td>
-                        <td>{selectedAppointment.payment.date}</td>
+                        <td>{selectedAppointment.paymentDTO.paymentID}</td>
+                        <td>
+  {selectedAppointment.paymentDTO.paymentAmount.toLocaleString('vi-VN')} ₫
+</td>
+
+
+                        <td>{selectedAppointment.paymentDTO.paymentMethod}</td>
+                        <td>{selectedAppointment.paymentDTO.paymentStatus}</td>
+                        <td>{selectedAppointment.paymentDTO.paymentDate}</td>
                       </tr>
                     ) : (
                       <tr><td colSpan="5">Chưa có thông tin thanh toán</td></tr>

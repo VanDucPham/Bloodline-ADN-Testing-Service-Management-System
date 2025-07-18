@@ -5,7 +5,7 @@
   box-shadow: 0 2px 16px rgba(0,0,0,0.10);
   padding: 0 0 32px 0;
   margin: 32px auto 40px auto;
-  max-width: 900px;
+  max-width: none;
   min-width: 320px;
   border: 1px solid #e6e6e6;
   overflow: hidden;

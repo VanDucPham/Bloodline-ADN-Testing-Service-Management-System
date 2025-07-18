@@ -69,6 +69,8 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     Double sumAmountByServiceAndDateRange(@Param("serviceId") Long serviceId, 
                                         @Param("startDate") LocalDateTime startDate, 
                                         @Param("endDate") LocalDateTime endDate);
-    
+
+    @Query("SELECT p FROM Payment p WHERE p.appointment.appointmentId = :appointmentId")
+    Payment findPaymentByAppointmentId(@Param("appointmentId") Long appointmentId);
     // Thống kê doanh thu theo ngày
 } 

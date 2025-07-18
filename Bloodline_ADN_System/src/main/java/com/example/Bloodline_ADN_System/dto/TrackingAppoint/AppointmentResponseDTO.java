@@ -1,6 +1,6 @@
 package com.example.Bloodline_ADN_System.dto.TrackingAppoint;
 
-import com.example.Bloodline_ADN_System.Entity.Payment;
+import com.example.Bloodline_ADN_System.dto.PaymentDTO;
 import com.example.Bloodline_ADN_System.dto.noneWhere.ParticipantResponeDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,5 +28,5 @@ public class AppointmentResponseDTO {
     private String kit_status ;
     private String result; // Thêm trường result để lưu kết quả xét nghiệm
     List<ParticipantResponeDTO> participantResponseDTOS ;
-    Payment Payment ;
+    paymentDTO paymentDTO ;
 }

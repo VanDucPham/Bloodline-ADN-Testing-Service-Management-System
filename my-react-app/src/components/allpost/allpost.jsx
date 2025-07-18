@@ -6,6 +6,7 @@ import "./allpost.css";
 
 import Footer from "../Footer.jsx";
 import apiService from "../../service/api";
+import heroBg from "../../images/backgroup-2-scaled.jpg";
 
 
 
@@ -134,7 +135,7 @@ export default function AllPost() {
           height: "48vh",
           width: "100vw",
           marginLeft: "calc(-50vw + 50%)",
-          backgroundImage: "linear-gradient(rgba(0, 32, 96, 0.55), rgba(0, 32, 96, 0.55)), url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80')",
+          backgroundImage: `linear-gradient(rgba(0, 32, 96, 0.55), rgba(21, 83, 207, 0.55)), url(${heroBg})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           display: "flex",
@@ -147,7 +148,7 @@ export default function AllPost() {
         <div style={{
           maxWidth: "1280px",
           width: "100%",
-          color: "#ffffff",
+          color: "#ce4d4dff",
           textAlign: "center"
         }}>
           <h2 style={{
