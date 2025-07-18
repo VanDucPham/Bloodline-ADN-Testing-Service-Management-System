@@ -1,8 +1,7 @@
 package com.example.Bloodline_ADN_System.dto.TrackingAppoint;
 
-import com.example.Bloodline_ADN_System.Entity.Payment;
-import com.example.Bloodline_ADN_System.dto.ParticipantResponeDTO;
-import com.example.Bloodline_ADN_System.dto.SampleDTO;
+import com.example.Bloodline_ADN_System.dto.PaymentDTO;
+import com.example.Bloodline_ADN_System.dto.noneWhere.ParticipantResponeDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,6 +15,8 @@ import java.util.List;
 @NoArgsConstructor
 public class AppointmentResponseDTO {
     private String appointmentId;
+    private Long serviceId; // Thêm trường serviceId để frontend có thể sử dụng cho feedback
+    private Long userId; // Thêm trường userId để frontend có thể sử dụng cho feedback
     private String CaseCode ;
     private String ServiceName ;
     private String CaseType ;
@@ -25,8 +26,7 @@ public class AppointmentResponseDTO {
     private  String delivery_method ;
     private String collection_Status ;
     private String kit_status ;
+    private String result; // Thêm trường result để lưu kết quả xét nghiệm
     List<ParticipantResponeDTO> participantResponseDTOS ;
-    Payment Payment ;
-
-
+    paymentDTO paymentDTO ;
 }

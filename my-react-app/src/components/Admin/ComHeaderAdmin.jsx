@@ -1,15 +1,14 @@
 import React, { useState } from "react";
-import { Layout, Menu, Avatar, Dropdown, Modal } from "antd";
+import { Layout, Menu } from "antd";
 import {
    DashboardOutlined,
   UserOutlined,
   SettingOutlined,
-  LogoutOutlined,
   MessageOutlined,
   AppstoreAddOutlined,
   CalendarOutlined,
   FileTextOutlined,
-  MenuFoldOutlined 
+  EnvironmentOutlined, // Thêm icon bản đồ
 } from "@ant-design/icons";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import logo from "../../images/logo.jpg";
@@ -22,55 +21,21 @@ const ComHeaderAdmin = () => {
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
 
-  // Lấy tên admin động từ localStorage
-  const user = JSON.parse(localStorage.getItem("userInfo") || "{}");
-  const userName = user?.fullName || "Admin";
-
-
 const menuItems = [
-      { key: "/admin/dashboard", icon: <DashboardOutlined />, label: "Dashboard" },
+      { key: "/admin", icon: <DashboardOutlined />, label: "Dashboard" },
     { key: "/admin/accounts", icon: <UserOutlined />, label: "Tài khoản" },
     { key: "/admin/services", icon: <AppstoreAddOutlined />, label: "Dịch vụ" },
     { key: "/admin/schedules", icon: <CalendarOutlined />, label: "Lịch làm việc" },
+    { key: "/admin/areas", icon: <EnvironmentOutlined />, label: "Quản lý khu vực" }, // Thêm dòng này
     { key: "/admin/feedbacks", icon: <MessageOutlined />, label: "Phản hồi" },
     { key: "/admin/blogs", icon: <FileTextOutlined />, label: "Blog" },
     { key: "/admin/settings", icon: <SettingOutlined />, label: "Cài đặt" },
 ];
 
 
-  const handleUserMenu = (key) => {
-    switch (key) {
-      case "logout":
-        Modal.confirm({
-          title: "Xác nhận đăng xuất",
-          content: "Bạn có chắc chắn muốn đăng xuất?",
-          okText: "Đăng xuất",
-          cancelText: "Hủy",
-          onOk: () => {
-            localStorage.clear();
-            navigate("/login");
-          },
-        });
-        break;
-      case "profile":
-        navigate("/admin/profile");
-        break;
-      case "password":
-        navigate("/admin/change-password");
-        break;
-      default:
-        break;
-    }
-  };
 
-  const userMenu = (
-    <Menu onClick={({ key }) => handleUserMenu(key)}>
-      <Menu.Item key="profile" icon={<UserOutlined />}>Hồ sơ</Menu.Item>
-      <Menu.Item key="password" icon={<SettingOutlined />}>Mật khẩu</Menu.Item>
-      <Menu.Divider />
-      <Menu.Item key="logout" icon={<LogoutOutlined />}>Đăng xuất</Menu.Item>
-    </Menu>
-  );
+
+
 
   return (
     <Layout style={{ minHeight: "100vh" ,width: "100vw" }}>

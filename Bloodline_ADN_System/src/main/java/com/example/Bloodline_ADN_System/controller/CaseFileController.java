@@ -1,13 +1,12 @@
 package com.example.Bloodline_ADN_System.controller;
 
-import com.example.Bloodline_ADN_System.dto.SampleDTO;
+import com.example.Bloodline_ADN_System.dto.noneWhere.SampleDTO;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentDTO;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentResponse;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.ParticipantDTO;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.SampleCustomerDTO;
 import com.example.Bloodline_ADN_System.service.AppointmentService;
 import com.example.Bloodline_ADN_System.service.ParticipantService;
-import com.example.Bloodline_ADN_System.service.SampleService;
 import com.example.Bloodline_ADN_System.service.impl.SampleServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

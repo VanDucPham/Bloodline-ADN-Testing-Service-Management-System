@@ -1,89 +1,85 @@
 // src/pages/FeedbackManagement.jsx
-import { Table, Card, Rate, Tag, Space, Button, Modal, Statistic, Row, Col, Progress, Tooltip } from 'antd';
-import { useState, useMemo } from 'react';
-import { EyeOutlined, StarFilled } from '@ant-design/icons';
+import { Table, Card, Rate, Tag, Space, Button, Modal, Statistic, Row, Col, Progress, Tooltip, message } from 'antd';
+import { useState, useEffect } from 'react';
+import { EyeOutlined, StarFilled, DeleteOutlined } from '@ant-design/icons';
+import apiService from '../../service/api';
 
 function FeedbackManagement() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedFeedback, setSelectedFeedback] = useState(null);
+  const [feedbackData, setFeedbackData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    totalFeedbacks: 0,
+    averageRating: 0,
+    ratingDistribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
+  });
 
-  // Sample data - replace with actual API data
-  const feedbackData = [
-    {
-      id: 1,
-      caseId: 'CASE001',
-      rating: 5,
-      comment: 'Dịch vụ rất tốt, nhân viên nhiệt tình',
-      staffName: 'Nguyễn Văn A',
-      date: '2024-03-15',
-      status: 'active',
-    },
-    {
-      id: 2,
-      caseId: 'CASE002',
-      rating: 4,
-      comment: 'Kết quả nhanh chóng, đúng hẹn',
-      staffName: 'Trần Thị B',
-      date: '2024-03-14',
-      status: 'active',
-    },
-    {
-      id: 3,
-      caseId: 'CASE003',
-      rating: 5,
-      comment: 'Rất hài lòng với dịch vụ',
-      staffName: 'Nguyễn Văn A',
-      date: '2024-03-13',
-      status: 'active',
-    },
-    {
-      id: 4,
-      caseId: 'CASE004',
-      rating: 3,
-      comment: 'Cần cải thiện thời gian trả kết quả',
-      staffName: 'Trần Thị B',
-      date: '2024-03-12',
-      status: 'inactive',
-    },
-    {
-      id: 5,
-      caseId: 'CASE005',
-      rating: 2,
-      comment: 'Nhân viên tư vấn chưa nhiệt tình',
-      staffName: 'Nguyễn Văn A',
-      date: '2024-03-10',
-      status: 'active',
-    },
-    {
-      id: 6,
-      caseId: 'CASE006',
-      rating: 1,
-      comment: 'Không hài lòng với dịch vụ',
-      staffName: 'Trần Thị B',
-      date: '2024-03-09',
-      status: 'inactive',
-    },
-  ];
+  // Fetch data từ backend
+  useEffect(() => {
+    fetchFeedbackData();
+  }, []);
 
-  // Thống kê số lượng feedback theo số sao
-  const ratingStats = useMemo(() => {
-    const stats = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
-    feedbackData.forEach(fb => {
-      if (stats[fb.rating] !== undefined) stats[fb.rating]++;
+  const fetchFeedbackData = async () => {
+    try {
+      setLoading(true);
+      
+      // Lấy tất cả feedback
+      const feedbacksResponse = await apiService.feedback.getAllFeedback();
+      setFeedbackData(feedbacksResponse);
+      
+      // Lấy thống kê
+      const statsResponse = await apiService.feedback.getFeedbackStats();
+      setStats(statsResponse);
+      
+    } catch (error) {
+      console.error('Lỗi khi lấy dữ liệu feedback:', error);
+      message.error('Không thể tải dữ liệu feedback');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Xóa feedback
+  const handleDeleteFeedback = async (feedbackId) => {
+    try {
+      await apiService.feedback.deleteFeedback(feedbackId);
+      message.success('Đã xóa feedback thành công');
+      fetchFeedbackData(); // Refresh lại data
+    } catch (error) {
+      console.error('Lỗi khi xóa feedback:', error);
+      message.error('Không thể xóa feedback');
+    }
+  };
+
+  // Format date
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('vi-VN', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
     });
-    return stats;
-  }, [feedbackData]);
-
-  const total = feedbackData.length;
-  const avgRating = total
-    ? (feedbackData.reduce((sum, fb) => sum + fb.rating, 0) / total).toFixed(2)
-    : 0;
+  };
 
   const columns = [
     {
-      title: 'ID Hồ sơ',
-      dataIndex: 'caseId',
-      key: 'caseId',
+      title: 'ID Feedback',
+      dataIndex: 'feedbackId',
+      key: 'feedbackId',
+      width: 120,
+    },
+    {
+      title: 'ID Lịch hẹn',
+      dataIndex: 'appointmentId',
+      key: 'appointmentId',
+      width: 120,
+    },
+    {
+      title: 'ID Dịch vụ',
+      dataIndex: 'serviceId',
+      key: 'serviceId',
       width: 120,
     },
     {
@@ -94,41 +90,44 @@ function FeedbackManagement() {
       render: (rating) => <Rate disabled defaultValue={rating} />,
     },
     {
-      title: 'Nhân viên',
-      dataIndex: 'staffName',
-      key: 'staffName',
-      width: 150,
+      title: 'Nội dung',
+      dataIndex: 'feedbackText',
+      key: 'feedbackText',
+      width: 200,
+      render: (text) => (
+        <div style={{ maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {text}
+        </div>
+      ),
     },
     {
       title: 'Ngày đánh giá',
-      dataIndex: 'date',
-      key: 'date',
+      dataIndex: 'feedbackDate',
+      key: 'feedbackDate',
       width: 150,
-    },
-    {
-      title: 'Trạng thái',
-      dataIndex: 'status',
-      key: 'status',
-      width: 120,
-      render: (status) => (
-        <Tag color={status === 'active' ? 'green' : 'red'}>
-          {status === 'active' ? 'Hiển thị' : 'Ẩn'}
-        </Tag>
-      ),
+      render: (date) => formatDate(date),
     },
     {
       title: 'Thao tác',
       key: 'action',
-      width: 100,
+      width: 120,
       render: (_, record) => (
-        <Button
-          type="text"
-          icon={<EyeOutlined />}
-          onClick={() => {
-            setSelectedFeedback(record);
-            setIsModalVisible(true);
-          }}
-        />
+        <Space>
+          <Button
+            type="text"
+            icon={<EyeOutlined />}
+            onClick={() => {
+              setSelectedFeedback(record);
+              setIsModalVisible(true);
+            }}
+          />
+          <Button
+            type="text"
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => handleDeleteFeedback(record.feedbackId)}
+          />
+        </Space>
       ),
     },
   ];
@@ -136,13 +135,14 @@ function FeedbackManagement() {
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-6">Quản lý Feedback</h1>
+      
       {/* Thống kê tổng quan */}
       <Row gutter={16} className="mb-6">
         <Col span={6}>
           <Card>
             <Statistic
               title="Tổng số feedback"
-              value={total}
+              value={stats.totalFeedbacks}
               valueStyle={{ color: '#1890ff' }}
             />
           </Card>
@@ -151,7 +151,7 @@ function FeedbackManagement() {
           <Card>
             <Statistic
               title="Điểm trung bình"
-              value={avgRating}
+              value={stats.averageRating}
               precision={2}
               prefix={<StarFilled style={{ color: '#fadb14' }} />}
             />
@@ -162,20 +162,20 @@ function FeedbackManagement() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               {[5, 4, 3, 2, 1].map(star => (
                 <div key={star} style={{ textAlign: 'center', width: '18%' }}>
-                  <Tooltip title={`${ratingStats[star]} đánh giá`}>
+                  <Tooltip title={`${stats.ratingDistribution[star] || 0} đánh giá`}>
                     <div style={{ fontWeight: 500 }}>
                       <Rate disabled count={1} value={1} style={{ color: '#faad14' }} />
                       <span style={{ marginLeft: 4 }}>{star} sao</span>
                     </div>
                     <Progress
-                      percent={total ? (ratingStats[star] / total) * 100 : 0}
+                      percent={stats.totalFeedbacks ? ((stats.ratingDistribution[star] || 0) / stats.totalFeedbacks) * 100 : 0}
                       showInfo={false}
                       strokeColor="#faad14"
-                      strokeWidth={12}
+                      size={12}
                       style={{ marginTop: 6 }}
                     />
                     <div style={{ fontSize: 13, color: '#555', marginTop: 2 }}>
-                      {ratingStats[star]} đánh giá
+                      {stats.ratingDistribution[star] || 0} đánh giá
                     </div>
                   </Tooltip>
                 </div>
@@ -184,13 +184,15 @@ function FeedbackManagement() {
           </Card>
         </Col>
       </Row>
+      
       {/* Bảng danh sách feedback */}
       <Card>
         <Table
           columns={columns}
           dataSource={feedbackData}
-          rowKey="id"
-          pagination={{ pageSize: 6 }}
+          rowKey="feedbackId"
+          pagination={{ pageSize: 10 }}
+          loading={loading}
         />
       </Card>
 
@@ -207,24 +209,34 @@ function FeedbackManagement() {
         {selectedFeedback && (
           <div className="space-y-4">
             <div>
-              <h3 className="font-semibold">ID Hồ sơ:</h3>
-              <p>{selectedFeedback.caseId}</p>
+              <h3 className="font-semibold">ID Feedback:</h3>
+              <p>{selectedFeedback.feedbackId}</p>
+            </div>
+            <div>
+              <h3 className="font-semibold">ID Lịch hẹn:</h3>
+              <p>{selectedFeedback.appointmentId}</p>
+            </div>
+            <div>
+              <h3 className="font-semibold">ID Dịch vụ:</h3>
+              <p>{selectedFeedback.serviceId}</p>
+            </div>
+            <div>
+              <h3 className="font-semibold">ID Người dùng:</h3>
+              <p>{selectedFeedback.userId}</p>
             </div>
             <div>
               <h3 className="font-semibold">Đánh giá:</h3>
               <Rate disabled defaultValue={selectedFeedback.rating} />
             </div>
             <div>
-              <h3 className="font-semibold">Nhân viên:</h3>
-              <p>{selectedFeedback.staffName}</p>
-            </div>
-            <div>
               <h3 className="font-semibold">Ngày đánh giá:</h3>
-              <p>{selectedFeedback.date}</p>
+              <p>{formatDate(selectedFeedback.feedbackDate)}</p>
             </div>
             <div>
               <h3 className="font-semibold">Nội dung đánh giá:</h3>
-              <p className="mt-2">{selectedFeedback.comment}</p>
+              <p className="mt-2" style={{ whiteSpace: 'pre-wrap' }}>
+                {selectedFeedback.feedbackText}
+              </p>
             </div>
           </div>
         )}

@@ -1,8 +1,8 @@
 package com.example.Bloodline_ADN_System.service;
 
 import com.example.Bloodline_ADN_System.Entity.User;
-import com.example.Bloodline_ADN_System.dto.ChangePasswordDTO;
-import com.example.Bloodline_ADN_System.dto.UserUpdateDTO;
+import com.example.Bloodline_ADN_System.dto.noneWhere.ChangePasswordDTO;
+import com.example.Bloodline_ADN_System.dto.noneWhere.UserUpdateDTO;
 
 import java.security.Principal;
 import java.util.Optional;

@@ -58,6 +58,14 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     @Query("SELECT a.caseFile.caseId FROM Appointment a WHERE a.appointmentId = :appointmentId")
     Long findCaseIdByAppointmentId(@Param("appointmentId") Long appointmentId);
 
+
+    @Query("SELECT a FROM Appointment a " +
+            "LEFT JOIN FETCH a.caseFile " +
+            "LEFT JOIN FETCH a.user " +
+            "LEFT JOIN FETCH a.assignedStaff " +
+            "WHERE FUNCTION('DATE_FORMAT', a.appointmentDate, '%Y-%m') = :year_month")
+    List<Appointment> findByMonth(@Param("year_month") String yearMonth);
+
     Optional<Appointment> findByCaseFile_CaseCode(String caseCode);
 
     @EntityGraph(attributePaths = {
@@ -68,5 +76,9 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
             "result"
     })
     List<Appointment> findAll();
+
+    // Đếm số lượng appointment theo service ID
+    long countByService_ServiceId(Long serviceId);
+
 
 }

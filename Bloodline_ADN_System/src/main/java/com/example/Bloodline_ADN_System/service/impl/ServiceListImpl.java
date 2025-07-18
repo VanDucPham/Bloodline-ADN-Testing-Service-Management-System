@@ -2,8 +2,11 @@ package com.example.Bloodline_ADN_System.service.impl;
 
 import com.example.Bloodline_ADN_System.Entity.Service;
 import com.example.Bloodline_ADN_System.dto.ManagerService.ServiceManagerDTO;
-import com.example.Bloodline_ADN_System.dto.ServiceDTO;
+import com.example.Bloodline_ADN_System.dto.noneWhere.ServiceDTO;
 import com.example.Bloodline_ADN_System.repository.ServiceRepository;
+import com.example.Bloodline_ADN_System.repository.AppointmentRepository;
+import com.example.Bloodline_ADN_System.repository.FeedbackRepository;
+import com.example.Bloodline_ADN_System.repository.CaseFileRepository;
 import com.example.Bloodline_ADN_System.service.ServiceList;
 
 import java.util.List;
@@ -13,9 +16,18 @@ import java.util.stream.Collectors;
 public class ServiceListImpl implements ServiceList {
 
     private final ServiceRepository serviceRepository;
+    private final AppointmentRepository appointmentRepository;
+    private final FeedbackRepository feedbackRepository;
+    private final CaseFileRepository caseFileRepository;
 
-    public ServiceListImpl(ServiceRepository serviceRepository) {
+    public ServiceListImpl(ServiceRepository serviceRepository, 
+                         AppointmentRepository appointmentRepository,
+                         FeedbackRepository feedbackRepository,
+                         CaseFileRepository caseFileRepository) {
         this.serviceRepository = serviceRepository;
+        this.appointmentRepository = appointmentRepository;
+        this.feedbackRepository = feedbackRepository;
+        this.caseFileRepository = caseFileRepository;
     }
 
     public List<ServiceManagerDTO> getAllServices() {
@@ -47,7 +59,30 @@ public class ServiceListImpl implements ServiceList {
     }
 
     public void deleteService(Long id) {
-        serviceRepository.findById(id).orElseThrow(() -> new RuntimeException("Dịch vụ không tồn tại"));
+        // Kiểm tra service có tồn tại không
+        Service service = serviceRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Dịch vụ không tồn tại"));
+        
+        // Kiểm tra xem service có đang được sử dụng không
+        long appointmentCount = appointmentRepository.countByService_ServiceId(id);
+        long feedbackCount = feedbackRepository.countByService_ServiceId(id);
+        long caseFileCount = caseFileRepository.countByService_ServiceId(id);
+        
+        if (appointmentCount > 0 || feedbackCount > 0 || caseFileCount > 0) {
+            StringBuilder errorMessage = new StringBuilder("Không thể xóa dịch vụ này vì đang được sử dụng: ");
+            if (appointmentCount > 0) {
+                errorMessage.append("Có ").append(appointmentCount).append(" lịch hẹn, ");
+            }
+            if (feedbackCount > 0) {
+                errorMessage.append("Có ").append(feedbackCount).append(" đánh giá, ");
+            }
+            if (caseFileCount > 0) {
+                errorMessage.append("Có ").append(caseFileCount).append(" hồ sơ, ");
+            }
+            errorMessage.setLength(errorMessage.length() - 2); // Xóa dấu phẩy cuối
+            throw new RuntimeException(errorMessage.toString());
+        }
+        
         serviceRepository.deleteById(id);
     }
 

@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Table, Button, Modal, Form, Input, Space, Popconfirm, message, Tooltip, Select, Tag, Upload, Image } from "antd";
 import { PlusOutlined, UploadOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import apiService from '../../service/api';
 import "./BlogManager.css";
+
+
 
 const BLOG_TYPES = [
   { value: "NEWS", label: "Tin tức" },
@@ -26,6 +28,10 @@ const typeColor = {
 };
 
 const BlogManager = () => {
+
+  
+
+  
   const [blogs, setBlogs] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingBlog, setEditingBlog] = useState(null);
@@ -44,7 +50,7 @@ const BlogManager = () => {
   const [archivedEditModal, setArchivedEditModal] = useState({ visible: false, record: null, action: null });
 
   // Lấy danh sách blog từ BE
-  const fetchBlogs = async () => {
+  const fetchBlogs = useCallback(async () => {
     setLoading(true);
     try {
       setError("");
@@ -60,9 +66,9 @@ const BlogManager = () => {
       setError(e?.response?.data?.message || "Lỗi tải danh sách blog");
     }
     setLoading(false);
-  };
+  }, [page, size, statusFilter, typeFilter]);
 
-  useEffect(() => { fetchBlogs(); }, [page, size, statusFilter, typeFilter]);
+  useEffect(() => { fetchBlogs(); }, [fetchBlogs]);
 
   // Mở modal tạo mới hoặc chỉnh sửa
   const openModal = (blog = null) => {
@@ -88,7 +94,7 @@ const BlogManager = () => {
     form.resetFields();
     setUploadingImage([]);
   };
-
+  
   // Lưu bài viết (thêm mới hoặc cập nhật)
   const handleSave = async () => {
     setSaveLoading(true);
@@ -126,7 +132,8 @@ const BlogManager = () => {
         } catch (e) {
           console.error('Lỗi tạo blog:', e, payload);
           message.error(e?.response?.data?.message || "Lỗi lưu bài viết (API)");
-          throw e;
+          // Không throw e nữa vì đã được catch ở ngoài
+          return; // Thoát khỏi function để tránh thực hiện code tiếp theo
         }
       }
       await fetchBlogs(); // Đảm bảo fetch xong mới đóng modal
@@ -169,10 +176,13 @@ const BlogManager = () => {
   // Xử lý upload ảnh thực tế lên server
   const handleImageUpload = async ({ file }) => {
     try {
-      const res = await apiService.uploadBlogImage(file);
-      const url = res.data.url;
-      setUploadingImage([{ url, name: file.name }]);
-      message.success('Upload ảnh thành công!');
+     const res = await apiService.admin.uploadImage(file);
+const url = res.data?.url || res.url; // đảm bảo lấy đúng field
+console.log("Uploaded image URL:", url);
+
+setUploadingImage([{ url, name: file.name }]);
+message.success('Upload ảnh thành công!');
+
     } catch (e) {
       message.error(e?.response?.data?.message || 'Lỗi upload ảnh');
     }

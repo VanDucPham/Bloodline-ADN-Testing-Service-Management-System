@@ -3,7 +3,7 @@ package com.example.Bloodline_ADN_System.service.impl;
 import com.example.Bloodline_ADN_System.Entity.Appointment;
 import com.example.Bloodline_ADN_System.Entity.Participant;
 import com.example.Bloodline_ADN_System.Entity.Sample;
-import com.example.Bloodline_ADN_System.dto.ParticipantResponeDTO;
+import com.example.Bloodline_ADN_System.dto.noneWhere.ParticipantResponeDTO;
 import com.example.Bloodline_ADN_System.dto.TrackingAppoint.UpdateParticipant;
 import com.example.Bloodline_ADN_System.dto.TrackingAppoint.UpdateSample;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.ParticipantDTO;
@@ -11,7 +11,6 @@ import com.example.Bloodline_ADN_System.repository.AppointmentRepository;
 import com.example.Bloodline_ADN_System.repository.ParticipantRepository;
 import com.example.Bloodline_ADN_System.repository.SampleRepository;
 import com.example.Bloodline_ADN_System.service.ParticipantService;
-import com.example.Bloodline_ADN_System.service.SampleService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

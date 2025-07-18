@@ -2,52 +2,72 @@ package com.example.Bloodline_ADN_System.payment;
 
 import org.springframework.stereotype.Service;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
 public class VNPayService {
 
-    public String createPaymentUrl(PaymentRequest request, String ipAddress) {
+    public String createPaymentUrl(PaymentRequest req, String ip) {
         try {
             Map<String, String> vnp_Params = new HashMap<>();
             vnp_Params.put("vnp_Version", VNPayConfig.vnp_Version);
-            vnp_Params.put("vnp_Command", VNPayConfig.vnp_Command_Pay);
+            vnp_Params.put("vnp_Command", VNPayConfig.vnp_Command);
             vnp_Params.put("vnp_TmnCode", VNPayConfig.vnp_TmnCode);
-            vnp_Params.put("vnp_Amount", String.valueOf(request.getAmount() * 100));
+            vnp_Params.put("vnp_Amount", String.valueOf(req.getAmount() * 100));
+            if (req.getBankCode() != null && !req.getBankCode().isEmpty()) {
+                vnp_Params.put("vnp_BankCode", req.getBankCode());
+            }
             vnp_Params.put("vnp_CurrCode", "VND");
-            vnp_Params.put("vnp_TxnRef", request.getTxnRef());
-            vnp_Params.put("vnp_OrderInfo", request.getOrderInfo());
+
+
+
+            vnp_Params.put("vnp_TxnRef", req.getTxnRef());
+            vnp_Params.put("vnp_OrderInfo", req.getOrderInfo());
             vnp_Params.put("vnp_OrderType", "other");
-            vnp_Params.put("vnp_Locale", "vn");
+            vnp_Params.put("vnp_Locale", (req.getLanguage() != null && !req.getLanguage().isEmpty()) ? req.getLanguage() : "vn");
             vnp_Params.put("vnp_ReturnUrl", VNPayConfig.vnp_ReturnUrl);
-            vnp_Params.put("vnp_IpAddr", ipAddress);
-            vnp_Params.put("vnp_CreateDate", new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
+            vnp_Params.put("vnp_IpAddr", ip);
 
-            Map<String, String> sortedParams = new TreeMap<>(vnp_Params);
-            StringBuilder hashData = new StringBuilder();
-            StringBuilder query = new StringBuilder();
+            // Format date
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+            formatter.setTimeZone(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
+            Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
 
-            for (Map.Entry<String, String> entry : sortedParams.entrySet()) {
-                String key = entry.getKey();
-                String value = entry.getValue();
+            String vnp_CreateDate = formatter.format(cld.getTime());
+            vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
 
-                hashData.append(key).append('=').append(value).append('&');
-                query.append(URLEncoder.encode(key, StandardCharsets.UTF_8.toString()))
-                        .append('=')
-                        .append(URLEncoder.encode(value, StandardCharsets.UTF_8.toString()))
-                        .append('&');
+            cld.add(Calendar.MINUTE, 15);
+            String vnp_ExpireDate = formatter.format(cld.getTime());
+            vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
+
+            // ✅ KHÔNG thêm vnp_SecureHashType vào params để hash
+            vnp_Params.remove("vnp_SecureHashType");
+            vnp_Params.remove("vnp_SecureHash");
+
+            String hashData = VNPayUtils.hashData(vnp_Params);
+            String secureHash = VNPayUtils.hmacSHA512(VNPayConfig.vnp_HashSecret, hashData);
+            String queryUrl = VNPayUtils.buildQuery(vnp_Params)
+
+                    + "&vnp_SecureHash=" + secureHash;
+
+            // DEBUG LOG
+            System.out.println("========== VNPAY PARAMS ==========");
+            for (Map.Entry<String, String> entry : vnp_Params.entrySet()) {
+                System.out.println(entry.getKey() + ": " + entry.getValue());
             }
 
-            hashData.setLength(hashData.length() - 1); // Xoá dấu & cuối
-            query.setLength(query.length() - 1);
+            System.out.println("========== RAW HASH DATA ==========");
+            System.out.println(hashData);
 
-            String secureHash = VNPayUtils.hmacSHA512(VNPayConfig.vnp_HashSecret, hashData.toString());
-            query.append("&vnp_SecureHash=").append(secureHash);
+            System.out.println("========== SECURE HASH ==========");
+            System.out.println(secureHash);
 
-            return VNPayConfig.vnp_PayUrl + "?" + query;
+            System.out.println("========== PAYMENT URL ==========");
+            System.out.println(VNPayConfig.vnp_PayUrl + "?" + queryUrl);
+
+            return VNPayConfig.vnp_PayUrl + "?" + queryUrl;
+
         } catch (Exception e) {
             throw new RuntimeException("Tạo URL thanh toán thất bại", e);
         }

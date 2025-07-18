@@ -6,6 +6,9 @@ import "./allpost.css";
 
 import Footer from "../Footer.jsx";
 import apiService from "../../service/api";
+import heroBg from "../../images/backgroup-2-scaled.jpg";
+
+
 
 export default function AllPost() {
   const [articles, setArticles] = useState([]);
@@ -18,17 +21,25 @@ export default function AllPost() {
 
   // Lấy số lượng blog từng loại từ BE
   const fetchCategoryCounts = () => {
-    apiService.getBlogCategoryCount && apiService.getBlogCategoryCount().then(res => {
-      setCategoryCounts(res.data || {});
-    });
+    apiService.get("/blog/category-count")
+      .then(res => {
+        setCategoryCounts(res.data || {});
+      })
+      .catch(error => {
+        console.error("Lỗi khi lấy số lượng blog theo danh mục:", error);
+        setCategoryCounts({});
+      });
   };
+  
   useEffect(() => {
     fetchCategoryCounts();
   }, []);
 
   // Gọi lại khi articles thay đổi (sau khi thêm/xóa/cập nhật blog)
   useEffect(() => {
-    fetchCategoryCounts();
+    if (articles.length > 0) {
+      fetchCategoryCounts();
+    }
   }, [articles]);
 
   const categories = [
@@ -59,7 +70,8 @@ export default function AllPost() {
         setArticles(mapped);
         setLoading(false);
       })
-      .catch(() => {
+      .catch(error => {
+        console.error("Lỗi khi lấy danh sách blog:", error);
         setArticles([]);
         setLoading(false);
       });
@@ -123,7 +135,7 @@ export default function AllPost() {
           height: "48vh",
           width: "100vw",
           marginLeft: "calc(-50vw + 50%)",
-          backgroundImage: "linear-gradient(rgba(0, 32, 96, 0.55), rgba(0, 32, 96, 0.55)), url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80')",
+          backgroundImage: `linear-gradient(rgba(0, 32, 96, 0.55), rgba(21, 83, 207, 0.55)), url(${heroBg})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           display: "flex",
@@ -136,7 +148,7 @@ export default function AllPost() {
         <div style={{
           maxWidth: "1280px",
           width: "100%",
-          color: "#ffffff",
+          color: "#ce4d4dff",
           textAlign: "center"
         }}>
           <h2 style={{

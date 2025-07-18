@@ -1,14 +1,17 @@
-
 package com.example.Bloodline_ADN_System.service.impl;
 
 import com.example.Bloodline_ADN_System.Entity.*;
-import com.example.Bloodline_ADN_System.dto.ApiMessResponse;
-import com.example.Bloodline_ADN_System.dto.SampleDTO;
+import com.example.Bloodline_ADN_System.dto.PaymentDTO;
+import com.example.Bloodline_ADN_System.dto.noneWhere.ApiMessResponse;
+import com.example.Bloodline_ADN_System.dto.noneWhere.SampleDTO;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.*;
+import com.example.Bloodline_ADN_System.payment.PaymentRequest;
 import com.example.Bloodline_ADN_System.repository.*;
 import com.example.Bloodline_ADN_System.service.*;
+import com.example.Bloodline_ADN_System.service.AllowedAreaService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -26,6 +29,9 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final CaseFileService caseFileService;
     private final TimeSlotLimitRepository timeSlotLimitRepository;
     private final ServiceRepository serviceRepository;
+    private final PaymentService paymentService;
+    @Autowired
+    private AllowedAreaService allowedAreaService;
 
 
     // ---------------------CREATE APPOINTMENT FOR CASEFILE---------------------
@@ -71,8 +77,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         // 2. Validate
         AppointmentDTO dto = request.getAppointment();
-//        validateAppointmentDate(dto.getAppointmentDate());
         validateSlotAvailability(dto.getAppointmentDate(), dto.getAppointmentTime());
+
+
 
         User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
@@ -87,7 +94,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         appointment.setType(dto.getAppointmentType());
         appointment.setAppointmentDate(LocalDate.now());
         appointment.setAppointmentTime(LocalTime.now());
-        appointment.setDeliveryMethod(Appointment.DeliveryMethod.valueOf(dto.getDeliveryMethod()));
+        appointment.setDeliveryMethod(Appointment.DeliveryMethod.SELF_DROP_OFF);
         appointment.setAppointmentNote(dto.getAppointmentNote());
         appointment.setStatus(Appointment.AppointmentStatus.SCHEDULED);
         appointment.setCollectionStatus(Appointment.CollectionStatus.ASSIGNED);
@@ -98,23 +105,44 @@ public class AppointmentServiceImpl implements AppointmentService {
         return new AppointmentResponse<>("Đặt lịch thành công", toDTO(saved));
     }
 
-    private void validateAppointmentDate(LocalDate date) {
-        LocalDate today = LocalDate.now();
-        if (!date.isAfter(today)) {
-            throw new IllegalArgumentException("Lịch hẹn phải được đặt trước ít nhất 1 ngày.");
+    private void validateAppointmentDate(LocalDate date, String deliveryMethod) {
+        // For home collection/delivery, date can be null
+        if (date == null && ("HOME_COLLECTION".equals(deliveryMethod) || "HOME_DELIVERY".equals(deliveryMethod))) {
+            return; // Skip validation for home collection/delivery without specific date
+        }
+        // For facility appointments or when date is provided, validate it
+        if (date != null) {
+            LocalDate today = LocalDate.now();
+            if (!date.isAfter(today)) {
+                throw new IllegalArgumentException("Lịch hẹn phải được đặt trước ít nhất 1 ngày.");
+            }
+        } else {
+            throw new IllegalArgumentException("Ngày hẹn không được để trống cho lịch hẹn tại cơ sở.");
         }
     }
 
     private void validateSlotAvailability(LocalDate date, LocalTime time) {
+        if (time == null || date == null) {
+            // Không có thời gian, không kiểm tra slot
+            return;
+        }
+
+        if (date == null) {
+            // Có thời gian nhưng không có ngày => lỗi
+            throw new IllegalArgumentException("Ngày hẹn không được để trống nếu có giờ hẹn.");
+        }
+
         int count = appointmentRepository.countByAppointmentDateAndAppointmentTime(date, time);
-        if (count >= 3) {
+        if (count >= 5) {
             throw new IllegalArgumentException("Khung giờ đã đầy. Vui lòng chọn khung giờ khác.");
         }
     }
 
 
 
-    // --------------------- CUSTOMER CREATE FULL APPOINTMENT ---------------------
+
+    // --------------------- CUSTOMER CREATE FULL APPOINTMENT --------
+    // -------------
 
 
 
@@ -123,13 +151,6 @@ public class AppointmentServiceImpl implements AppointmentService {
     public AppointmentResponse<AppointmentDTO> createAppointment(AppointmentRequest request) {
         // 1. Save Case File
         caseFileDTO caseFiledto = request.getCaseFile();
-        System.out.println(request.getCaseFile().getUserId());
-        System.out.println(caseFiledto.getUserId());
-        userRepository.findAll().forEach(System.out::println);
-        System.out.println("userId: " + caseFiledto.getUserId() + ", type: " + caseFiledto.getUserId().getClass());
-        Optional<User> test = userRepository.findById(6L);
-        System.out.println("Found? " + test.isPresent());
-
         String caseCodegen = caseFileService.generateCaseCode(String.valueOf(caseFiledto.getCaseType())) ;
         caseFiledto.setCaseCode(caseCodegen);
         CaseFile caseFile = new CaseFile();
@@ -138,8 +159,21 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         // 2. Validate
         AppointmentDTO dto = request.getAppointment();
-        validateAppointmentDate(dto.getAppointmentDate());
+        validateAppointmentDate(dto.getAppointmentDate(), dto.getDeliveryMethod());
         validateSlotAvailability(dto.getAppointmentDate(), dto.getAppointmentTime());
+
+        // --- Kiểm tra khu vực lấy mẫu tại nhà ---
+        if ("HOME_COLLECTION".equals(dto.getAppointmentType())) {
+            String city = dto.getCollectionCity(); // Giả sử có trường city trong DTO
+            String district = dto.getCollectionDistrict(); // Giả sử có trường district trong DTO
+            if (city == null || city.trim().isEmpty() || district == null || district.trim().isEmpty()) {
+                throw new RuntimeException("Vui lòng chọn đầy đủ thành phố và quận/huyện lấy mẫu tại nhà.");
+            }
+            if (!allowedAreaService.isAllowed(city, district)) {
+                throw new RuntimeException("Khu vực này chưa hỗ trợ lấy mẫu tại nhà. Vui lòng chọn khu vực khác.");
+            }
+        }
+        // --- End kiểm tra khu vực ---
 
         // 3. Create & Save Appointment
 
@@ -156,7 +190,10 @@ public class AppointmentServiceImpl implements AppointmentService {
         appointment.setUser(user);
         appointment.setService(service);
         appointment.setType(dto.getAppointmentType());
-        appointment.setAppointmentDate(dto.getAppointmentDate());
+        if(dto.getAppointmentDate() != null) {
+            appointment.setAppointmentDate(dto.getAppointmentDate());
+        }
+
         appointment.setCollectionAddress(dto.getCollectionAddress());
         appointment.setAppointmentTime(dto.getAppointmentTime());
         appointment.setDeliveryMethod(Appointment.DeliveryMethod.valueOf(dto.getDeliveryMethod()));
@@ -165,6 +202,11 @@ public class AppointmentServiceImpl implements AppointmentService {
         appointment.setCaseFile(caseFile);
         Appointment savedAppointment = appointmentRepository.save(appointment);
         AppointmentDTO savedDto = toDTO(savedAppointment);
+
+        PaymentRequest paymentDto = request.getPayment();
+        if ((paymentDto!= null )){
+            paymentService.createPayment(paymentDto, savedAppointment.getAppointmentId()) ;
+        }
 
 // 4. Save Participants
         List<Participant> participants = request.getParticipants().stream()
@@ -371,6 +413,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         // Lưu lại
         appointmentRepository.save(appointment);
+    }
+
+    public AppointmentDTO getAppointmentById(Long id) {
+        return toDTO(appointmentRepository.getAppointmentsByAppointmentId(id));
     }
 
 

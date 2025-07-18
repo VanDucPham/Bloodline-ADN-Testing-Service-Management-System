@@ -1,157 +1,64 @@
-// src/pages/FacilityScheduleWithAssign.jsx
-import React, { useState } from "react";
-import { Calendar, Badge, Card, Modal, List, Select, Button, Tag } from "antd";
+import React, { useEffect, useState } from "react";
+import { Calendar, Badge, Card, Modal, List, Select, Button, Tag, message } from "antd";
 import dayjs from "dayjs";
-
-// Danh sách nhân viên mẫu
-const staffList = [
-  "Nguyễn Văn A",
-  "Trần Thị B",
-  "Lê Văn C",
-  "Phạm Thị D",
-  "Hoàng Văn E",
-];
-
-// Dữ liệu giả lập nhiều ngày trong tháng
-const workSchedules = [
-  {
-    date: "2025-07-07",
-    shifts: [
-      {
-        time: "08:00 - 12:00",
-        staff: "Nguyễn Văn A",
-        cases: [
-          { caseId: "HS001", caseName: "Hồ sơ cha con", customer: "Trần Văn Bình", assignedStaff: "Nguyễn Văn A" },
-          { caseId: "HS002", caseName: "Hồ sơ mẹ con", customer: "Lê Thị Mai", assignedStaff: "" }
-        ]
-      },
-      {
-        time: "13:00 - 17:00",
-        staff: "Trần Thị B",
-        cases: [
-          { caseId: "HS003", caseName: "Hồ sơ hành chính", customer: "Phạm Văn Cường", assignedStaff: "" }
-        ]
-      },
-    ],
-  },
-  {
-    date: "2025-07-08",
-    shifts: [
-      {
-        time: "08:00 - 12:00",
-        staff: "Lê Văn C",
-        cases: [
-          { caseId: "HS004", caseName: "Hồ sơ dân sự", customer: "Nguyễn Thị Hạnh", assignedStaff: "Lê Văn C" },
-          { caseId: "HS005", caseName: "Hồ sơ nhận cha", customer: "Lê Văn Thanh", assignedStaff: "" }
-        ]
-      },
-      {
-        time: "13:00 - 17:00",
-        staff: "Phạm Thị D",
-        cases: [
-          { caseId: "HS006", caseName: "Hồ sơ hành chính", customer: "Trần Văn Hòa", assignedStaff: "" }
-        ]
-      },
-    ],
-  },
-  {
-    date: "2025-07-10",
-    shifts: [
-      {
-        time: "08:00 - 12:00",
-        staff: "Hoàng Văn E",
-        cases: [
-          { caseId: "HS007", caseName: "Hồ sơ cha con", customer: "Nguyễn Văn Khoa", assignedStaff: "" }
-        ]
-      }
-    ]
-  },
-  {
-    date: "2025-07-12",
-    shifts: [
-      {
-        time: "08:00 - 12:00",
-        staff: "Trần Thị B",
-        cases: [
-          { caseId: "HS008", caseName: "Hồ sơ dân sự", customer: "Phan Thị Hồng", assignedStaff: "" }
-        ]
-      },
-      {
-        time: "13:00 - 17:00",
-        staff: "Nguyễn Văn A",
-        cases: [
-          { caseId: "HS009", caseName: "Hồ sơ hành chính", customer: "Đỗ Văn Minh", assignedStaff: "" },
-          { caseId: "HS010", caseName: "Hồ sơ nhận cha", customer: "Lê Thị Tâm", assignedStaff: "" }
-        ]
-      },
-    ]
-  },
-  {
-    date: "2025-07-15",
-    shifts: [
-      {
-        time: "08:00 - 12:00",
-        staff: "Lê Văn C",
-        cases: [
-          { caseId: "HS011", caseName: "Hồ sơ cha con", customer: "Phạm Văn Quý", assignedStaff: "" }
-        ]
-      }
-    ]
-  },
-  {
-    date: "2025-07-18",
-    shifts: [
-      {
-        time: "08:00 - 12:00",
-        staff: "Phạm Thị D",
-        cases: [
-          { caseId: "HS012", caseName: "Hồ sơ dân sự", customer: "Nguyễn Thị Loan", assignedStaff: "" }
-        ]
-      }
-    ]
-  },
-  {
-    date: "2025-07-22",
-    shifts: [
-      {
-        time: "08:00 - 12:00",
-        staff: "Hoàng Văn E",
-        cases: [
-          { caseId: "HS013", caseName: "Hồ sơ hành chính", customer: "Trần Văn Lực", assignedStaff: "" }
-        ]
-      },
-      {
-        time: "13:00 - 17:00",
-        staff: "Nguyễn Văn A",
-        cases: [
-          { caseId: "HS014", caseName: "Hồ sơ nhận cha", customer: "Lê Văn Hùng", assignedStaff: "" }
-        ]
-      }
-    ]
-  },
-  {
-    date: "2025-07-25",
-    shifts: [
-      {
-        time: "08:00 - 12:00",
-        staff: "Trần Thị B",
-        cases: [
-          { caseId: "HS015", caseName: "Hồ sơ cha con", customer: "Nguyễn Văn Hòa", assignedStaff: "" }
-        ]
-      }
-    ]
-  }
-  // ... có thể bổ sung thêm các ngày khác
-];
-
-const getShiftsByDate = (date) => {
-  const d = dayjs(date).format("YYYY-MM-DD");
-  return workSchedules.find((s) => s.date === d)?.shifts || [];
-};
+import axios from "axios";
+import apiService from "../../service/api";
 
 function FacilityScheduleWithAssign() {
   const [modal, setModal] = useState({ open: false, date: null, shifts: [] });
-  const [assignments, setAssignments] = useState({}); // {caseId: staffName}
+  const [assignments, setAssignments] = useState({});
+  const [scheduleData, setScheduleData] = useState([]);
+  const [staffList, setStaffList] = useState([]);
+  const translateDeliveryMethod = (method) => {
+  switch (method) {
+    case "HOME_COLLECTION": return "Tại nhà";
+    case "HOME_DELIVERY": return "Nhân viên đến lấy";
+    case "SELF_DROP_OFF": return "Gửi bưu điện";
+    default: return method; // fallback nếu có giá trị lạ
+  }
+};
+
+const translateAppointmentType = (type) => {
+  switch (type) {
+    case "CIVIL": return "DÂN SỰ";
+    case "ADMINISTRATIVE": return "HÀNH CHÍNH";
+    
+    default: return type;
+  }
+};
+
+  const fetchSchedule = async () => {
+    try {
+      const today = dayjs().format("YYYY-MM");
+      const res = await apiService.admin.getscheduleByMonth(today);
+      setScheduleData(res || []);
+    } catch (err) {
+      message.error("Không thể tải lịch làm việc");
+    }
+  };
+
+  const fetchStaffList = async () => {
+    try {
+      const res = await apiService.admin.getStaffAssigned();
+      console.log( "Danh sachsnhaan viên",res)
+      const staff = res || [];
+      setStaffList(staff.map(s => ({ label: s.staffName, value: s.staffCode })));
+    } catch (err) {
+      message.error("Không thể tải danh sách nhân viên");
+    }
+  };
+
+  useEffect(() => {
+    fetchSchedule();
+    fetchStaffList();
+  }, []);
+
+  const getShiftsByDate = (date) => {
+    const d = dayjs(date).format("YYYY-MM-DD");
+    const dayData = scheduleData.find(s => s.day === d);
+    console.log(dayData)
+    return dayData?.cases || [];
+  };
 
   const cellRender = (current, info) => {
     if (info.type === "date") {
@@ -160,7 +67,7 @@ function FacilityScheduleWithAssign() {
         <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
           {shifts.map((shift, idx) => (
             <li key={idx}>
-              <Badge status="processing" text={shift.time + " - " + shift.staff} />
+              <Badge status="processing" text={`${shift.time} - ${shift.staff || "Chưa phân công"}`} />
             </li>
           ))}
         </ul>
@@ -176,14 +83,28 @@ function FacilityScheduleWithAssign() {
     }
   };
 
-  const handleAssign = (caseId, staff) => {
-    setAssignments(prev => ({ ...prev, [caseId]: staff }));
+  const handleAssign = (appointmentId, staffName) => {
+    setAssignments(prev => ({ ...prev, [appointmentId]: staffName }));
   };
 
-  const handleSaveAssignments = () => {
-    // Gọi API lưu assignments nếu cần
-    Modal.success({ content: "Đã lưu phân công nhân viên cho hồ sơ!" });
-    setModal({ ...modal, open: false });
+  const handleSaveAssignments = async () => {
+    const payload = Object.entries(assignments).map(([appointmentId, staffCode]) => ({
+      appointmentId: Number(appointmentId),
+      staffCode,
+    }));
+
+    try {
+      console.log(payload)
+      await apiService.admin.addStaffAsigned(payload);
+      
+      message.success("Đã lưu phân công nhân viên!");
+      setAssignments({});
+      fetchSchedule();
+      setModal({ ...modal, open: false });
+    } catch (err) {
+      message.error("Lỗi khi lưu phân công!");
+      console.log(err)
+    }
   };
 
   return (
@@ -212,37 +133,46 @@ function FacilityScheduleWithAssign() {
           <div key={idx} style={{ marginBottom: 24 }}>
             <div>
               <Tag color="blue">{shift.time}</Tag>
-              <span style={{ marginLeft: 8, fontWeight: 500 }}>Nhân viên ca: {shift.staff}</span>
+              <span style={{ marginLeft: 8, fontWeight: 500 }}>
+                Nhân viên ca: {shift.staff || "Chưa phân công"}
+              </span>
             </div>
             <List
-              dataSource={shift.cases}
+              dataSource={shift.caseassignments}
               renderItem={(cs) => (
                 <List.Item>
                   <List.Item.Meta
                     title={
                       <span>
-                        <Tag color="purple">{cs.caseId}</Tag>
-                        {cs.caseName} &mdash; <i>Khách: {cs.customer}</i>
+                        <Tag color="purple">#{cs.caseCode}</Tag>
+                        &nbsp;Khách: {cs.customerName}
                       </span>
                     }
-                    description={
-                      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                        <span>Phân công xử lý:&nbsp;</span>
-                        <Select
-                          style={{ width: 180 }}
-                          value={assignments[cs.caseId] ?? cs.assignedStaff ?? ""}
-                          onChange={staff => handleAssign(cs.caseId, staff)}
-                          placeholder="Chọn nhân viên"
-                          options={staffList.map(name => ({ label: name, value: name }))}
-                          allowClear
-                        />
-                        {assignments[cs.caseId] || cs.assignedStaff ? (
-                          <Tag color="green">Đã phân công</Tag>
-                        ) : (
-                          <Tag color="red">Chưa phân công</Tag>
-                        )}
-                      </div>
-                    }
+                   description={
+  <>
+    <div>
+      <Tag color="geekblue">Hình thức: {translateDeliveryMethod(cs.deliveryMethod) }</Tag>
+      <Tag color="volcano">Loại lịch hẹn: {translateAppointmentType(cs.appointmentType) }</Tag>
+    </div>
+    <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 8 }}>
+      <span>Phân công:&nbsp;</span>
+      <Select
+        style={{ width: 180 }}
+        value={assignments[cs.appointmentID] ?? cs.assignStaff ?? ""}
+        onChange={(staffCode) => handleAssign(cs.appointmentID, staffCode)}
+        placeholder="Chọn nhân viên"
+        options={staffList}
+        allowClear
+      />
+      {(assignments[cs.appointmentID] || cs.assignStaff) ? (
+        <Tag color="green">Đã phân công</Tag>
+      ) : (
+        <Tag color="red">Chưa phân công</Tag>
+      )}
+    </div>
+  </>
+}
+
                   />
                 </List.Item>
               )}

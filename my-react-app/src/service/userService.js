@@ -13,7 +13,7 @@ class UserService extends BaseApiService {
         return this.put(`/customer/changePassword/${id}`, passwordData);
     }
     async getService(){
-        return this.get('/customer/service')
+        return this.get('/customer/appointment/services')
     }
     async getUserById(id) { return this.get(`/user/${id}`); }
     async deleteUser(id) { return this.delete(`/user/${id}`); }
@@ -35,10 +35,30 @@ return this.post('/customer/appointment/check-availability', data)
    async updateParticipant(id, data) {
     return this.put(`/customer/${id}/update`, data);
   }
+  async creatPaymentVnPay(data){
+    return this.post('/auth/vnpay/create', data)
+  }
+  async getAllServicePrice(){
+    return this.get('/auth/getService')
+  }
+  async createPay(data){
+    return this.post('/auth/vnpay/create', data)
+  }
+  
+  // Lấy tất cả khu vực (cho quản trị)
+  async getAllowedAreas() {
+    return this.get('/areas');
+  }
+
+  // Kiểm tra khu vực hợp lệ (cho khách hàng)
+  async checkAllowedArea(city, district) {
+    return this.get(`/areas/check?city=${encodeURIComponent(city)}&district=${encodeURIComponent(district)}`);
+  }
 
   async getResult(appointmentId){
     return this.get(`/customer/result/get/${appointmentId}`);
   }
+  
 
 }
     

@@ -10,7 +10,8 @@ import {
   CalendarOutlined,
   UserOutlined,
   LogoutOutlined,
-  FileTextOutlined
+  FileTextOutlined,
+  EnvironmentOutlined
 } from "@ant-design/icons";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import "./ManagerLayout.css";
@@ -35,6 +36,7 @@ const ManagerLayout = () => {
     { key: "/manager/employees", icon: <TeamOutlined />, label: "Danh sách nhân viên" },
      { key: "/manager/services", icon: <AppstoreAddOutlined />, label: "Dịch vụ" },
     { key: "/manager/schedules", icon: <CalendarOutlined />, label: "Lịch làm việc" },
+    { key: "/manager/areas", icon: <EnvironmentOutlined />, label: "Quản lý khu vực" },
     { key: "/manager/tracking", icon: <BarChartOutlined />, label: "Theo dõi hồ sơ" },
     { key: "/manager/blogs", icon: <FileTextOutlined />, label: "Blog" },
     { key: "/manager/report", icon: <BarChartOutlined />, label: "Phản hổi khách hàng" },

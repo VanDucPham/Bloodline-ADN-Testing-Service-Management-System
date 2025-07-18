@@ -1,9 +1,9 @@
 package com.example.Bloodline_ADN_System.controller;
 
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.SampleCustomerDTO;
-import com.example.Bloodline_ADN_System.dto.SampleDTO;
-import com.example.Bloodline_ADN_System.dto.SampleStaffDTO;
-import com.example.Bloodline_ADN_System.dto.SampleUpdateDTO;
+import com.example.Bloodline_ADN_System.dto.noneWhere.SampleDTO;
+import com.example.Bloodline_ADN_System.dto.noneWhere.SampleStaffDTO;
+import com.example.Bloodline_ADN_System.dto.noneWhere.SampleUpdateDTO;
 import com.example.Bloodline_ADN_System.service.SampleService;
 import com.example.Bloodline_ADN_System.service.impl.SampleServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;

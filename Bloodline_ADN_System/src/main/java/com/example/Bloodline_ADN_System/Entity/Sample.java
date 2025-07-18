@@ -1,7 +1,8 @@
 package com.example.Bloodline_ADN_System.Entity;
 
-import com.example.Bloodline_ADN_System.dto.SampleDTO;
+import com.example.Bloodline_ADN_System.dto.noneWhere.SampleDTO;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,6 +24,7 @@ public class Sample {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "participant_id")
+    @JsonIgnore
     private Participant participant;
 
 

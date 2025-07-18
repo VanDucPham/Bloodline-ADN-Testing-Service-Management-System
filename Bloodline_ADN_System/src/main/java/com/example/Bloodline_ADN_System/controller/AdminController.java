@@ -4,8 +4,15 @@ package com.example.Bloodline_ADN_System.controller;
 //import com.example.Bloodline_ADN_System.Entity.User;
 import com.example.Bloodline_ADN_System.dto.*;
 import com.example.Bloodline_ADN_System.dto.ManagerService.ServiceManagerDTO;
+import com.example.Bloodline_ADN_System.dto.ScheduleManager.StaffDTO;
+import com.example.Bloodline_ADN_System.dto.ScheduleManager.request.AppoinmentAsignedStaffDTO;
+import com.example.Bloodline_ADN_System.dto.ScheduleManager.request.AssignmentRequestDTO;
+import com.example.Bloodline_ADN_System.dto.ScheduleManager.response.CaseassignmentDTO;
+import com.example.Bloodline_ADN_System.dto.ScheduleManager.response.DayscheduleDTO;
+import com.example.Bloodline_ADN_System.dto.noneWhere.*;
 import com.example.Bloodline_ADN_System.repository.UserRepository;
 import com.example.Bloodline_ADN_System.service.BlogService;
+import com.example.Bloodline_ADN_System.service.ScheduleService;
 import com.example.Bloodline_ADN_System.service.ServiceList;
 import com.example.Bloodline_ADN_System.service.UserService;
 import com.example.Bloodline_ADN_System.service.impl.AdminServiceImpl;
@@ -17,8 +24,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-import java.util.Optional;
+import java.io.IOException;
+import java.util.*;
 //import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
@@ -28,18 +35,27 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+
+
+
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 @RestController
 @RequestMapping("/api/admin")
 @AllArgsConstructor
 public class AdminController {
 
+    private static final Logger logger = LoggerFactory.getLogger(AdminController.class);
     private final AdminServiceImpl adminService;
     private final UserRepository userRepository;
     private final ServiceList serviceList;
     private final BlogService blogService;
     private final UserService userService;
+    private final ScheduleService scheduleService;
+
 
     @PostMapping("/create")
     public ResponseEntity<?> createUser(@RequestBody CreateUserRequest request) {
@@ -109,10 +125,17 @@ public class AdminController {
         return ResponseEntity.ok(serviceList.updateService(id,serviceDTO));
     }
 
-    @DeleteMapping("service/delete/{id}")
-    public ResponseEntity<String> deleteService(@PathVariable Long id) {
-        serviceList.deleteService(id);
-        return ResponseEntity.ok("Xóa dịch vụ thành công");
+    @DeleteMapping("/service/delete/{id}")
+    public ResponseEntity<?> deleteService(@PathVariable Long id) {
+        try {
+            serviceList.deleteService(id);
+            return ResponseEntity.ok("Xóa dịch vụ thành công");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Lỗi khi xóa dịch vụ: " + e.getMessage());
+        }
     }
 
     @GetMapping ("/profile")
@@ -169,27 +192,79 @@ public class AdminController {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         return ResponseEntity.ok(blogService.getBlogsPage(pageable, status, type, authorId));
     }
+    @GetMapping("/case_schedule/{month}")
+    public ResponseEntity<List<DayscheduleDTO>> getCaseSchedule(@PathVariable String  month) {
+         List<DayscheduleDTO>   schedule =  scheduleService.getSchedule(month) ;
 
-    @PostMapping("/blog/upload-image")
-    public ResponseEntity<?> uploadBlogImage(@RequestParam("file") MultipartFile file) {
+        return ResponseEntity.ok(schedule);
+    }
+
+    @GetMapping("/staff_inf")
+    public ResponseEntity<List<StaffDTO>> getStaffInfor() {
+        return ResponseEntity.ok(scheduleService.getAllStaff()) ;
+    }
+
+    @PostMapping("/assign-staff")
+    public ResponseEntity<?> assignStaffToAppointments(@RequestBody List<AppoinmentAsignedStaffDTO> assignments) {
         try {
-            if (file.isEmpty()) {
-                return ResponseEntity.badRequest().body(Map.of("message", "File rỗng"));
-            }
-            String fileName = System.currentTimeMillis() + "_" + StringUtils.cleanPath(file.getOriginalFilename());
-            Path uploadPath = Paths.get("src/main/resources/static/images/blog");
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
-            Path filePath = uploadPath.resolve(fileName);
-            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-            String imageUrl = "/images/blog/" + fileName;
-            return ResponseEntity.ok(Map.of("url", imageUrl));
+            scheduleService.assignStaffToCase(assignments);
+            return ResponseEntity.ok("Success");
         } catch (Exception e) {
-            e.printStackTrace(); // Log lỗi chi tiết ra console
-            return ResponseEntity.status(500).body(Map.of("message", "Lỗi upload ảnh: " + e.getMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi khi phân công");
         }
     }
+
+
+//
+//    @PostMapping("/blog/upload-image")
+//    public ResponseEntity<?> uploadBlogImage(@RequestParam("file") MultipartFile file) {
+//        try {
+//            if (file.isEmpty()) {
+//                return ResponseEntity.badRequest().body(Map.of("message", "File rỗng"));
+//            }
+//            String originalFilename = file.getOriginalFilename() != null ? file.getOriginalFilename() : "unknown";
+//            String fileName = System.currentTimeMillis() + "_" + StringUtils.cleanPath(originalFilename);
+//            Path uploadPath = Paths.get("src/main/resources/static/images/blog");
+//            if (!Files.exists(uploadPath)) {
+//                Files.createDirectories(uploadPath);
+//            }
+//            Path filePath = uploadPath.resolve(fileName);
+//            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+//            String imageUrl = "/images/blog/" + fileName;
+//            return ResponseEntity.ok(Map.of("url", imageUrl));
+//        } catch (Exception e) {
+//            logger.error("Lỗi upload ảnh: ", e);
+//            return ResponseEntity.status(500).body(Map.of("message", "Lỗi upload ảnh: " + e.getMessage()));
+//        }
+//    }
+//
+//    private static final String UPLOAD_DIR = "src/main/resources/static/ImagePage/";
+//    @PostMapping("/upload")
+//    public ResponseEntity<Map<String, String>> uploadImage(@RequestParam("file") MultipartFile file) {
+//        try {
+//            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+//            Path uploadPath = Paths.get(UPLOAD_DIR);
+//
+//            // Tạo thư mục nếu chưa tồn tại
+//            if (!Files.exists(uploadPath)) {
+//                Files.createDirectories(uploadPath);
+//            }
+//
+//            Path filePath = uploadPath.resolve(fileName);
+//            Files.write(filePath, file.getBytes());
+//
+//            // URL để trả về client
+//            String imageUrl = "/ImagePage/" + fileName;
+//            Map<String, String> result = new HashMap<>();
+//            result.put("url", imageUrl);
+//
+//            return ResponseEntity.ok(result);
+//        } catch (IOException e) {
+//            e.printStackTrace(); // in log lỗi cụ thể
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body(Collections.singletonMap("error", "Upload failed"));
+//        }
+//    }
 
     @GetMapping("/blog/category-count")
     public ResponseEntity<?> getBlogCategoryCount() {

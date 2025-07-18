@@ -1,12 +1,15 @@
 package com.example.Bloodline_ADN_System.controller;
 
 import com.example.Bloodline_ADN_System.Entity.Appointment;
-import com.example.Bloodline_ADN_System.dto.*;
 import com.example.Bloodline_ADN_System.dto.ManagerService.ServiceManagerDTO;
+import com.example.Bloodline_ADN_System.dto.PaymentDTO;
+import com.example.Bloodline_ADN_System.dto.ResultDTO;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentDTO;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentRequest;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentResponse;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.ParticipantDTO;
+import com.example.Bloodline_ADN_System.dto.noneWhere.*;
+import com.example.Bloodline_ADN_System.payment.PaymentRequest;
 import com.example.Bloodline_ADN_System.service.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +34,7 @@ public class StaffCaseFileController {
     private final ServiceList serviceList;
     private final UserService userService;
     private final ResultService resultService;
-
+    private final PaymentService paymentService;
     @GetMapping("/appointment")
     public ResponseEntity<List<AppointmentDTO>> getAppointmentsForStaff(
             @RequestParam(required = false) Appointment.AppointmentStatus status,
@@ -42,6 +45,18 @@ public class StaffCaseFileController {
         Long staffId = userService.getUserIdFromPrincipal(principal);
         List<AppointmentDTO> result = appointmentService.filterAppointmentForStaff(status, type, date, staffId);
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/appointment/{id}")
+    public ResponseEntity<AppointmentDTO> getAppointmentById(@PathVariable Long id) {
+        AppointmentDTO appointment = appointmentService.getAppointmentById(id);
+        return ResponseEntity.ok(appointment);
+    }
+
+    @GetMapping("/service/{id}")
+    public ResponseEntity<ServiceManagerDTO> getServiceById(@PathVariable Long id) {
+        ServiceManagerDTO service = serviceList.getServiceById(id);
+        return ResponseEntity.ok(service);
     }
 
     @PostMapping("/sample/offline")
@@ -112,5 +127,8 @@ public class StaffCaseFileController {
         return resultService.exportResultPdf(appointmentId);
     }
 
-
+    @PostMapping("/payment/{appointmentId}")
+    public ResponseEntity<PaymentDTO> createPayment(@PathVariable Long appointmentId,@RequestBody PaymentRequest paymentRequest) {
+        return ResponseEntity.ok(paymentService.createPaymentAndReturnDTO(paymentRequest, appointmentId));
+    }
 }

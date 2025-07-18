@@ -1,7 +1,8 @@
 package com.example.Bloodline_ADN_System.service;
 
+import com.example.Bloodline_ADN_System.dto.noneWhere.BlogDTO;
 //import com.example.Bloodline_ADN_System.Entity.User;
-import com.example.Bloodline_ADN_System.dto.BlogDTO;
+
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

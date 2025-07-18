@@ -205,12 +205,11 @@ function StaffAppointments() {
     setAddParticipantError('');
     setAddParticipantSuccess('');
     try {
-      const payload = values.map(p => ({
+     const payload = values.map(p => ({
       ...p,
       appointmentId: selectedParticipants.appointmentId,
       birthDate: p.birthDate ? moment(p.birthDate).format('YYYY-MM-DD') : null,
-    }));
-      await apiService.staff.addParticipants(payload);
+    })); await apiService.staff.addParticipants(payload);
       setAddParticipantSuccess('Thêm người tham gia thành công!');
       await handleShowParticipants(selectedParticipants.appointmentId);
       setShowAddParticipantForm(false);

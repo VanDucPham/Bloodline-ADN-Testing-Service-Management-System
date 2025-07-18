@@ -1,7 +1,8 @@
 package com.example.Bloodline_ADN_System.dto.managerCaseFile;
 
 import com.example.Bloodline_ADN_System.Entity.Appointment;
-import com.example.Bloodline_ADN_System.dto.SampleDTO;
+import com.example.Bloodline_ADN_System.dto.noneWhere.SampleDTO;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -43,6 +44,8 @@ public class AppointmentDTO {
     private String deliveryMethod;
 
     private String collectionAddress ;
+    private String collectionCity;     // Thành phố lấy mẫu
+    private String collectionDistrict; // Quận/Huyện lấy mẫu
 
     // Ghi chú
     private String appointmentNote;

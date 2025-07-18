@@ -7,4 +7,7 @@ public class PaymentRequest {
     private long amount;
     private String orderInfo;
     private String txnRef;
+    private String bankCode; // optional
+    private  String language ;
+  private String paymentMethod; // optional
 }

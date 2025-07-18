@@ -1,7 +1,7 @@
 package com.example.Bloodline_ADN_System.service;
 
 import com.example.Bloodline_ADN_System.Entity.Participant;
-import com.example.Bloodline_ADN_System.dto.ParticipantResponeDTO;
+import com.example.Bloodline_ADN_System.dto.noneWhere.ParticipantResponeDTO;
 import com.example.Bloodline_ADN_System.dto.TrackingAppoint.UpdateParticipant;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.ParticipantDTO;
 
