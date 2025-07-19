@@ -32,7 +32,7 @@ public class CaseTrackingServiceImpl implements CaseTrackingService {
             if (caseFile.getCreatedBy() == null || caseFile.getCaseCode() == null) {
                 return null;}
 
-            // Các lệnh chuyển đổi DTO như bạn đang có
+
             dto.setCaseId(appointment.getCaseFile().getCaseCode());
             dto.setCustomer(appointment.getUser().getName());
             dto.setType(appointment.getType().toString());
@@ -85,7 +85,7 @@ public class CaseTrackingServiceImpl implements CaseTrackingService {
         return appointments.stream()
                 .peek(app -> {
                     if (app.getCaseFile() == null) {
-                        System.err.println("⚠Appointment ID " + app.getAppointmentId() + " không có caseFile.");
+                        System.err.println("Appointment ID " + app.getAppointmentId() + " không có caseFile.");
                     }
                 })
                 .map(app -> {
