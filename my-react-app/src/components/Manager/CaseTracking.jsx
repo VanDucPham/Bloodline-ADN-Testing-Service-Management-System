@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Table, Tag, Button, Input, Select, Modal, Steps, Spin, Alert } from "antd";
 import apiService from '../../service/api';
+import './CaseTracking.css';
 
 
 export default function CaseTracking() {
@@ -11,7 +12,6 @@ export default function CaseTracking() {
   const [statusFilter, setStatusFilter] = useState("");
   const [selected, setSelected] = useState(null);
   const [activeTab, setActiveTab] = useState(0);
-  const [caseDetails, setCaseDetails] = useState(null);
   const [participants, setParticipants] = useState([]);
   const [loadingParticipants, setLoadingParticipants] = useState(false);
   const [participantsError, setParticipantsError] = useState(null);
@@ -24,19 +24,28 @@ export default function CaseTracking() {
     { value: "COMPLETED", label: "Hoàn thành", color: "green" },
     { value: "CANCELLED", label: "Đã hủy", color: "red" },
   ];
-  const fetchData = async () => {
-    try {
+  useEffect(() => {
+    const fetchData = async () => {
       setLoading(true);
-      const response = await apiService.manager.getAllTracking();
-      console.log("👉 Dữ liệu từ API: ", response);
-      setData(response || []); // Sử dụng trực tiếp response thay vì response.data
-    } catch (error) {
-      console.error("❌ Lỗi khi tải dữ liệu:", error);
-      setError("Không thể tải dữ liệu: " + error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+      try {
+        const response = await apiService.manager.getAllTracking();
+        // Sắp xếp theo thứ tự ngược lại - mới nhất ở đầu
+        const sortedData = response.sort((a, b) => {
+          // So sánh theo createdAt (ngày tạo)
+          const dateA = new Date(a.createdAt);
+          const dateB = new Date(b.createdAt);
+          return dateB - dateA; // Ngược lại: b - a
+        });
+        setData(sortedData);
+      } catch (error) {
+        console.error("Error fetching case tracking:", error);
+        setError(error.message || "Lỗi khi tải dữ liệu");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
   // Gọi API participants khi tab được mở
   useEffect(() => {
     if (activeTab === 1 && selected?.appointmentId) {
@@ -56,7 +65,7 @@ export default function CaseTracking() {
                 };
               })
               .catch(error => {
-                console.error(`❌ Error fetching sample for participant ${participant.participantId}:`, error);
+                console.error(`Error fetching sample for participant ${participant.participantId}:`, error);
                 return {
                   ...participant,
                   sampleDTO: null
@@ -69,12 +78,12 @@ export default function CaseTracking() {
               setParticipants(participantsWithSamples);
             })
             .catch(error => {
-              console.error("❌ Error processing samples:", error);
+              console.error("Error processing samples:", error);
               setParticipants(response || []);
             });
         })
         .catch(error => {
-          console.error("❌ Error fetching participants:", error);
+          console.error("Error fetching participants:", error);
           setParticipantsError(error.message || "Lỗi khi tải dữ liệu người tham gia");
         })
         .finally(() => {
@@ -91,11 +100,10 @@ export default function CaseTracking() {
       
       apiService.staff.getResultByAppointmentId(selected.appointmentId)
         .then(response => {
-          console.log("✅ Result data:", response);
           setResultData(response);
         })
         .catch(error => {
-          console.error("❌ Error fetching result:", error);
+          console.error("Error fetching result:", error);
           setResultError(error.message || "Lỗi khi tải dữ liệu kết quả");
         })
         .finally(() => {
@@ -104,9 +112,6 @@ export default function CaseTracking() {
     }
   }, [activeTab, selected?.appointmentId]);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
   const filtered = data.filter(item => {
     const matchesSearch = item.caseId?.toLowerCase().includes(search.toLowerCase()) ||
                          item.customer?.toLowerCase().includes(search.toLowerCase());
@@ -117,7 +122,7 @@ export default function CaseTracking() {
   
   const columns = [
     { title: "Mã hồ sơ", dataIndex: "caseId", key: "caseId" },
-    { title: "Khách hàng", dataIndex: "customer", key: "customer" },
+    { title: "Người tạo lịch hẹn", dataIndex: "customer", key: "customer" },
     { title: "Loại hồ sơ", dataIndex: "type", key: "type" },
     { title: "Ngày tạo", dataIndex: "createdAt", key: "createdAt" },
     {
@@ -142,8 +147,8 @@ export default function CaseTracking() {
   ];
 
   return (
-    <div style={{ background: "#fff", padding: 24, borderRadius: 8, maxWidth: 2000, margin: "32px auto" }}>
-      <h2>Theo dõi trạng thái hồ sơ</h2>
+    <div className="case-tracking-container">
+      <h2 className="case-tracking-title">Theo dõi trạng thái hồ sơ</h2>
 
       {loading ? (
         <Spin tip="Đang tải dữ liệu..." />
@@ -151,19 +156,19 @@ export default function CaseTracking() {
         <Alert type="error" message={error} />
       ) : (
         <>
-          <div style={{ display: "flex", gap: 12, marginBottom: 16 }}>
+          <div className="search-filter-container">
             <Input.Search
               placeholder="Tìm theo mã hồ sơ hoặc khách hàng"
               value={search}
               onChange={e => setSearch(e.target.value)}
-              style={{ width: 260 }}
+              className="search-input"
             />
             <Select
               value={statusFilter}
               onChange={setStatusFilter}
               placeholder="Lọc theo trạng thái"
               allowClear
-              style={{ width: 180 }}
+              className="status-filter"
               options={statusOptions.map(s => ({ value: s.value, label: s.label }))}
             />
           </div>
@@ -185,16 +190,16 @@ export default function CaseTracking() {
           footer={null}
           width={800}
         >
-          <div className="tabs" style={{ display: 'flex', gap: 12, marginBottom: 18 }}>
-            <div className={`tab${activeTab === 0 ? ' active' : ''}`} style={{ padding: '10px 16px', background: activeTab === 0 ? '#017baf' : '#e0e7ef', color: activeTab === 0 ? '#fff' : '#015d84', borderRadius: 8, cursor: 'pointer', fontWeight: 500 }} onClick={() => setActiveTab(0)}>Chi tiết lịch hẹn</div>
-            <div className={`tab${activeTab === 1 ? ' active' : ''}`} style={{ padding: '10px 16px', background: activeTab === 1 ? '#017baf' : '#e0e7ef', color: activeTab === 1 ? '#fff' : '#015d84', borderRadius: 8, cursor: 'pointer', fontWeight: 500 }} onClick={() => setActiveTab(1)}>Người tham gia & Mẫu</div>
-            <div className={`tab${activeTab === 2 ? ' active' : ''}`} style={{ padding: '10px 16px', background: activeTab === 2 ? '#017baf' : '#e0e7ef', color: activeTab === 2 ? '#fff' : '#015d84', borderRadius: 8, cursor: 'pointer', fontWeight: 500 }} onClick={() => setActiveTab(2)}>Thanh toán</div>
-            <div className={`tab${activeTab === 3 ? ' active' : ''}`} style={{ padding: '10px 16px', background: activeTab === 3 ? '#017baf' : '#e0e7ef', color: activeTab === 3 ? '#fff' : '#015d84', borderRadius: 8, cursor: 'pointer', fontWeight: 500 }} onClick={() => setActiveTab(3)}>Chi tiết kết quả</div>
+          <div className="tabs">
+            <div className={`tab${activeTab === 0 ? ' active' : ''}`} onClick={() => setActiveTab(0)}>Chi tiết lịch hẹn</div>
+            <div className={`tab${activeTab === 1 ? ' active' : ''}`} onClick={() => setActiveTab(1)}>Người tham gia & Mẫu</div>
+            <div className={`tab${activeTab === 2 ? ' active' : ''}`} onClick={() => setActiveTab(2)}>Thanh toán</div>
+            <div className={`tab${activeTab === 3 ? ' active' : ''}`} onClick={() => setActiveTab(3)}>Chi tiết kết quả</div>
           </div>
-          <div className={`tab-content${activeTab === 0 ? ' active' : ''}`} style={{ display: activeTab === 0 ? 'block' : 'none' }}>
-            <div><b>Mã lịch hẹn:</b> {selected.appointmentId || caseDetails?.appointmentId || 'Chưa có thông tin'}</div>
-            <div><b>Khách hàng:</b> {selected.customer}</div>
-            <div><b>Dịch vụ:</b> {selected.serviceName || caseDetails?.serviceName || 'Chưa có thông tin'}</div>
+          <div className={`tab-content${activeTab === 0 ? ' active' : ''}`}>
+            <div><b>Mã lịch hẹn:</b> {selected.appointmentId || 'Chưa có thông tin'}</div>
+            <div><b>Người tạo lịch hẹn:</b> {selected.customer}</div>
+            <div><b>Dịch vụ:</b> {selected.serviceName || 'Chưa có thông tin'}</div>
             <div><b>Ngày hẹn:</b> {selected.appointmentDate ? new Date(selected.appointmentDate).toLocaleDateString() : selected.createdAt ? new Date(selected.createdAt).toLocaleDateString() : 'Chưa có thông tin'}</div>
             <div><b>Giờ hẹn:</b> {selected.appointmentTime ? selected.appointmentTime : 'Chưa có thông tin'}</div>
             <div><b>Loại lịch hẹn:</b> {selected.type}</div>
@@ -204,9 +209,9 @@ export default function CaseTracking() {
                 {statusOptions.find(s => s.value === selected.status)?.label || selected.status}
               </Tag>
             </div>
-            <div><b>Mã hồ sơ:</b> {caseDetails?.caseCode || selected.caseId}</div>
+            <div><b>Mã hồ sơ:</b> {selected.caseId}</div>
             <div><b>Ngày tạo:</b> {selected.createdAt ? new Date(selected.createdAt).toLocaleDateString() : 'Chưa có thông tin'}</div>
-            <div style={{ margin: "18px 0 8px 0" }}><b>Tiến trình xử lý:</b></div>
+            <div className="timeline-section"><b>Tiến trình xử lý:</b></div>
             <Steps
               direction="vertical"
               size="small"
@@ -217,10 +222,10 @@ export default function CaseTracking() {
               })) : []}
             />
             {(!selected.timeline || !Array.isArray(selected.timeline)) && (
-              <div style={{ color: 'red', marginTop: 8 }}>Không có dữ liệu tiến trình xử lý!</div>
+              <div className="no-data-message">Không có dữ liệu tiến trình xử lý!</div>
             )}
           </div>
-          <div className={`tab-content${activeTab === 1 ? ' active' : ''}`} style={{ display: activeTab === 1 ? 'block' : 'none' }}>
+          <div className={`tab-content${activeTab === 1 ? ' active' : ''}`}>
             {loadingParticipants ? (
               <Spin tip="Đang tải dữ liệu người tham gia..." />
             ) : participantsError ? (
@@ -231,29 +236,29 @@ export default function CaseTracking() {
               <Alert type="info" message="Không có dữ liệu người tham gia cho lịch hẹn này" />
             ) : (
               <div>
-                <div style={{ marginBottom: 16 }}>
+                <div className="appointment-detail-item">
                   <strong>Mã lịch hẹn:</strong> {selected.appointmentId}
                 </div>
-                <table className="detail-table" style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '16px' }}>
+                <table className="detail-table">
                   <thead>
                     <tr>
-                      <th style={{ border: '1px solid #e0e7ef', padding: '10px 12px', textAlign: 'left' }}>Họ tên</th>
-                      <th style={{ border: '1px solid #e0e7ef', padding: '10px 12px', textAlign: 'left' }}>Số căn cước công dân</th>
-                      <th style={{ border: '1px solid #e0e7ef', padding: '10px 12px', textAlign: 'left' }}>Quan hệ</th>
-                      <th style={{ border: '1px solid #e0e7ef', padding: '10px 12px', textAlign: 'left' }}>Loại mẫu</th>
-                      <th style={{ border: '1px solid #e0e7ef', padding: '10px 12px', textAlign: 'left' }}>Trạng thái mẫu</th>
-                      <th style={{ border: '1px solid #e0e7ef', padding: '10px 12px', textAlign: 'left' }}>Kết quả</th>
+                      <th>Họ tên</th>
+                      <th>Số căn cước công dân</th>
+                      <th>Quan hệ</th>
+                      <th>Loại mẫu</th>
+                      <th>Trạng thái mẫu</th>
+                      <th>Kết quả</th>
                     </tr>
                   </thead>
                   <tbody>
                     {participants.map((p, index) => (
                       <tr key={index}>
-                        <td style={{ border: '1px solid #e0e7ef', padding: '10px 12px', textAlign: 'left' }}>{p.name}</td>
-                        <td style={{ border: '1px solid #e0e7ef', padding: '10px 12px', textAlign: 'left' }}>{p.citizenId}</td>
-                        <td style={{ border: '1px solid #e0e7ef', padding: '10px 12px', textAlign: 'left' }}>{p.relationship}</td>
-                        <td style={{ border: '1px solid #e0e7ef', padding: '10px 12px', textAlign: 'left' }}>{p.sampleDTO?.sampleType || 'Chưa có'}</td>
-                        <td style={{ border: '1px solid #e0e7ef', padding: '10px 12px', textAlign: 'left' }}>{p.sampleDTO?.status || 'Chưa thu thập'}</td>
-                        <td style={{ border: '1px solid #e0e7ef', padding: '10px 12px', textAlign: 'left' }}>{p.sampleDTO?.result || 'chưa có kết quả'}</td>
+                        <td>{p.name}</td>
+                        <td>{p.citizenId}</td>
+                        <td>{p.relationship}</td>
+                        <td>{p.sampleDTO?.sampleType || 'Chưa có'}</td>
+                        <td>{p.sampleDTO?.status || 'Chưa thu thập'}</td>
+                        <td>{p.sampleDTO?.result || 'chưa có kết quả'}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -261,31 +266,31 @@ export default function CaseTracking() {
               </div>
             )}
           </div>
-          <div className={`tab-content${activeTab === 2 ? ' active' : ''}`} style={{ display: activeTab === 2 ? 'block' : 'none' }}>
+          <div className={`tab-content${activeTab === 2 ? ' active' : ''}`}>
             {selected?.paymentDTO ? (
               <div>
-                <div style={{ marginBottom: 16 }}>
+                <div className="appointment-detail-item">
                   <strong>Mã lịch hẹn:</strong> {selected.appointmentId}
                 </div>
-                <table className="detail-table" style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '16px' }}>
+                <table className="detail-table">
                   <thead>
                     <tr>
-                      <th style={{ border: '1px solid #e0e7ef', padding: '10px 12px', textAlign: 'left' }}>Mã thanh toán</th>
-                      <th style={{ border: '1px solid #e0e7ef', padding: '10px 12px', textAlign: 'left' }}>Số tiền</th>
-                      <th style={{ border: '1px solid #e0e7ef', padding: '10px 12px', textAlign: 'left' }}>Phương thức</th>
-                      <th style={{ border: '1px solid #e0e7ef', padding: '10px 12px', textAlign: 'left' }}>Trạng thái</th>
-                      <th style={{ border: '1px solid #e0e7ef', padding: '10px 12px', textAlign: 'left' }}>Ngày thanh toán</th>
+                      <th>Mã thanh toán</th>
+                      <th>Số tiền</th>
+                      <th>Phương thức</th>
+                      <th>Trạng thái</th>
+                      <th>Ngày thanh toán</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td style={{ border: '1px solid #e0e7ef', padding: '10px 12px', textAlign: 'left' }}>{selected.paymentDTO.paymentID}</td>
-                      <td style={{ border: '1px solid #e0e7ef', padding: '10px 12px', textAlign: 'left' }}>
-                        {selected.paymentDTO.paymentAmount.toLocaleString('vi-VN')} ₫
+                      <td>{selected.paymentDTO.paymentId}</td>
+                      <td>
+                        {selected.paymentDTO.amount ? selected.paymentDTO.amount.toLocaleString('vi-VN') : '0'} ₫
                       </td>
-                      <td style={{ border: '1px solid #e0e7ef', padding: '10px 12px', textAlign: 'left' }}>{selected.paymentDTO.paymentMethod}</td>
-                      <td style={{ border: '1px solid #e0e7ef', padding: '10px 12px', textAlign: 'left' }}>{selected.paymentDTO.paymentStatus}</td>
-                      <td style={{ border: '1px solid #e0e7ef', padding: '10px 12px', textAlign: 'left' }}>{selected.paymentDTO.paymentDate}</td>
+                      <td>{selected.paymentDTO.paymentMethod}</td>
+                      <td>{selected.paymentDTO.status}</td>
+                      <td>{selected.paymentDTO.paymentDate}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -294,7 +299,7 @@ export default function CaseTracking() {
               <Alert type="info" message="Chưa có dữ liệu thanh toán cho lịch hẹn này" />
             )}
           </div>
-          <div className={`tab-content${activeTab === 3 ? ' active' : ''}`} style={{ display: activeTab === 3 ? 'block' : 'none' }}>
+          <div className={`tab-content${activeTab === 3 ? ' active' : ''}`}>
             {loadingResult ? (
               <Spin tip="Đang tải dữ liệu kết quả..." />
             ) : resultError ? (
@@ -305,30 +310,30 @@ export default function CaseTracking() {
               <Alert type="info" message="Chưa có dữ liệu kết quả cho lịch hẹn này" />
             ) : (
               <div>
-                <div style={{ marginBottom: 16 }}>
+                <div className="appointment-detail-item">
                   <strong>Mã lịch hẹn:</strong> {selected.appointmentId}
                 </div>
-                <table className="detail-table" style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '16px' }}>
+                <table className="detail-table">
                   <tbody>
                     <tr>
-                      <td style={{ border: '1px solid #e0e7ef', padding: '10px 12px', textAlign: 'left', fontWeight: 'bold' }}>Kết quả</td>
-                      <td style={{ border: '1px solid #e0e7ef', padding: '10px 12px', textAlign: 'left' }}>{resultData.resultValue || 'Không có dữ liệu'}</td>
+                      <td className="bold">Kết quả</td>
+                      <td>{resultData.resultValue || 'Không có dữ liệu'}</td>
                     </tr>
                     <tr>
-                      <td style={{ border: '1px solid #e0e7ef', padding: '10px 12px', textAlign: 'left', fontWeight: 'bold' }}>Ghi chú</td>
-                      <td style={{ border: '1px solid #e0e7ef', padding: '10px 12px', textAlign: 'left' }}>{resultData.notes || '-'}</td>
+                      <td className="bold">Ghi chú</td>
+                      <td>{resultData.notes || '-'}</td>
                     </tr>
                     <tr>
-                      <td style={{ border: '1px solid #e0e7ef', padding: '10px 12px', textAlign: 'left', fontWeight: 'bold' }}>Ngày phân tích</td>
-                      <td style={{ border: '1px solid #e0e7ef', padding: '10px 12px', textAlign: 'left' }}>{resultData.resultDate ? new Date(resultData.resultDate).toLocaleString() : '-'}</td>
+                      <td className="bold">Ngày phân tích</td>
+                      <td>{resultData.resultDate ? new Date(resultData.resultDate).toLocaleString() : '-'}</td>
                     </tr>
                     <tr>
-                      <td style={{ border: '1px solid #e0e7ef', padding: '10px 12px', textAlign: 'left', fontWeight: 'bold' }}>Trạng thái</td>
-                      <td style={{ border: '1px solid #e0e7ef', padding: '10px 12px', textAlign: 'left' }}>{resultData.status || '-'}</td>
+                      <td className="bold">Trạng thái</td>
+                      <td>{resultData.status || '-'}</td>
                     </tr>
                     <tr>
-                      <td style={{ border: '1px solid #e0e7ef', padding: '10px 12px', textAlign: 'left', fontWeight: 'bold' }}>Người tham gia</td>
-                      <td style={{ border: '1px solid #e0e7ef', padding: '10px 12px', textAlign: 'left' }}>{resultData.participants || '-'}</td>
+                      <td className="bold">Người tham gia</td>
+                      <td>{resultData.participants ? (Array.isArray(resultData.participants) ? resultData.participants.join(', ') : resultData.participants) : '-'}</td>
                     </tr>
                   </tbody>
                 </table>
