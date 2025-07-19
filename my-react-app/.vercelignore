@@ -3,4 +3,5 @@ node_modules
 .env.local
 .env.development
 README.md
-*.log 
+*.log
+package-lock.json 
