@@ -1,5 +1,6 @@
 package com.example.Bloodline_ADN_System.controller;
 
+import com.example.Bloodline_ADN_System.Entity.Appointment;
 import com.example.Bloodline_ADN_System.dto.noneWhere.ApiMessResponse;
 import com.example.Bloodline_ADN_System.dto.noneWhere.ChangePasswordDTO;
 import com.example.Bloodline_ADN_System.dto.*;
@@ -75,6 +76,12 @@ public class CustomerController {
     @GetMapping("/result/get/{appointmentId}")
     public ResultDTO getResult(@PathVariable Long appointmentId){
         return resultService.getResultByAppointmentId(appointmentId);
+    }
+
+    @PutMapping("/apointment/update/{id}")
+    public ResponseEntity<AppointmentDTO> updateAppointment(@PathVariable Long id, @RequestParam(value = "status", required = false) Appointment.AppointmentStatus status,
+                                                            @RequestParam(value = "collectionStatus", required = false) Appointment.CollectionStatus collectionStatus) {
+        return ResponseEntity.ok(appointmentService.updateAppointmentProgress(id, status, collectionStatus));
     }
 
 }

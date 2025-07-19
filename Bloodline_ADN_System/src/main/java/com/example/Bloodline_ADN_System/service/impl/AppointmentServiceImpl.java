@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -232,7 +233,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                         Sample sample = new Sample();
                         sample.setParticipant(participant);
                         sample.setSampleType(sampleDto.getSampleType());
-                        sample.setCollectionDateTime(sampleDto.getCollectionDateTime());
+                        sample.setCollectionDateTime(LocalDateTime.now());
                         sample.setQuality(sampleDto.getQuality());
                         sample.setStatus(sampleDto.getStatus());
                         sample.setResult(sampleDto.getResult());

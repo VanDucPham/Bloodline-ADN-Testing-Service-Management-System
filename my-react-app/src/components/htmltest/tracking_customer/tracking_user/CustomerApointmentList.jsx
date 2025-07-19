@@ -139,13 +139,58 @@ const AppointmentList = () => {
           )
         );
       } else {
-        showToast('danger', response?.message || 'Hủy lịch hẹn thất bại.');
+        showToast('danger', response.message || 'Hủy lịch hẹn thất bại.');
       }
     } catch (error) {
       const message =
         error.response?.response?.message ||
         error.message ||
         'Lỗi không xác định khi hủy lịch hẹn';
+      showToast('danger', message);
+    }
+  };
+
+  const handleConfirmKitReceived = async (appointmentId) => {
+    try {
+      // Giữ nguyên trạng thái appointment, chỉ cập nhật collection status
+      const currentStatus = selectedAppointment.statusAppointment;
+      console.log('🔍 Debug - Calling API:', {
+        appointmentId,
+        currentStatus,
+        collectionStatus: 'ARRIVED'
+      });
+      
+      const response = await apiService.user.updateAppointmentStatusAndCollectionStatus(
+        appointmentId, 
+        currentStatus, 
+        'ARRIVED'
+      )      
+      // Nếu API call thành công (không throw error), coi như thành công
+      showToast('success', 'Đã xác nhận nhận kit thành công!');
+      
+      // Cập nhật trạng thái trong danh sách
+      setAppointments((prev) =>
+        prev.map((item) =>
+          item.appointmentId === appointmentId
+            ? { ...item, collection_Status: 'ARRIVED' }
+            : item
+        )
+      );
+      
+      // Cập nhật trạng thái trong modal nếu đang mở
+      if (selectedAppointment && selectedAppointment.appointmentId === appointmentId) {
+        setSelectedAppointment(prev => ({
+          ...prev,
+          collection_Status: 'ARRIVED'
+        }));
+      }
+      
+    } catch (error) {
+      console.error('❌ Debug - API Error:', error);
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        'Lỗi không xác định khi xác nhận nhận kit';
       showToast('danger', message);
     }
   };
@@ -251,10 +296,11 @@ const AppointmentList = () => {
         </div>
         <div className="appointment-list grid-2col">
           {pagedAppointments.map((appointment, idx) => {
-            // Dữ liệu mẫu avatar, tên, trạng thái thanh toán
+            // Dữ liệu mẫu avatar, tên
             const avatar = sampleAvatars[idx % sampleAvatars.length];
             const name = sampleNames[idx % sampleNames.length];
-            const paid = idx % 2 === 0; // mẫu: chẵn đã thanh toán, lẻ chưa
+            // Kiểm tra trạng thái thanh toán thực từ paymentDTO
+            const isPaid = appointment.paymentDTO && appointment.paymentDTO.paymentStatus === "COMPLETED";
             return (
               <div className="appointment-card fade-in-card" key={appointment.appointmentId} style={{animationDelay: `${idx * 80}ms`}}>
                 <div className="card-header">
@@ -273,9 +319,9 @@ const AppointmentList = () => {
                 <div className="card-detail">
                   <div><FontAwesomeIcon icon={faCalendarDay} /> {appointment.date}</div>
                   <div><FontAwesomeIcon icon={faClock} /> {appointment.time}</div>
-                  <div className={`card-payment ${paid ? 'paid' : 'unpaid'}`}>
-                    <FontAwesomeIcon icon={paid ? faCreditCard : faMoneyCheckAlt} style={{marginRight:4}} />
-                    {paid ? 'Đã thanh toán' : 'Chưa thanh toán'}
+                  <div className={`card-payment ${isPaid ? 'paid' : 'unpaid'}`}>
+                    <FontAwesomeIcon icon={isPaid ? faCreditCard : faMoneyCheckAlt} style={{marginRight:4}} />
+                    {isPaid ? 'Đã thanh toán' : 'Chưa thanh toán'}
                   </div>
                 </div>
                 <div className="card-footer">
@@ -335,10 +381,32 @@ const AppointmentList = () => {
                     <tr><td>Giờ hẹn</td><td>{selectedAppointment.time}</td></tr>
                     <tr><td>Trạng thái lịch hẹn</td><td>{getStatusText(selectedAppointment.statusAppointment)}</td></tr>
                     {selectedAppointment.delivery_method === "HOME_DELIVERY" && (
-                      <tr><td>Trạng thái lấy mẫu tại nhà:</td><td>Nhân viên đang đến</td></tr>
+                      <tr><td>Trạng thái lấy mẫu tại nhà:</td><td>{selectedAppointment.collection_Status || 'Chưa có thông tin'}</td></tr>
                     )}
                     {selectedAppointment.delivery_method === "HOME_COLLECTION" && (
-                      <tr><td>Trạng thái kit:</td><td>Kit đã  đang được gửi đến</td></tr>
+                      <tr>
+                        <td>Trạng thái kit:</td>
+                        <td>
+                          {selectedAppointment.collection_Status || 'Chưa có thông tin'}
+                          {selectedAppointment.collection_Status === "TRAVELING" && (
+                            <button
+                              onClick={() => handleConfirmKitReceived(selectedAppointment.appointmentId)}
+                              style={{ 
+                                backgroundColor: '#52c41a', 
+                                color: 'white', 
+                                border: 'none', 
+                                padding: '4px 8px', 
+                                borderRadius: '4px', 
+                                cursor: 'pointer',
+                                fontSize: '12px',
+                                marginLeft: '8px'
+                              }}
+                            >
+                              ✅ Xác nhận nhận kit
+                            </button>
+                          )}
+                        </td>
+                      </tr>
                     )}
                     <tr>
                       <td>Kết luận xét nghiệm</td>
@@ -349,6 +417,7 @@ const AppointmentList = () => {
                     <tr><td>Mã hồ sơ</td><td>{selectedAppointment.caseCode}</td></tr>
                   </tbody>
                 </table>
+                
                 
                 {selectedAppointment.result && selectedAppointment.result.trim() !== '' && (
                   <div style={{ marginTop: '1rem', textAlign: 'center' }}>
@@ -429,10 +498,8 @@ const AppointmentList = () => {
                       <tr>
                         <td>{selectedAppointment.paymentDTO.paymentID}</td>
                         <td>
-  {selectedAppointment.paymentDTO.paymentAmount.toLocaleString('vi-VN')} ₫
-</td>
-
-
+                          {selectedAppointment.paymentDTO.paymentAmount ? selectedAppointment.paymentDTO.paymentAmount.toLocaleString('vi-VN') : '0'} ₫
+                        </td>
                         <td>{selectedAppointment.paymentDTO.paymentMethod}</td>
                         <td>{selectedAppointment.paymentDTO.paymentStatus}</td>
                         <td>{selectedAppointment.paymentDTO.paymentDate}</td>

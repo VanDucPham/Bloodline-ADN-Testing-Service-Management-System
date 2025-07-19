@@ -13,7 +13,7 @@ function FacilityScheduleWithAssign() {
   switch (method) {
     case "HOME_COLLECTION": return "Tại nhà";
     case "HOME_DELIVERY": return "Nhân viên đến lấy";
-    case "SELF_DROP_OFF": return "Gửi bưu điện";
+    case "SELF_DROP_OFF": return "Lấy mẫu tại cơ sở";
     default: return method; // fallback nếu có giá trị lạ
   }
 };
@@ -40,7 +40,7 @@ const translateAppointmentType = (type) => {
   const fetchStaffList = async () => {
     try {
       const res = await apiService.admin.getStaffAssigned();
-      console.log( "Danh sachsnhaan viên",res)
+      console.log( "Danh sách nhân viên",res)
       const staff = res || [];
       setStaffList(staff.map(s => ({ label: s.staffName, value: s.staffCode })));
     } catch (err) {
