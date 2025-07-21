@@ -12,7 +12,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // Map tất cả đường dẫn /upload/** tới thư mục gốc trên ổ cứng
         registry.addResourceHandler("/upload/**")
-                .addResourceLocations("file:upload/");
+                .addResourceLocations("file:Bloodline_ADN_System/upload/");
         // nếu thư mục là ./upload trong thư mục project
     }
 }

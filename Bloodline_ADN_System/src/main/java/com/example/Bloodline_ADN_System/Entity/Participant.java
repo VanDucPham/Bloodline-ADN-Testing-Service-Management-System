@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDate;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 // ========================
 // 👤 PARTICIPANT ENTITY
@@ -32,9 +33,11 @@ public class Participant {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "appointment_id")
+    @JsonIgnore
     private Appointment appointment;
 
     @OneToOne(mappedBy = "participant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private Sample sample;
 
     public enum Gender { MALE, FEMALE, OTHER }

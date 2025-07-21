@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 // ========================
 // 💵 PAYMENT ENTITY
@@ -21,6 +22,7 @@ public class Payment {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "appointment_id")
+    @JsonIgnore
     private Appointment appointment;
 
     private Double amount;
