@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-import ArticleList from "./article-list.jsx";
+import ArticleList from "./Article-list.jsx";
 import Pagination from "./pagination.jsx";
 import "./dnapost.css";
 

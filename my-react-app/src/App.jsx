@@ -9,7 +9,7 @@ import Pricelist from './components/pricelist/Pricelist';
 import UserDashboard from './components/dashboards/UserDashboard';
 import AppointmentBooking from './components/htmltest/tracking_customer/tracking_user/appointmentBooking';
 import BlogDetail from './components/post-detail/BlogDetail';
-import DnaPost from './components/dna-testing/DnaPost';
+import DnaPost from './components/dna-testing/Dnapost.jsx';
 import AllPost from './components/allpost/allpost';
 import AboutUs from './components/aboutus/AboutUs';
 import QuestionADNApp from "./components/questionADN/QuestionADN";
