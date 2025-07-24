@@ -5,12 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "chmod +x node_modules/.bin/vite && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "vercel-build": "vite build",
-    "postinstall": "chmod +x node_modules/.bin/vite"
-
+    "vercel-build": "chmod +x node_modules/.bin/vite && vite build"
   },
   "dependencies": {
     "@ant-design/charts": "^2.6.0",
