@@ -6,6 +6,6 @@ services:
     staticPublishPath: ./my-react-app/dist
     envVars:
       - key: NODE_VERSION
-        value: 18.19.0
+        value: 22.19.0
       - key: VITE_API_BASE_URL
         value: https://bloodline-adn-backend-1.onrender.com/api 
