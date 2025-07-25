@@ -16,6 +16,8 @@ import moment from 'moment';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
+const today = new Date().toISOString().split('T')[0];
+
 
 function ParticipantModal({
   open,
@@ -224,6 +226,7 @@ function ParticipantModal({
                   type="date"
                   placeholder="Ngày sinh"
                   value={p.birthDate}
+                  max={today} // Giới hạn ngày sinh không được lớn hơn hôm nay
                   onChange={(e) => handleNewParticipantChange(idx, e)}
                   required
                 />

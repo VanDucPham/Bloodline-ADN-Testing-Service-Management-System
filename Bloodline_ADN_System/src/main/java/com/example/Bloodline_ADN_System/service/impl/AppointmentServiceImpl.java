@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -77,7 +78,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         // 2. Validate
         AppointmentDTO dto = request.getAppointment();
-        validateAppointmentDate(dto.getAppointmentDate(), dto.getDeliveryMethod());
         validateSlotAvailability(dto.getAppointmentDate(), dto.getAppointmentTime());
 
 
@@ -95,7 +95,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         appointment.setType(dto.getAppointmentType());
         appointment.setAppointmentDate(LocalDate.now());
         appointment.setAppointmentTime(LocalTime.now());
-        appointment.setDeliveryMethod(Appointment.DeliveryMethod.valueOf(dto.getDeliveryMethod()));
+        appointment.setDeliveryMethod(Appointment.DeliveryMethod.SELF_DROP_OFF);
         appointment.setAppointmentNote(dto.getAppointmentNote());
         appointment.setStatus(Appointment.AppointmentStatus.SCHEDULED);
         appointment.setCollectionStatus(Appointment.CollectionStatus.ASSIGNED);
@@ -233,7 +233,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                         Sample sample = new Sample();
                         sample.setParticipant(participant);
                         sample.setSampleType(sampleDto.getSampleType());
-                        sample.setCollectionDateTime(sampleDto.getCollectionDateTime());
+                        sample.setCollectionDateTime(LocalDateTime.now());
                         sample.setQuality(sampleDto.getQuality());
                         sample.setStatus(sampleDto.getStatus());
                         sample.setResult(sampleDto.getResult());
@@ -367,6 +367,18 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .map(this::toDTO)
                 .collect(Collectors.toList());
     }
+
+    //Lọc cho nhân viên
+    public List<AppointmentDTO> filterAppointmentForStaff(Appointment.AppointmentStatus status,
+                                                          Appointment.AppointmentType type,
+                                                          LocalDate date,
+                                                          Long staffId) {
+        return appointmentRepository.findByFiltersForStaff(staffId, status, type, date)
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
 
     @Override
     public AppointmentDTO updateAppointmentProgress(Long id, Appointment.AppointmentStatus status, Appointment.CollectionStatus collectionStatus) {

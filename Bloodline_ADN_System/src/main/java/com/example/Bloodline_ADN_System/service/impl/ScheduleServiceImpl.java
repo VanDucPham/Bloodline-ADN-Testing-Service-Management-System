@@ -125,6 +125,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
                 assign.ifPresent(appointment -> {
                     appointment.setAssignedStaff(user);
+                    appointment.setCollectionStatus(Appointment.CollectionStatus.ASSIGNED);
                     appointmentRepository.save(appointment); // cập nhật vào DB
                 });
             }

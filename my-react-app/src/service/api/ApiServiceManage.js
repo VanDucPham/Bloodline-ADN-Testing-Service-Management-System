@@ -1,7 +1,7 @@
 
 import axios from "axios";
 import AuthService from "../authService";
-import UserService from "../userService";
+import UserService from "../userService.js";
 
 
 import FeedbackService from "../feedbackService"; // Import FeedbackService

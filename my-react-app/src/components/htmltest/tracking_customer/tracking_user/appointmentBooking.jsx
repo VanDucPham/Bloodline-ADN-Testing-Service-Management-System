@@ -329,19 +329,16 @@ localStorage.setItem("sample", JSON.stringify(filteredSamples));
         setValidateMessage("Vui lòng chọn dịch vụ.");
         return;
       }
-      if (
-        appointment.deliveryMethod === "SELF_DROP_OFF" &&
-        (!appointment.appointmentDate || !appointment.appointmentTime)
-      ) {
-        setValidateMessage("Vui lòng chọn ngày giờ hẹn khi đến cơ sở.");
+      if (!appointment.deliveryMethod) {
+        setValidateMessage("Vui lòng chọn hình thức lấy mẫu.");
+        return;
+      }
+      if (!appointment.appointmentDate || !appointment.appointmentTime) {
+        setValidateMessage("Vui lòng chọn ngày giờ hẹn.");
         return;
       }
     }
-    // if (appointment.deliveryMethod !== 'SELF_DROP_OFF' && caseFile.caseType === 'ADMINISTRATIVE') {
-    //   setValidateMessage('Thủ tục hành chính chỉ được lấy mẫu tại cơ sở.');
-    //   return;
-    // }
-    if (step === 2 && appointment.deliveryMethod ==="SELF_DROP_OFF") {
+    if (step === 2 && appointment.deliveryMethod) {
       const available = await checkAvailability();
       if (!available) {
         setValidateMessage('Khung giờ này đã đầy, vui lòng chọn thời gian khác.');
@@ -510,7 +507,7 @@ localStorage.setItem("sample", JSON.stringify(filteredSamples));
                   Nhân viên đến lấy tận nhà
                 </option>
               </select>
-              { appointment.deliveryMethod ==="SELF_DROP_OFF" && (
+              {appointment.deliveryMethod && (
                 <><label>Chọn ngày hẹn:</label>
                 <input type="date" value={appointment.appointmentDate} min={minDate} onChange={handleDateChange} className="styled-input" />
                 <div className="grid grid-cols-2 gap-3">
@@ -697,7 +694,7 @@ localStorage.setItem("sample", JSON.stringify(filteredSamples));
               <div className="confirmation-card">
                 <p><strong>Loại hồ sơ:</strong> {caseFile.caseType}</p>
                 <p><strong>Dịch vụ:</strong> {selectedService ? selectedService.serviceName : ''}</p>
-                <p><strong>Lịch hẹn:</strong> {appointment.appointmentDate}, {appointment.appointmentTime}</p>
+                <p><strong>Lịch hẹn:</strong> {appointment.appointmentDate || 'Chưa chọn ngày'}, {appointment.appointmentTime || 'Chưa chọn giờ'}</p>
                 <p><strong>Người tham gia:</strong> {participants.map(p => p.name).join(', ')}</p>
                 <p><strong>Loại mẫu:</strong> {samples.map(s => s.participantName ? `${s.participantName} (${s.sampleType})` : s.sampleType).join(', ')}</p>
                 <p><strong>Hình thức lấy mẫu:</strong> {appointment.deliveryMethod}</p>
@@ -715,7 +712,7 @@ localStorage.setItem("sample", JSON.stringify(filteredSamples));
                 <p><strong>Dịch vụ:</strong> {selectedService ? selectedService.serviceName : ''} ({caseFile.caseType === 'ADMINISTRATIVE' ? 'Hành chính' : 'Dân sự'})</p>
                 <p><strong>Số người tham gia:</strong> {participants.length}</p>
                 <p><strong>Loại mẫu:</strong> {samples.map(s => s.sampleType).join(', ')}</p>
-                <p><strong>Ngày hẹn:</strong> {appointment.appointmentDate}</p>
+                <p><strong>Ngày hẹn:</strong> {appointment.appointmentDate || 'Chưa chọn ngày'}</p>
                 <p><strong>Tổng chi phí:</strong> <span className="price">{selectedService ? formatVND(selectedService.servicePrice) : ''}</span></p>
               </div>
               <label>Phương thức thanh toán:</label>

@@ -32,7 +32,10 @@ public interface AppointmentService {
     ApiMessResponse cancelAppointment(Long id);
     List<AppointmentDTO> filterAppointment(Appointment.AppointmentStatus status, Appointment.AppointmentType type, LocalDate date);
     AppointmentDTO updateAppointmentProgress(Long id, Appointment.AppointmentStatus status,Appointment.CollectionStatus collectionStatus);
-
+    List<AppointmentDTO> filterAppointmentForStaff(Appointment.AppointmentStatus status,
+                                                   Appointment.AppointmentType type,
+                                                   LocalDate date,
+                                                   Long staffId);
   //  Long getUserIdByUsername(String username);
 
 

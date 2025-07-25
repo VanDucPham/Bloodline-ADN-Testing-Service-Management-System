@@ -43,7 +43,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/feedback/my-feedback/**").hasRole("CUSTOMER")
                         .requestMatchers("/api/feedback/**").hasAnyRole("ADMIN", "MANAGER", "STAFF")
                         .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "MANAGER")
-                        .requestMatchers("/api/staff/**").hasAnyRole("STAFF", "ADMIN")
+                        .requestMatchers("/api/staff/**").hasAnyRole("STAFF", "ADMIN", "MANAGER")
                         .requestMatchers("/api/manager/**").hasAnyRole("MANAGER", "ADMIN")
                         .requestMatchers("/api/customer/**").hasAnyRole("CUSTOMER", "STAFF", "ADMIN", "MANAGER")
                         .anyRequest().authenticated()

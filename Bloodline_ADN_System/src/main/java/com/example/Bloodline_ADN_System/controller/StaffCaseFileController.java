@@ -16,8 +16,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
+
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -33,13 +36,15 @@ public class StaffCaseFileController {
     private final ResultService resultService;
     private final PaymentService paymentService;
     @GetMapping("/appointment")
-    public ResponseEntity<List<AppointmentDTO>> filterAppointments(
+    public ResponseEntity<List<AppointmentDTO>> getAppointmentsForStaff(
             @RequestParam(required = false) Appointment.AppointmentStatus status,
             @RequestParam(required = false) Appointment.AppointmentType type,
-            @RequestParam(name = "appointmentDate",required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
-    ) {
-        List<AppointmentDTO> appointments = appointmentService.filterAppointment(status, type, date);
-        return ResponseEntity.ok(appointments);
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            Principal principal) {
+
+        Long staffId = userService.getUserIdFromPrincipal(principal);
+        List<AppointmentDTO> result = appointmentService.filterAppointmentForStaff(status, type, date, staffId);
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/appointment/{id}")

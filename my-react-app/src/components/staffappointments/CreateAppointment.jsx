@@ -8,7 +8,6 @@ const APPOINTMENT_TYPES = [
   { value: 'CIVIL', label: 'Dân sự' },
 ];
 const DELIVERY_METHODS = [
-  { value: 'HOME_COLLECTION', label: 'Tự lấy mẫu tại nhà' },
   { value: 'SELF_DROP_OFF', label: 'Đến cơ sở lấy mẫu cơ sở' },
 ];
 const STATUS_OPTIONS = [
@@ -65,7 +64,7 @@ function CreateAppointment() {
     };
     fetchServices();
     // Lấy profile staff
-   const fetchStaffProfile = async () => {
+    const fetchStaffProfile = async () => {
       try {
         const res = await apiService.staff.getStaffProfile();
         console.log('Staff profile:', res);
@@ -109,16 +108,16 @@ function CreateAppointment() {
       return;
     }
     try {
-const response = await apiService.staff.createAppointment({
+      const response = await apiService.staff.createAppointment({
         appointment: form,
         caseFile: caseFile
       });
       const appointmentId = response?.appointmentId || response?.data?.appointmentId;
-  if (!appointmentId) {
-    setError('Không lấy được mã lịch hẹn sau khi tạo!');
-    return;
-  }
-            setSuccess('Đặt lịch thành công!');
+      if (!appointmentId) {
+        setError('Không lấy được mã lịch hẹn sau khi tạo!');
+        return;
+      }
+      setSuccess('Đặt lịch thành công!');
       setTimeout(() => navigate(`/payment/${appointmentId}`), 1200);
     } catch (err) {
       // Nếu backend trả về lỗi khung giờ đã đầy thì hiển thị đúng thông báo
@@ -152,7 +151,7 @@ const response = await apiService.staff.createAppointment({
           <select name="serviceId" value={form.serviceId} onChange={handleChange} required>
             <option value="">--Chọn dịch vụ--</option>
             {services.map(s => (
-                //Sẽ hiển thị cho người dùng chọn tên service nhưng lưu về lại là id
+              //Sẽ hiển thị cho người dùng chọn tên service nhưng lưu về lại là id
               <option key={s.serviceId} value={s.serviceId}>{s.serviceName}</option>
             ))}
           </select>
@@ -179,23 +178,22 @@ const response = await apiService.staff.createAppointment({
         </div> */}
         <div>
           <label>Phương thức lấy mẫu:</label>
-          <select name="deliveryMethod" value={form.deliveryMethod} onChange={handleChange} required>
-            <option value="">--Chọn--</option>
-            {DELIVERY_METHODS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-          </select>
+          <input type="text" value="Đến cơ sở lấy mẫu cơ sở" readOnly />
         </div>
+
         <div>
           <label>Trạng thái lịch hẹn:</label>
-          <select name="appointmentStatus" value={form.appointmentStatus} onChange={handleChange} required>
-            {STATUS_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-          </select>
+
+           <input type="text" value="Đã đặt" readOnly />
+
+
         </div>
         <div>
           <label>Trạng thái thu mẫu:</label>
-          <select name="collectionStatus" value={form.collectionStatus} onChange={handleChange} required>
-            {COLLECTION_STATUS_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-          </select>
+
+           <input type="text" value="Đã phân công" readOnly />
         </div>
+
         <div>
           <label>Ghi chú:</label>
           <input name="appointmentNote" value={form.appointmentNote} onChange={handleChange} />

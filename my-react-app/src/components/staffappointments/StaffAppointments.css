@@ -1,6 +1,6 @@
 /* === Layout Container === */
 .staff-appointments-container {
-  max-width: 1200px;
+  max-width: none;
   margin: 30px auto;
   padding: 24px;
   background: #f8f9fa;
