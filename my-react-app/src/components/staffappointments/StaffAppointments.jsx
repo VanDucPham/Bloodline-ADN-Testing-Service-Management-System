@@ -309,6 +309,14 @@ function StaffAppointments() {
 
     const matchId = searchId ? String(item.appointmentId) === searchId : true;
     return matchStatus && matchDate && matchId;
+  }).sort((a, b) => {
+    const dateA = moment(a.appointmentDate + ' ' + (a.appointmentTime || '00:00'), 'YYYY-MM-DD HH:mm');
+    const dateB = moment(b.appointmentDate + ' ' + (b.appointmentTime || '00:00'), 'YYYY-MM-DD HH:mm');
+    if (dateB.diff(dateA) !== 0) {
+      return dateB.diff(dateA); // Ngày mới nhất lên trước
+    }
+    // Nếu ngày giờ giống nhau, sắp xếp theo appointmentId giảm dần (mới nhất lên trước)
+    return b.appointmentId - a.appointmentId;
   });
 
 
