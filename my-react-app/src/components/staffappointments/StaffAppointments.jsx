@@ -310,8 +310,8 @@ function StaffAppointments() {
     const matchId = searchId ? String(item.appointmentId) === searchId : true;
     return matchStatus && matchDate && matchId;
   }).sort((a, b) => {
-    const dateA = moment(a.appointmentDate + ' ' + (a.appointmentTime || '00:00'), 'YYYY-MM-DD HH:mm');
-    const dateB = moment(b.appointmentDate + ' ' + (b.appointmentTime || '00:00'), 'YYYY-MM-DD HH:mm');
+    const dateA = moment(a.appointmentDate, 'YYYY-MM-DD');
+    const dateB = moment(b.appointmentDate, 'YYYY-MM-DD');
     if (dateB.diff(dateA) !== 0) {
       return dateB.diff(dateA); // Ngày mới nhất lên trước
     }
