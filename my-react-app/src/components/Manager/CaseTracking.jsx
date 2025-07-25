@@ -37,7 +37,7 @@ export default function CaseTracking() {
             return dateB - dateA; // Ngày mới nhất lên đầu
           }
           // Nếu ngày giống nhau, sắp xếp theo id giảm dần (id lớn hơn lên trước)
-          return b.id - a.id;
+          return b.appointmentId - a.appointmentId;
         });
         setData(sortedData);
       } catch (error) {
