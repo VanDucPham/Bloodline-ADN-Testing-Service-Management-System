@@ -31,10 +31,13 @@ export default function CaseTracking() {
         const response = await apiService.manager.getAllTracking();
         // Sắp xếp theo thứ tự ngược lại - mới nhất ở đầu
         const sortedData = response.sort((a, b) => {
-          // So sánh theo createdAt (ngày tạo)
           const dateA = new Date(a.createdAt);
           const dateB = new Date(b.createdAt);
-          return dateB - dateA; // Ngược lại: b - a
+          if (dateB - dateA !== 0) {
+            return dateB - dateA; // Ngày mới nhất lên đầu
+          }
+          // Nếu ngày giống nhau, sắp xếp theo id giảm dần (id lớn hơn lên trước)
+          return b.id - a.id;
         });
         setData(sortedData);
       } catch (error) {
