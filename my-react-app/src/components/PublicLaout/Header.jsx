@@ -82,7 +82,7 @@ function Header() {
       <div className="header-top">
         <div className="header-logo-group">
           <div className="logo-wrapper">
-            <img src="/src/images/logo.jpg" alt="Vietcare Logo" className="logo" />
+            <img src="/images/logo.jpg" alt="Vietcare Logo" className="logo" />
           </div>
           <div className="brand-title">
             <span className="brand-main">Vietcare Lab</span>
