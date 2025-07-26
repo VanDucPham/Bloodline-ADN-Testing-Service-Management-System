@@ -63,16 +63,16 @@ const steps = [
 ];
 
 const experts = [
-  { img: '/src/images/vien-nghien-cuu-vietcare-21.jpg', name: 'TS. Nguyễn Văn A', desc: 'Chuyên gia di truyền học, 15 năm kinh nghiệm.' },
-  { img: '/src/images/vien-nghien-cuu-vietcare-6.jpg', name: 'BS. Lê Thị B', desc: 'Bác sĩ xét nghiệm, tư vấn di truyền.' },
-  { img: '/src/images/image1-aboutus.jpg', name: 'PGS. Trần Văn C', desc: 'Cố vấn chuyên môn, nhiều công trình nghiên cứu.' },
+  { img: '/public/images/vien-nghien-cuu-vietcare-21.jpg', name: 'TS. Nguyễn Văn A', desc: 'Chuyên gia di truyền học, 15 năm kinh nghiệm.' },
+  { img: '/public/images/vien-nghien-cuu-vietcare-6.jpg', name: 'BS. Lê Thị B', desc: 'Bác sĩ xét nghiệm, tư vấn di truyền.' },
+  { img: '/public/images/image1-aboutus.jpg', name: 'PGS. Trần Văn C', desc: 'Cố vấn chuyên môn, nhiều công trình nghiên cứu.' },
 ];
 
 const partners = [
-  '/src/images/logo.jpg',
-  '/src/images/vien-nghien-cuu-vietcare-20.jpg',
-  '/src/images/vien-nghien-cuu-vietcare-21.jpg',
-  '/src/images/vien-nghien-cuu-vietcare-6.jpg',
+  '/public/images/logo.jpg',
+  '/public/images/vien-nghien-cuu-vietcare-20.jpg',
+  '/public/images/vien-nghien-cuu-vietcare-21.jpg',
+  '/public/images/vien-nghien-cuu-vietcare-6.jpg',
 ];
 
 function useSectionFadeIn() {
@@ -149,7 +149,7 @@ const Homepage = () => {
 
     try {
       // Sử dụng axios trực tiếp để tránh vấn đề baseURL
-      const response = await axios.post('http://localhost:8080/api/consultation/register', formData, {
+      const response = await axios.post('https://bloodline-adn-testing.onrender.com/api/consultation/register', formData, {
         headers: {
           'Content-Type': 'application/json'
         }
