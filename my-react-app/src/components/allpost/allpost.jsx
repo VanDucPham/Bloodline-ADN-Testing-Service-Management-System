@@ -6,7 +6,7 @@ import "./allpost.css";
 
 import Footer from "../Footer.jsx";
 import apiService from "../../service/api";
-import heroBg from "../../images/backgroup-2-scaled.jpg";
+import heroBg from "/images/backgroup-2-scaled.jpg";
 
 
 
