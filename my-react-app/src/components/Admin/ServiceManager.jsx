@@ -28,6 +28,7 @@ const ServiceManager = () => {
   const [editingService, setEditingService] = useState(null);
   const [form] = Form.useForm();
 
+  // Lấy danh sách dịch vụ
   const fetchServices = async () => {
     setLoading(true);
     try {
@@ -45,6 +46,7 @@ const ServiceManager = () => {
     fetchServices();
   }, []);
 
+  // Mở modal (sửa hoặc thêm mới)
   const openModal = (service = null) => {
     setEditingService(service);
     setIsModalOpen(true);
@@ -57,9 +59,7 @@ const ServiceManager = () => {
                 uid: "-1",
                 name: "current.jpg",
                 status: "done",
-                url: service.imageUrl.startsWith("http")
-                  ? service.imageUrl
-                  : `http://localhost:8080${service.imageUrl}`,
+                url: service.imageUrl, // Ảnh Cloudinary
               },
             ]
           : [],
@@ -75,11 +75,13 @@ const ServiceManager = () => {
     form.resetFields();
   };
 
+  // Lưu dịch vụ (thêm hoặc cập nhật)
   const handleSave = async () => {
     try {
       const values = await form.validateFields();
       let imageUrl = editingService?.imageUrl || "";
 
+      // Nếu có upload ảnh mới -> upload lên Cloudinary
       if (
         values.imageFile &&
         values.imageFile.length > 0 &&
@@ -87,7 +89,7 @@ const ServiceManager = () => {
       ) {
         const file = values.imageFile[0].originFileObj;
         const response = await apiService.admin.uploadImage(file);
-        imageUrl = response.data?.url || response.url;
+        imageUrl = response.data?.url || response.url; // Link Cloudinary
       }
 
       const payload = {
@@ -114,6 +116,7 @@ const ServiceManager = () => {
     }
   };
 
+  // Xóa dịch vụ
   const handleDelete = async (service) => {
     try {
       await apiService.admin.deleteService(service.serviceId);
@@ -147,19 +150,14 @@ const ServiceManager = () => {
       title: "Hình ảnh",
       dataIndex: "imageUrl",
       key: "imageUrl",
-      render: (url) => {
-        const fullUrl = url?.startsWith("http")
-          ? url
-          : `http://localhost:8080${url}`;
-        return (
-          <img
-            src={fullUrl}
-            alt="Dịch vụ"
-            width={60}
-            style={{ borderRadius: 4, objectFit: "cover" }}
-          />
-        );
-      },
+      render: (url) => (
+        <img
+          src={url} // Ảnh Cloudinary
+          alt="Dịch vụ"
+          width={60}
+          style={{ borderRadius: 4, objectFit: "cover" }}
+        />
+      ),
     },
     {
       title: "Số người",
