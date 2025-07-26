@@ -209,7 +209,7 @@ const Homepage = () => {
             <a href="#register" className="hero-cta">Đăng ký tư vấn miễn phí</a>
           </div>
           <div className="hero-right">
-            <img src="/src/images/backgroup-2-scaled.jpg" alt="ADN Lab" className="hero-img" />
+            <img src="/images/backgroup-2-scaled.jpg" alt="ADN Lab" className="hero-img" />
           </div>
         </div>
       </section>
