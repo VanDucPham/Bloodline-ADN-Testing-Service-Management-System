@@ -50,9 +50,9 @@ const benefits = [
 ];
 
 const services = [
-  { img: '/src/images/chi-phi-xet-nghiem-adn-1.jpg', title: 'Xét nghiệm huyết thống', desc: 'Xác định quan hệ cha con, mẹ con, anh chị em...' },
-  { img: '/src/images/vien-nghien-cuu-vietcare-20.jpg', title: 'Xét nghiệm ADN pháp lý', desc: 'Kết quả có giá trị pháp lý, dùng cho tòa án, giấy khai sinh...' },
-  { img: '/src/images/doctor.jpg', title: 'Tư vấn di truyền', desc: 'Tư vấn sức khỏe, phòng ngừa bệnh di truyền.' },
+  { img: '/public/images/chi-phi-xet-nghiem-adn-1.jpg', title: 'Xét nghiệm huyết thống', desc: 'Xác định quan hệ cha con, mẹ con, anh chị em...' },
+  { img: '/public/images/vien-nghien-cuu-vietcare-20.jpg', title: 'Xét nghiệm ADN pháp lý', desc: 'Kết quả có giá trị pháp lý, dùng cho tòa án, giấy khai sinh...' },
+  { img: '/public/images/doctor.jpg', title: 'Tư vấn di truyền', desc: 'Tư vấn sức khỏe, phòng ngừa bệnh di truyền.' },
 ];
 
 const steps = [
