@@ -50,9 +50,9 @@ const benefits = [
 ];
 
 const services = [
-  { img: '/public/images/chi-phi-xet-nghiem-adn-1.jpg', title: 'Xét nghiệm huyết thống', desc: 'Xác định quan hệ cha con, mẹ con, anh chị em...' },
-  { img: '/public/images/vien-nghien-cuu-vietcare-20.jpg', title: 'Xét nghiệm ADN pháp lý', desc: 'Kết quả có giá trị pháp lý, dùng cho tòa án, giấy khai sinh...' },
-  { img: '/public/images/doctor.jpg', title: 'Tư vấn di truyền', desc: 'Tư vấn sức khỏe, phòng ngừa bệnh di truyền.' },
+  { img: '/images/chi-phi-xet-nghiem-adn-1.jpg', title: 'Xét nghiệm huyết thống', desc: 'Xác định quan hệ cha con, mẹ con, anh chị em...' },
+  { img: '/images/vien-nghien-cuu-vietcare-20.jpg', title: 'Xét nghiệm ADN pháp lý', desc: 'Kết quả có giá trị pháp lý, dùng cho tòa án, giấy khai sinh...' },
+  { img: '/images/doctor.jpg', title: 'Tư vấn di truyền', desc: 'Tư vấn sức khỏe, phòng ngừa bệnh di truyền.' },
 ];
 
 const steps = [
@@ -63,16 +63,16 @@ const steps = [
 ];
 
 const experts = [
-  { img: '/public/images/vien-nghien-cuu-vietcare-21.jpg', name: 'TS. Nguyễn Văn A', desc: 'Chuyên gia di truyền học, 15 năm kinh nghiệm.' },
-  { img: '/public/images/vien-nghien-cuu-vietcare-6.jpg', name: 'BS. Lê Thị B', desc: 'Bác sĩ xét nghiệm, tư vấn di truyền.' },
-  { img: '/public/images/image1-aboutus.jpg', name: 'PGS. Trần Văn C', desc: 'Cố vấn chuyên môn, nhiều công trình nghiên cứu.' },
+  { img: '/images/vien-nghien-cuu-vietcare-21.jpg', name: 'TS. Nguyễn Văn A', desc: 'Chuyên gia di truyền học, 15 năm kinh nghiệm.' },
+  { img: '/images/vien-nghien-cuu-vietcare-6.jpg', name: 'BS. Lê Thị B', desc: 'Bác sĩ xét nghiệm, tư vấn di truyền.' },
+  { img: '/images/image1-aboutus.jpg', name: 'PGS. Trần Văn C', desc: 'Cố vấn chuyên môn, nhiều công trình nghiên cứu.' },
 ];
 
 const partners = [
-  '/public/images/logo.jpg',
-  '/public/images/vien-nghien-cuu-vietcare-20.jpg',
-  '/public/images/vien-nghien-cuu-vietcare-21.jpg',
-  '/public/images/vien-nghien-cuu-vietcare-6.jpg',
+  '/images/logo.jpg',
+  '/images/vien-nghien-cuu-vietcare-20.jpg',
+  '/images/vien-nghien-cuu-vietcare-21.jpg',
+  '/images/vien-nghien-cuu-vietcare-6.jpg',
 ];
 
 function useSectionFadeIn() {
