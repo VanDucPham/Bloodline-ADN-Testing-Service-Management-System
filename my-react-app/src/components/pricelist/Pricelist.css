@@ -309,3 +309,78 @@
     margin-top: 18px;
   }
 }
+
+/* Service Detail Styles */
+.service-detail-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.service-detail-img {
+  transition: transform 0.3s ease;
+}
+
+.service-detail-img:hover {
+  transform: scale(1.02);
+}
+
+.detail-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.detail-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #1976d2;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.back-button:hover {
+  text-decoration: underline;
+  transform: translateX(-2px);
+  transition: all 0.2s ease;
+}
+
+.process-section .stat-item {
+  transition: transform 0.2s ease;
+}
+
+.process-section .stat-item:hover {
+  transform: translateY(-2px);
+}
+
+/* Responsive cho service detail */
+@media (max-width: 768px) {
+  .service-detail-container {
+    padding: 0 16px;
+  }
+  
+  .service-details-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .process-section > div {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .service-price-highlight {
+    padding: 12px !important;
+  }
+  
+  .service-price-highlight > div:first-child {
+    font-size: 1.4rem !important;
+  }
+}
