@@ -159,7 +159,7 @@ const Homepage = () => {
       if (response.data.success === true) {
         setMessage({ 
           type: 'success', 
-          text: response.data.message 
+          text: response.data.message  
         });
         // Reset form
         setFormData({
