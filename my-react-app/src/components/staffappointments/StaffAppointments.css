@@ -34,7 +34,7 @@
 .staff-appointments-table th,
 .staff-appointments-table td {
   padding: 12px 16px;
-  border-bottom: 1px solid #e0f1ff;
+  border-bottom: 1px solid #156db4;
   text-align: left;
 }
 
@@ -52,7 +52,7 @@
   padding: 6px 10px;
   border-radius: 6px;
   border: 1px solid #90e0ef;
-  background-color: #f0faff;
+  background-color: #1e8dc5;
 }
 
 /* === Participant & Sample Info Boxes === */
