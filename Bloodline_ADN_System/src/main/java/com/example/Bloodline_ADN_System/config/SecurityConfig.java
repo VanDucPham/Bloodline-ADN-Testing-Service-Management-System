@@ -35,6 +35,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/blog/**").permitAll()
                         .requestMatchers("/api/consultation/register").permitAll()
                         .requestMatchers("/api/consultation/status/**").permitAll()
+                        .requestMatchers("/api/customer/service/{id}").permitAll()
                         .requestMatchers("/api/customer/service/public").permitAll()
                         .requestMatchers("/api/customer/service/public/{id}").permitAll()
                         .requestMatchers("/api/feedback/service/**").permitAll()

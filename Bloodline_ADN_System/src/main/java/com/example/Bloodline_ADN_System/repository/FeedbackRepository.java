@@ -20,8 +20,9 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
     List<Feedback> findAllWithUser();
 
     // Lấy feedback theo serviceId và fetch luôn user
-    @Query("SELECT f FROM Feedback f JOIN FETCH f.user WHERE f.service.serviceId = :serviceId")
+    @Query("SELECT f FROM Feedback f JOIN FETCH f.user JOIN FETCH f.service WHERE f.service.serviceId = :serviceId")
     List<Feedback> findByServiceIdWithUser(Long serviceId);
+
 
     @Query("SELECT f FROM Feedback f JOIN FETCH f.user JOIN FETCH f.service")
     List<Feedback> findAllWithUserAndService();

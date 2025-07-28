@@ -29,24 +29,8 @@ const ServiceFeedback = ({ serviceId }) => {
         feedbacksResponse = await apiService.feedback.getAllFeedback();
       }
       // Lấy tên của từng user
-      const feedbacksWithNames = await Promise.all(
-        feedbacksResponse.map(async (feedback) => {
-          try {
-            const userResponse = await apiService.user.getUserById(feedback.userId);
-            return {
-              ...feedback,
-              userName: userResponse.name
-            };
-          } catch (error) {
-            console.error('Lỗi khi lấy tên user:', error);
-            return {
-              ...feedback,
-              userName: `Khách hàng #${feedback.userId}`
-            };
-          }
-        })
-      );
-      setFeedbacks(feedbacksWithNames);
+      setFeedbacks(feedbacksResponse);
+
       setError('');
     } catch (error) {
       console.error('Lỗi khi lấy feedback:', error);

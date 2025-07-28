@@ -117,8 +117,10 @@ public class FeedbackServiceImpl implements FeedbackService {
         if (!serviceRepository.existsById(serviceId)) {
             throw new RuntimeException("Dịch vụ không tồn tại");
         }
-        
-        List<Feedback> feedbacks = feedbackRepository.findByService_ServiceId(serviceId);
+
+        List<Feedback> feedbacks = feedbackRepository.findByServiceIdWithUser(serviceId);
+
+
         return feedbacks.stream().map(this::toDTO).collect(Collectors.toList());
     }
 

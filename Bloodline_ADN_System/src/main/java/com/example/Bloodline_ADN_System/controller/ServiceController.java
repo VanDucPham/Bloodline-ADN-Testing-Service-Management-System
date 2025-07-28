@@ -25,10 +25,14 @@ public class ServiceController {
         return ResponseEntity.ok(services); // Trả về 200 OK và list dịch vụ
     }
 
+    // API public lấy chi tiết dịch vụ theo ID
+    @GetMapping("/{id}")
+    public ResponseEntity<ServiceDTO> getServiceById(@PathVariable Long id) {
+        ServiceDTO serviceDTO = serviceService.getServiceById(id);
+        return ResponseEntity.ok(serviceDTO);
+    }
 
 
 
-
-    // API public lấy chi tiết dịch vụ theo id
 
 }

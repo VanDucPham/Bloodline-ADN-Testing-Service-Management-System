@@ -1,0 +1,76 @@
+/* ServiceDetail.css */
+
+.service-card-detail {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  padding: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: left;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.service-card-img {
+  width: 100%;
+  max-width: 100%;
+  border-radius: 12px;
+  object-fit: cover;
+  margin-bottom: 1.5rem;
+}
+
+.service-card-detail h2 {
+  font-size: 28px;
+  margin-bottom: 1rem;
+  color: #1e1e1e;
+}
+
+.service-card-desc {
+  font-size: 16px;
+  color: #444;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.service-card-price {
+  font-size: 18px;
+  font-weight: 600;
+  color: #e53935;
+  margin-bottom: 1rem;
+}
+
+.service-card-info {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 1.5rem;
+}
+
+.service-card-info li {
+  font-size: 15px;
+  margin-bottom: 0.5rem;
+}
+
+.service-card-promo {
+  color: #2e7d32;
+  font-weight: bold;
+}
+
+.service-card-btn {
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: background-color 0.3s;
+}
+
+.service-card-btn:hover {
+  background-color: #1565c0;
+}
+
+.feedback-section {
+  max-width: 900px;
+  margin: 0 auto;
+}
