@@ -58,6 +58,16 @@ class AuthService extends BaseApiService {
         return this.get('/auth/blog');
     }
 
+    // Lấy chi tiết dịch vụ theo ID (public - không cần đăng nhập)
+    async detailService(serviceId) {
+        try {
+            return await this.get(`/customer/service/${serviceId}`);
+        } catch (error) {
+            console.error('Lỗi khi lấy chi tiết dịch vụ:', error);
+            throw error;
+        }
+    }
+
     // Lấy feedback theo service ID (public - không cần đăng nhập)
     async getFeedbackByService(serviceId) {
         try {

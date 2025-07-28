@@ -5,6 +5,18 @@ class FeedbackService {
     this.api = api;
   }
 
+  // Public: Lấy feedback public cho mọi user
+  async getPublicFeedback() {
+    try {
+      // Đổi endpoint này thành endpoint public thực tế mà backend cung cấp
+      const response = await this.api.get('/feedback/public');
+      return response.data;
+    } catch (error) {
+      console.error('Lỗi khi lấy feedback public:', error);
+      throw error;
+    }
+  }
+
   // Customer: Tạo feedback mới
   async createFeedback(feedbackData, appointmentId, serviceId) {
     try {

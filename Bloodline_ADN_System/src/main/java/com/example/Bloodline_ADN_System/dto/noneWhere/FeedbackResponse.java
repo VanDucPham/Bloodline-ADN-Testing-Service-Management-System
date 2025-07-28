@@ -13,4 +13,6 @@ public class FeedbackResponse {
     private String feedbackText;
     private Integer rating;
     private LocalDateTime feedbackDate;
+    private String userName;
+    private String serviceName;
 }

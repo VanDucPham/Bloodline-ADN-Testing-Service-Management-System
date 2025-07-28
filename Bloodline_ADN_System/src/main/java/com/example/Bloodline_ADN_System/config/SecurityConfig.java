@@ -39,6 +39,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/customer/service/public/{id}").permitAll()
                         .requestMatchers("/api/feedback/service/**").permitAll()
                         .requestMatchers("/api/auth/user/**").permitAll()
+                        .requestMatchers("/api/feedback/public").permitAll()
+                        .requestMatchers("/api/service/**").permitAll()
                         .requestMatchers("/api/feedback/create/**").hasRole("CUSTOMER")
                         .requestMatchers("/api/feedback/my-feedback/**").hasRole("CUSTOMER")
                         .requestMatchers("/api/feedback/**").hasAnyRole("ADMIN", "MANAGER", "STAFF")

@@ -16,15 +16,23 @@ const ServiceFeedback = ({ serviceId }) => {
   const fetchFeedbackData = async () => {
     try {
       setLoading(true);
-      
-      // Lấy feedback theo service
-      const feedbacksResponse = await apiService.auth.getFeedbackByService(serviceId);
-      
+      let feedbacksResponse = [];
+      if (serviceId) {
+        // Lấy feedback theo service nếu có serviceId
+        if (apiService.auth.getFeedbackByService) {
+          feedbacksResponse = await apiService.auth.getFeedbackByService(serviceId);
+        } else if (apiService.feedback.getFeedbackByService) {
+          feedbacksResponse = await apiService.feedback.getFeedbackByService(serviceId);
+        }
+      } else {
+        // Lấy toàn bộ feedback nếu không truyền serviceId
+        feedbacksResponse = await apiService.feedback.getAllFeedback();
+      }
       // Lấy tên của từng user
       const feedbacksWithNames = await Promise.all(
         feedbacksResponse.map(async (feedback) => {
           try {
-            const userResponse = await apiService.auth.getUserById(feedback.userId);
+            const userResponse = await apiService.user.getUserById(feedback.userId);
             return {
               ...feedback,
               userName: userResponse.name
@@ -38,7 +46,6 @@ const ServiceFeedback = ({ serviceId }) => {
           }
         })
       );
-      
       setFeedbacks(feedbacksWithNames);
       setError('');
     } catch (error) {

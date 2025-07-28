@@ -1,4 +1,4 @@
-package com.example.Bloodline_ADN_System.service;
+package com.example.Bloodline_ADN_System.service.impl;
 
 import com.example.Bloodline_ADN_System.Entity.User;
 import com.example.Bloodline_ADN_System.repository.UserRepository;

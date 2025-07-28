@@ -18,4 +18,5 @@ public interface FeedbackService {
     // Public methods - không cần đăng nhập
     List<FeedbackResponse> getFeedbackByServiceId(Long serviceId);
     Map<String, Object> getFeedbackStatsByServiceId(Long serviceId);
+    List<FeedbackResponse> getAllPublicFeedback();
 }
