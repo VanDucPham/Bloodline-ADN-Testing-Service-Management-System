@@ -92,7 +92,7 @@ function AppointmentBooking() {
       const mm = String(now.getMonth() + 1).padStart(2, "0");
       const dd = String(now.getDate()).padStart(2, "0");
       setMinDate(`${yyyy}-${mm}-${dd}`);
-
+      
       // Set today's date for birthDate validation
       const todayDate = new Date();
       const tyyyy = todayDate.getFullYear();

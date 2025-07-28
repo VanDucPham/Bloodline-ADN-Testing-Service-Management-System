@@ -225,128 +225,141 @@
     }
   }
 
-  /* Quy trình lấy mẫu và xét nghiệm */
-  .process-section {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    padding: 64px 0;
-    margin-top: 48px;
-  }
+/* Quy trình lấy mẫu và xét nghiệm */
+.service-info-process-section {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 64px 0;
+  margin-top: 48px;
+}
 
-  .process-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-  }
+.service-info-process-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
 
-  .process-title {
-    text-align: center;
-    font-size: 2.1rem;
-    font-weight: 700;
-    color: #22304a;
-    margin-bottom: 16px;
-    letter-spacing: 1px;
-  }
+.service-info-process-title {
+  text-align: center;
+  font-size: 2.1rem;
+  font-weight: 700;
+  color: #22304a;
+  margin-bottom: 16px;
+  letter-spacing: 1px;
+}
 
-  .process-intro {
-    text-align: center;
-    font-size: 1.1rem;
-    color: #666;
-    max-width: 800px;
-    margin: 0 auto 24px auto;
-    line-height: 1.6;
-  }
+.service-info-process-intro {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #666;
+  max-width: 800px;
+  margin: 0 auto 24px auto;
+  line-height: 1.6;
+}
 
-  .process-divider {
-    width: 80px;
-    height: 3px;
-    background: #1976d2;
-    margin: 0 auto 48px auto;
-    border-radius: 2px;
-  }
+.service-info-process-divider {
+  width: 80px;
+  height: 3px;
+  background: #1976d2;
+  margin: 0 auto 48px auto;
+  border-radius: 2px;
+}
 
-  .process-steps {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-    margin-top: 48px;
-  }
+.service-info-process-steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-top: 48px;
+}
 
-  .process-step {
-    position: relative;
-    background: #fff;
-    border-radius: 16px;
-    padding: 24px 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    border: 1px solid #e9ecef;
-  }
+.service-info-process-step {
+  position: relative;
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e9ecef;
+}
 
-  .step-number {
-    position: absolute;
-    top: -20px;
-    left: 24px;
-    width: 48px;
-    height: 48px;
-    background: #ff9800;
-    color: #fff;
-    border-radius: 50%;
+.service-info-step-number {
+  position: absolute;
+  top: -20px;
+  left: 24px;
+  width: 48px;
+  height: 48px;
+  background: #ff9800;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+}
+
+.service-info-step-content {
+  margin-top: 16px;
+}
+
+.service-info-step-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #22304a;
+  margin-bottom: 10px;
+}
+
+.service-info-step-divider {
+  width: 100%;
+  height: 1px;
+  background: #dee2e6;
+  margin: 12px 0;
+  border: none;
+  border-top: 2px dotted #dee2e6;
+}
+
+.service-info-step-description {
+  font-size: 1rem;
+  color: #666;
+  line-height: 1.5;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .service-info-process-steps {
+    flex-direction: column;
+    gap: 24px;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.3rem;
-    font-weight: 700;
-    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
   }
-
-  .step-content {
-    margin-top: 16px;
+  .service-info-process-step {
+    padding: 24px 20px;
   }
-
-  .step-title {
+  .service-info-step-number {
+    width: 40px;
+    height: 40px;
     font-size: 1.1rem;
-    font-weight: 700;
-    color: #22304a;
-    margin-bottom: 10px;
+    top: -16px;
+    left: 20px;
   }
-
-  .step-divider {
-    width: 100%;
-    height: 1px;
-    background: #dee2e6;
-    margin: 12px 0;
-    border: none;
-    border-top: 2px dotted #dee2e6;
+  .service-info-process-title {
+    font-size: 1.8rem;
   }
-
-  .step-description {
+  .service-info-process-intro {
     font-size: 1rem;
-    color: #666;
-    line-height: 1.5;
-    margin: 0;
   }
+}
 
-  @media (max-width: 768px) {
-    .process-steps {
-      flex-direction: column;
-      gap: 24px;
-    }
-    
-    .process-step {
-      padding: 24px 20px;
-    }
-    
-    .step-number {
-      width: 40px;
-      height: 40px;
-      font-size: 1.1rem;
-      top: -16px;
-      left: 20px;
-    }
-    
-    .process-title {
-      font-size: 1.8rem;
-    }
-    
-    .process-intro {
-      font-size: 1rem;
-    }
-  }
+/* Remove old process-step styles to avoid conflicts */
+.process-section,
+.process-container,
+.process-title,
+.process-intro,
+.process-divider,
+.process-steps,
+.process-step,
+.step-number,
+.step-content,
+.step-title,
+.step-divider,
+.step-description {
+  all: unset;
+}
