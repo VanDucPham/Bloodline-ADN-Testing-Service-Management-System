@@ -59,7 +59,7 @@
 }
 
 /* Main Content */
-.main-content {
+.admin-layout .main-content {
   margin-left: 240px;
   padding: 30px 40px;
   flex-grow: 1;
@@ -68,7 +68,7 @@
   transition: margin-left 0.3s;
 }
 
-.main-content h1 {
+.admin-layout .main-content h1 {
   font-size: 24px;
   color: #2c3e50;
   margin-bottom: 20px;
@@ -89,7 +89,7 @@
     display: none;
   }
 
-  .main-content {
+  .admin-layout .main-content {
     margin-left: 60px;
     padding: 20px;
   }

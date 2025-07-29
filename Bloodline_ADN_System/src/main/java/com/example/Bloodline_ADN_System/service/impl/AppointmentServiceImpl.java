@@ -368,6 +368,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     //Lọc cho nhân viên
     public List<AppointmentDTO> filterAppointmentForStaff(Appointment.AppointmentStatus status,
                                                           Appointment.AppointmentType type,
@@ -426,7 +427,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         AppointmentDTO dto = new AppointmentDTO();
         dto.setAppointmentId(appointment.getAppointmentId());
         dto.setUserId(appointment.getUser().getUserId());
-        dto.setServiceId(appointment.getService().getServiceId());
+        dto.setServiceName(appointment.getService().getServiceName());
         dto.setAppointmentType(appointment.getType());
         dto.setAppointmentDate(appointment.getAppointmentDate());
         dto.setAppointmentTime(appointment.getAppointmentTime());
@@ -435,6 +436,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         dto.setAppointmentNote(appointment.getAppointmentNote());
         dto.setCollectionStatus(appointment.getCollectionStatus());
         dto.setAssignedStaff(appointment.getUser().getUserId());
+        dto.setCaseCode(appointment.getCaseFile().getCaseCode());
         return dto;
     }
 }
