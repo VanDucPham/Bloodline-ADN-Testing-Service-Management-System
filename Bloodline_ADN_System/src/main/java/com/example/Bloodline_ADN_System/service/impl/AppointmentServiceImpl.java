@@ -417,6 +417,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         appointmentRepository.save(appointment);
     }
 
+    @Transactional
     public AppointmentDTO getAppointmentById(Long id) {
         return toDTO(appointmentRepository.getAppointmentsByAppointmentId(id));
     }
@@ -427,6 +428,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         AppointmentDTO dto = new AppointmentDTO();
         dto.setAppointmentId(appointment.getAppointmentId());
         dto.setUserId(appointment.getUser().getUserId());
+        dto.setServiceId(appointment.getService().getServiceId());
         dto.setServiceName(appointment.getService().getServiceName());
         dto.setAppointmentType(appointment.getType());
         dto.setAppointmentDate(appointment.getAppointmentDate());
