@@ -341,6 +341,7 @@ function StaffAppointments() {
   const onEditSample = (sample) => setEditingSample(sample);
   const onCancelEditSample = () => setEditingSample(null);
 
+
   const handleExportResult = async (appointmentId) => {
     try {
       console.log(`Bắt đầu gọi API xuất file PDF cho appointmentId: ${appointmentId}`);
@@ -397,6 +398,7 @@ function StaffAppointments() {
       // Nếu ngày giống nhau, sắp xếp theo appointmentId giảm dần (id lớn hơn lên trước)
       return b.appointmentId - a.appointmentId;
     });
+
 
 
   return (
