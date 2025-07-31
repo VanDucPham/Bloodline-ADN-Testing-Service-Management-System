@@ -23,6 +23,48 @@ const COLLECTION_STATUS_OPTIONS = [
 ];
 
 function StaffAppointments() {
+  // Hàm chuyển đổi trạng thái lịch hẹn sang tiếng Việt
+  const getAppointmentStatusText = (status) => {
+    const statusMap = {
+      'SCHEDULED': 'Đã lên lịch',
+      'CONFIRMED': 'Đã xác nhận',
+      'IN_PROGRESS': 'Đang thực hiện',
+      'COMPLETED': 'Hoàn thành',
+      'CANCELLED': 'Đã hủy'
+    };
+    return statusMap[status] || status;
+  };
+
+  // Hàm chuyển đổi trạng thái thu mẫu sang tiếng Việt
+  const getCollectionStatusText = (status) => {
+    const statusMap = {
+      'ASSIGNED': 'Đã phân công',
+      'TRAVELING': 'Đang di chuyển',
+      'ARRIVED': 'Đã đến',
+      'COLLECTING': 'Đang thu mẫu',
+      'COMPLETED': 'Hoàn thành'
+    };
+    return statusMap[status] || status;
+  };
+
+  // Hàm chuyển đổi phương thức lấy mẫu sang tiếng Việt
+  const getDeliveryMethodText = (method) => {
+    const methodMap = {
+      'SELF_DROP_OFF': 'Đến cơ sở',
+      'HOME_COLLECTION': 'Thu mẫu tại nhà',
+      'HOME_DELIVERY': 'Nhân viên đến nhà lấy mẫu'
+    };
+    return methodMap[method] || method;
+  };
+
+  // Hàm chuyển đổi loại lịch hẹn sang tiếng Việt
+  const getAppointmentTypeText = (type) => {
+    const typeMap = {
+      'ADMINISTRATIVE': 'Hành chính',
+      'CIVIL': 'Dân sự'
+    };
+    return typeMap[type] || type;
+  };
 
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -64,6 +106,7 @@ function StaffAppointments() {
   const [dateFilter, setDateFilter] = useState(() => moment());
 
   const [searchId, setSearchId] = useState('');
+  const [searchCaseCode, setSearchCaseCode] = useState('');
 
   useEffect(() => {
     fetchAppointments();
@@ -77,6 +120,7 @@ function StaffAppointments() {
       if (dateFilter) params.appointmentDate = dateFilter.format('YYYY-MM-DD');
       const response = await apiService.staff.getAppointment(params);
       setAppointments(response);
+      console.log(response);
     } catch (error) {
       console.error('Lỗi khi lấy danh sách lịch hẹn:', error);
     } finally {
@@ -298,60 +342,62 @@ function StaffAppointments() {
   const onCancelEditSample = () => setEditingSample(null);
 
 
-  const filteredAppointments = appointments.filter(item => {
-    const matchStatus = statusFilter ? item.appointmentStatus === statusFilter : true;
-    // Khai báo itemDate đúng vị trí
-    const itemDate = moment(item.appointmentDate, 'YYYY-MM-DD').startOf('day');
-    const filterDate = dateFilter ? dateFilter.clone().startOf('day') : null;
-    const matchDate = filterDate
-      ? itemDate.format('YYYY-MM-DD') === filterDate.format('YYYY-MM-DD')
-      : true;
+  const handleExportResult = async (appointmentId) => {
+    try {
+      console.log(`Bắt đầu gọi API xuất file PDF cho appointmentId: ${appointmentId}`);
+      const response = await apiService.staff.exportAppointmentResult(appointmentId);
+      if (!response) {
+        alert('Không nhận được file từ máy chủ!');
+        return;
+      }
 
-    const matchId = searchId ? String(item.appointmentId) === searchId : true;
-    return matchStatus && matchDate && matchId;
-  }).sort((a, b) => {
-    const dateA = moment(a.appointmentDate, 'YYYY-MM-DD');
-    const dateB = moment(b.appointmentDate, 'YYYY-MM-DD');
-    if (dateB.diff(dateA) !== 0) {
-      return dateB.diff(dateA); // Ngày mới nhất lên trước
+      const disposition = response.headers && response.headers['content-disposition'];
+      const filenameMatch = disposition && disposition.match(/filename="?(.+)"?/);
+      const filename = filenameMatch ? filenameMatch[1] : `result_${appointmentId}.pdf`;
+      
+      if (!(response instanceof Blob)) {
+        alert('Dữ liệu trả về không phải file hợp lệ!');
+        return;
+      }
+
+      const url = window.URL.createObjectURL(response);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      alert('Xuất kết quả thất bại!');
+      console.error('Lỗi khi xuất file PDF:', err);
     }
-    // Nếu ngày giờ giống nhau, sắp xếp theo appointmentId giảm dần (mới nhất lên trước)
-    return b.appointmentId - a.appointmentId;
-  });
+  };
 
+  // Lọc dữ liệu theo status, ngày, mã lịch hẹn và mã hồ sơ
+  const filteredAppointments = appointments
+    .filter(item => {
+      const matchStatus = statusFilter ? item.appointmentStatus === statusFilter : true;
+      // Khai báo itemDate đúng vị trí
+      const itemDate = moment(item.appointmentDate, 'YYYY-MM-DD').startOf('day');
+      const filterDate = dateFilter ? dateFilter.clone().startOf('day') : null;
+      const matchDate = filterDate
+        ? itemDate.format('YYYY-MM-DD') === filterDate.format('YYYY-MM-DD')
+        : true;
 
-
-const handleExportResult = async (appointmentId) => {
-  try {
-    console.log(`Bắt đầu gọi API xuất file PDF cho appointmentId: ${appointmentId}`);
-    const response = await apiService.staff.exportAppointmentResult(appointmentId);
-    if (!response) {
-      alert('Không nhận được file từ máy chủ!');
-      return;
-    }
-
-    const disposition = response.headers && response.headers['content-disposition'];
-    const filenameMatch = disposition && disposition.match(/filename="?(.+)"?/);
-    const filename = filenameMatch ? filenameMatch[1] : `result_${appointmentId}.pdf`;
-    
-    if (!(response instanceof Blob)) {
-      alert('Dữ liệu trả về không phải file hợp lệ!');
-      return;
-    }
-
-    const url = window.URL.createObjectURL(response);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', filename);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  } catch (err) {
-    alert('Xuất kết quả thất bại!');
-    console.error('Lỗi khi xuất file PDF:', err);
-  }
-};
-
+      const matchId = searchId ? String(item.appointmentId) === searchId : true;
+      const matchCaseCode = searchCaseCode ? (item.caseCode && item.caseCode.toLowerCase().includes(searchCaseCode.toLowerCase())) : true;
+      return matchStatus && matchDate && matchId && matchCaseCode;
+    })
+    .sort((a, b) => {
+      // So sánh ngày (bỏ giờ)
+      const dateA = moment(a.appointmentDate, 'YYYY-MM-DD');
+      const dateB = moment(b.appointmentDate, 'YYYY-MM-DD');
+      if (dateB.diff(dateA) !== 0) {
+        return dateB.diff(dateA); // Ngày mới nhất lên trước
+      }
+      // Nếu ngày giống nhau, sắp xếp theo appointmentId giảm dần (id lớn hơn lên trước)
+      return b.appointmentId - a.appointmentId;
+    });
 
 
 
@@ -393,6 +439,16 @@ const handleExportResult = async (appointmentId) => {
             style={{ width: 120 }}
           />
         </div>
+        <div>
+          <label>Tìm theo mã hồ sơ: </label>
+          <input
+            type="text"
+            value={searchCaseCode}
+            onChange={e => setSearchCaseCode(e.target.value)}
+            placeholder="Nhập mã hồ sơ"
+            style={{ width: 120 }}
+          />
+        </div>
       </div>
 
       {loading ? (
@@ -403,6 +459,7 @@ const handleExportResult = async (appointmentId) => {
             <thead>
               <tr>
                 <th>Mã lịch hẹn</th>
+                <th>Mã hồ sơ</th>
                 <th>Người dùng</th>
                 <th>Ngày</th>
                 <th>Giờ</th>
@@ -419,6 +476,7 @@ const handleExportResult = async (appointmentId) => {
               {filteredAppointments.map((item, idx) => (
                 <tr key={idx} className="staff-appointment-row">
                   <td>{item.appointmentId}</td>
+                  <td>{item.caseCode}</td>
                   <td>{item.userId}</td>
                   <td>{item.appointmentDate}</td>
                   <td>{item.appointmentTime}</td>
@@ -427,10 +485,11 @@ const handleExportResult = async (appointmentId) => {
                       value={item.appointmentStatus || ''}
                       disabled={updatingId === item.appointmentId}
                       onChange={e => handleStatusOrCollectionChange(item.appointmentId, 'appointmentStatus', e.target.value)}
+                      style={{ minWidth: '120px' }}
                     >
                       <option value="">-- Chọn trạng thái --</option>
                       {STATUS_OPTIONS.map(status => (
-                        <option key={status} value={status}>{status}</option>
+                        <option key={status} value={status}>{getAppointmentStatusText(status)}</option>
                       ))}
                     </select>
                   </td>
@@ -439,16 +498,17 @@ const handleExportResult = async (appointmentId) => {
                       value={item.collectionStatus || ''}
                       disabled={updatingId === item.appointmentId}
                       onChange={e => handleStatusOrCollectionChange(item.appointmentId, 'collectionStatus', e.target.value)}
+                      style={{ minWidth: '120px' }}
                     >
                       <option value="">-- Chọn trạng thái --</option>
                       {COLLECTION_STATUS_OPTIONS.map(status => (
-                        <option key={status} value={status}>{status}</option>
+                        <option key={status} value={status}>{getCollectionStatusText(status)}</option>
                       ))}
                     </select>
                   </td>
-                  <td>{item.serviceId}</td>
-                  <td>{item.deliveryMethod}</td>
-                  <td>{item.appointmentType}</td>
+                  <td>{item.serviceName}</td>
+                  <td>{getDeliveryMethodText(item.deliveryMethod)}</td>
+                  <td>{getAppointmentTypeText(item.appointmentType)}</td>
                   <td>
                     <button onClick={() => handleShowParticipants(item.appointmentId)}>Xem participant</button>
                   </td>

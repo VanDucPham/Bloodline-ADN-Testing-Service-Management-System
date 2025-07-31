@@ -27,6 +27,7 @@ public class AppointmentDTO {
 
     // Thông tin dịch vụ
     private Long serviceId;
+    private String serviceName;
 
     // Kiểu lịch hẹn (Hành chính / Dịch vụ)
     private Appointment.AppointmentType appointmentType;
