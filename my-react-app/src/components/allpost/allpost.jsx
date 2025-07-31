@@ -131,19 +131,7 @@ export default function AllPost() {
 
       <section
         className="hero-section"
-        style={{
-          height: "48vh",
-          width: "100vw",
-          marginLeft: "calc(-50vw + 50%)",
-          backgroundImage: `linear-gradient(rgba(0, 32, 96, 0.55), rgba(21, 83, 207, 0.55)), url(${heroBg})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "0 20px",
-          position: "relative",
-        }}
+        
       >
         <div style={{
           maxWidth: "1280px",
