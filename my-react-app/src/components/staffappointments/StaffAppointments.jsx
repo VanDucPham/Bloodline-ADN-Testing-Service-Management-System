@@ -297,30 +297,28 @@ function StaffAppointments() {
   const onEditSample = (sample) => setEditingSample(sample);
   const onCancelEditSample = () => setEditingSample(null);
 
-  // Lọc dữ liệu theo status, ngày và mã lịch hẹn
-  const filteredAppointments = appointments
-    .filter(item => {
-      const matchStatus = statusFilter ? item.appointmentStatus === statusFilter : true;
-      // Khai báo itemDate đúng vị trí
-      const itemDate = moment(item.appointmentDate, 'YYYY-MM-DD').startOf('day');
-      const filterDate = dateFilter ? dateFilter.clone().startOf('day') : null;
-      const matchDate = filterDate
-        ? itemDate.format('YYYY-MM-DD') === filterDate.format('YYYY-MM-DD')
-        : true;
 
-      const matchId = searchId ? String(item.appointmentId) === searchId : true;
-      return matchStatus && matchDate && matchId;
-    })
-    .sort((a, b) => {
-      // So sánh ngày (bỏ giờ)
-      const dateA = moment(a.appointmentDate, 'YYYY-MM-DD');
-      const dateB = moment(b.appointmentDate, 'YYYY-MM-DD');
-      if (dateB.diff(dateA) !== 0) {
-        return dateB.diff(dateA); // Ngày mới nhất lên trước
-      }
-      // Nếu ngày giống nhau, sắp xếp theo appointmentId giảm dần (id lớn hơn lên trước)
-      return b.appointmentId - a.appointmentId;
-    });
+  const filteredAppointments = appointments.filter(item => {
+    const matchStatus = statusFilter ? item.appointmentStatus === statusFilter : true;
+    // Khai báo itemDate đúng vị trí
+    const itemDate = moment(item.appointmentDate, 'YYYY-MM-DD').startOf('day');
+    const filterDate = dateFilter ? dateFilter.clone().startOf('day') : null;
+    const matchDate = filterDate
+      ? itemDate.format('YYYY-MM-DD') === filterDate.format('YYYY-MM-DD')
+      : true;
+
+    const matchId = searchId ? String(item.appointmentId) === searchId : true;
+    return matchStatus && matchDate && matchId;
+  }).sort((a, b) => {
+    const dateA = moment(a.appointmentDate, 'YYYY-MM-DD');
+    const dateB = moment(b.appointmentDate, 'YYYY-MM-DD');
+    if (dateB.diff(dateA) !== 0) {
+      return dateB.diff(dateA); // Ngày mới nhất lên trước
+    }
+    // Nếu ngày giờ giống nhau, sắp xếp theo appointmentId giảm dần (mới nhất lên trước)
+    return b.appointmentId - a.appointmentId;
+  });
+
 
 
 const handleExportResult = async (appointmentId) => {

@@ -11,7 +11,7 @@ import {
   EnvironmentOutlined, // Thêm icon bản đồ
 } from "@ant-design/icons";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import logo from "../../images/logo.jpg";
+import logo from "/images/logo.jpg";
 import "./AdminLayout.css";
 
 const { Header, Sider, Content } = Layout;

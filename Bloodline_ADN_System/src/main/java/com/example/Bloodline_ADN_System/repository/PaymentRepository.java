@@ -73,4 +73,8 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     @Query("SELECT p FROM Payment p WHERE p.appointment.appointmentId = :appointmentId")
     Payment findPaymentByAppointmentId(@Param("appointmentId") Long appointmentId);
     // Thống kê doanh thu theo ngày
+    @Query("SELECT DAY(p.paymentDate) as day, COALESCE(SUM(p.amount), 0) as total, COUNT(p) as cases " +
+           "FROM Payment p WHERE p.status = 'COMPLETED' AND YEAR(p.paymentDate) = :year AND MONTH(p.paymentDate) = :month " +
+           "GROUP BY DAY(p.paymentDate) ORDER BY day ASC")
+    List<Object[]> getRevenueByDay(@Param("year") int year, @Param("month") int month);
 } 

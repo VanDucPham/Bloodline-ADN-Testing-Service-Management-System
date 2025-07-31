@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import apiService from "../../../../service/api"; // Cập nhật đúng path của bạn
 
-import "./paymentResult.css"; // File CSS riêng nếu có
+import "./PaymentResult.css"; // File CSS riêng nếu có
 
 function PaymentResult() {
   const location = useLocation();

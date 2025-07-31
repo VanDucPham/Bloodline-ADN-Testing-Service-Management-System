@@ -215,56 +215,6 @@ public class AdminController {
     }
 
 
-//
-//    @PostMapping("/blog/upload-image")
-//    public ResponseEntity<?> uploadBlogImage(@RequestParam("file") MultipartFile file) {
-//        try {
-//            if (file.isEmpty()) {
-//                return ResponseEntity.badRequest().body(Map.of("message", "File rỗng"));
-//            }
-//            String originalFilename = file.getOriginalFilename() != null ? file.getOriginalFilename() : "unknown";
-//            String fileName = System.currentTimeMillis() + "_" + StringUtils.cleanPath(originalFilename);
-//            Path uploadPath = Paths.get("src/main/resources/static/images/blog");
-//            if (!Files.exists(uploadPath)) {
-//                Files.createDirectories(uploadPath);
-//            }
-//            Path filePath = uploadPath.resolve(fileName);
-//            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-//            String imageUrl = "/images/blog/" + fileName;
-//            return ResponseEntity.ok(Map.of("url", imageUrl));
-//        } catch (Exception e) {
-//            logger.error("Lỗi upload ảnh: ", e);
-//            return ResponseEntity.status(500).body(Map.of("message", "Lỗi upload ảnh: " + e.getMessage()));
-//        }
-//    }
-//
-//    private static final String UPLOAD_DIR = "src/main/resources/static/ImagePage/";
-//    @PostMapping("/upload")
-//    public ResponseEntity<Map<String, String>> uploadImage(@RequestParam("file") MultipartFile file) {
-//        try {
-//            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-//            Path uploadPath = Paths.get(UPLOAD_DIR);
-//
-//            // Tạo thư mục nếu chưa tồn tại
-//            if (!Files.exists(uploadPath)) {
-//                Files.createDirectories(uploadPath);
-//            }
-//
-//            Path filePath = uploadPath.resolve(fileName);
-//            Files.write(filePath, file.getBytes());
-//
-//            // URL để trả về client
-//            String imageUrl = "/ImagePage/" + fileName;
-//            Map<String, String> result = new HashMap<>();
-//            result.put("url", imageUrl);
-//
-//            return ResponseEntity.ok(result);
-//        } catch (IOException e) {
-//            e.printStackTrace(); // in log lỗi cụ thể
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                    .body(Collections.singletonMap("error", "Upload failed"));
-//        }
-//    }
 
     @GetMapping("/blog/category-count")
     public ResponseEntity<?> getBlogCategoryCount() {
