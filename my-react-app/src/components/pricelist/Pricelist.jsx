@@ -102,6 +102,7 @@ function Pricelist() {
               <div className="service-card fade-in-card" key={service.serviceId} style={{animationDelay: `${idx * 80}ms`}}>
                 <img
                   src={service.imageUrl}
+                  
                   alt={service.serviceName}
                   className="service-card-img"
                 />

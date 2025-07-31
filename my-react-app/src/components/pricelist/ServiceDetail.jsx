@@ -37,7 +37,7 @@ function ServiceDetail() {
     <div className="pricelist-section">
       <div className="service-card-detail">
         <img
-          src={service.imageUrl || "https://via.placeholder.com/300x200?text=No+Image"}
+          src={service.imageUrl || "https://res.cloudinary.com/dbupz8o9s/image/upload/v1753671387/uploads/lrz1up7gc4cvniynnnon.jpg"}
           alt={service.serviceName}
           className="service-card-img"
           style={{maxWidth: 400, marginBottom: 20}}
