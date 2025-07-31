@@ -40,7 +40,7 @@ function ServiceDetail() {
           src={service.imageUrl || "https://res.cloudinary.com/dbupz8o9s/image/upload/v1753671387/uploads/lrz1up7gc4cvniynnnon.jpg"}
           alt={service.serviceName}
           className="service-card-img"
-          style={{maxWidth: 400, marginBottom: 20}}
+          style={{maxWidth: none, marginBottom: 20}}
         />
         <h2>{service.serviceName}</h2>
         <div className="service-card-desc">{service.serviceDescription}</div>
