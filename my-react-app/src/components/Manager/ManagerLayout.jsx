@@ -64,6 +64,13 @@ const ManagerLayout = () => {
           >
             {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
           </button>
+          <button
+      className="home-btn"
+      onClick={() => navigate('/')}
+      style={{ marginLeft: 16, fontWeight: 'bold', fontSize: '16px', background: 'none', border: 'none', color: 'blue', cursor: 'pointer' }}
+    >
+      Trang chủ
+    </button>
           <div className="manager-info">
             <UserOutlined style={{ marginRight: 8 }} />
             {userName}
