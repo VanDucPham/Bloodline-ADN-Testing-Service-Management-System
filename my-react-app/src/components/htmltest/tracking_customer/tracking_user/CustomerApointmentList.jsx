@@ -308,7 +308,7 @@ const AppointmentList = () => {
                     <img src={avatar} alt={name} className="card-avatar" />
                     <div>
                       <div className="card-title">{appointment.serviceName}</div>
-                      <div className="card-customer">{name}</div>
+                    
                     </div>
                   </div>
                   <span className={`card-status ${getStatusClass(appointment.statusAppointment)}`}>

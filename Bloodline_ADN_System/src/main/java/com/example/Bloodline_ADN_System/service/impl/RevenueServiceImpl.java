@@ -3,6 +3,7 @@ package com.example.Bloodline_ADN_System.service.impl;
 import com.example.Bloodline_ADN_System.dto.RevenueDTO;
 import com.example.Bloodline_ADN_System.dto.MonthlyRevenueDTO;
 import com.example.Bloodline_ADN_System.dto.ServiceRevenueDTO;
+import com.example.Bloodline_ADN_System.dto.DailyRevenueDTO;
 import com.example.Bloodline_ADN_System.repository.PaymentRepository;
 import com.example.Bloodline_ADN_System.repository.AppointmentRepository;
 import com.example.Bloodline_ADN_System.service.RevenueService;
@@ -115,8 +116,27 @@ public class RevenueServiceImpl implements RevenueService {
         // Tạo startDate và endDate cho tháng cụ thể
         LocalDateTime startDate = LocalDateTime.of(year, month, 1, 0, 0);
         LocalDateTime endDate = startDate.plusMonths(1).minusSeconds(1);
-        
-        return getRevenueOverview(startDate, endDate);
+        RevenueDTO dto = getRevenueOverview(startDate, endDate);
+        // Lấy dữ liệu từng ngày trong tháng
+        List<Object[]> dailyRows = paymentRepository.getRevenueByDay(year, month);
+        List<DailyRevenueDTO> dailyData = new ArrayList<>();
+        Double maxDay = null;
+        Double minDay = null;
+        for (Object[] row : dailyRows) {
+            Integer day = ((Number) row[0]).intValue();
+            Double revenue = ((Number) row[1]).doubleValue();
+            Long cases = ((Number) row[2]).longValue();
+            dailyData.add(new DailyRevenueDTO(day, revenue, cases));
+            if (maxDay == null || revenue > maxDay) maxDay = revenue;
+            if (minDay == null || revenue < minDay) minDay = revenue;
+        }
+        dto.setDailyData(dailyData);
+        // Nếu có dữ liệu ngày, set lại max/min theo ngày
+        if (!dailyData.isEmpty()) {
+            dto.setMaxRevenueMonth(maxDay);
+            dto.setMinRevenueMonth(minDay);
+        }
+        return dto;
     }
 
     @Override

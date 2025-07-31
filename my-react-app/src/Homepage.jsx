@@ -50,9 +50,9 @@ const benefits = [
 ];
 
 const services = [
-  { img: '/src/images/chi-phi-xet-nghiem-adn-1.jpg', title: 'Xét nghiệm huyết thống', desc: 'Xác định quan hệ cha con, mẹ con, anh chị em...' },
-  { img: '/src/images/vien-nghien-cuu-vietcare-20.jpg', title: 'Xét nghiệm ADN pháp lý', desc: 'Kết quả có giá trị pháp lý, dùng cho tòa án, giấy khai sinh...' },
-  { img: '/src/images/doctor.jpg', title: 'Tư vấn di truyền', desc: 'Tư vấn sức khỏe, phòng ngừa bệnh di truyền.' },
+  { img: '/images/chi-phi-xet-nghiem-adn-1.jpg', title: 'Xét nghiệm huyết thống', desc: 'Xác định quan hệ cha con, mẹ con, anh chị em...' },
+  { img: '/images/vien-nghien-cuu-vietcare-20.jpg', title: 'Xét nghiệm ADN pháp lý', desc: 'Kết quả có giá trị pháp lý, dùng cho tòa án, giấy khai sinh...' },
+  { img: '/images/doctor.jpg', title: 'Tư vấn di truyền', desc: 'Tư vấn sức khỏe, phòng ngừa bệnh di truyền.' },
 ];
 
 const steps = [
@@ -63,16 +63,16 @@ const steps = [
 ];
 
 const experts = [
-  { img: '/src/images/vien-nghien-cuu-vietcare-21.jpg', name: 'TS. Nguyễn Văn A', desc: 'Chuyên gia di truyền học, 15 năm kinh nghiệm.' },
-  { img: '/src/images/vien-nghien-cuu-vietcare-6.jpg', name: 'BS. Lê Thị B', desc: 'Bác sĩ xét nghiệm, tư vấn di truyền.' },
-  { img: '/src/images/image1-aboutus.jpg', name: 'PGS. Trần Văn C', desc: 'Cố vấn chuyên môn, nhiều công trình nghiên cứu.' },
+  { img: '/images/vien-nghien-cuu-vietcare-21.jpg', name: 'TS. Nguyễn Văn A', desc: 'Chuyên gia di truyền học, 15 năm kinh nghiệm.' },
+  { img: '/images/vien-nghien-cuu-vietcare-6.jpg', name: 'BS. Lê Thị B', desc: 'Bác sĩ xét nghiệm, tư vấn di truyền.' },
+  { img: '/images/image1-aboutus.jpg', name: 'PGS. Trần Văn C', desc: 'Cố vấn chuyên môn, nhiều công trình nghiên cứu.' },
 ];
 
 const partners = [
-  '/src/images/logo.jpg',
-  '/src/images/vien-nghien-cuu-vietcare-20.jpg',
-  '/src/images/vien-nghien-cuu-vietcare-21.jpg',
-  '/src/images/vien-nghien-cuu-vietcare-6.jpg',
+  '/images/logo.jpg',
+  '/images/vien-nghien-cuu-vietcare-20.jpg',
+  '/images/vien-nghien-cuu-vietcare-21.jpg',
+  '/images/vien-nghien-cuu-vietcare-6.jpg',
 ];
 
 function useSectionFadeIn() {
@@ -149,7 +149,7 @@ const Homepage = () => {
 
     try {
       // Sử dụng axios trực tiếp để tránh vấn đề baseURL
-      const response = await axios.post('http://localhost:8080/api/consultation/register', formData, {
+      const response = await axios.post('https://bloodline-adn-testing.onrender.com/api/consultation/register', formData, {
         headers: {
           'Content-Type': 'application/json'
         }
@@ -159,7 +159,7 @@ const Homepage = () => {
       if (response.data.success === true) {
         setMessage({ 
           type: 'success', 
-          text: response.data.message 
+          text: response.data.message  
         });
         // Reset form
         setFormData({
@@ -209,7 +209,7 @@ const Homepage = () => {
             <a href="#register" className="hero-cta">Đăng ký tư vấn miễn phí</a>
           </div>
           <div className="hero-right">
-            <img src="/src/images/backgroup-2-scaled.jpg" alt="ADN Lab" className="hero-img" />
+            <img src="/images/backgroup-2-scaled.jpg" alt="ADN Lab" className="hero-img" />
           </div>
         </div>
       </section>

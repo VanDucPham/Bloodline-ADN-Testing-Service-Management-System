@@ -25,6 +25,12 @@ public class FeedbackServiceImpl implements FeedbackService {
     private final AppointmentRepository appointmentRepository;
     private final ServiceRepository serviceRepository;
 
+
+    @Override
+    public List<FeedbackResponse> getAllPublicFeedback() {
+        List<Feedback> feedbacks = feedbackRepository.findAllWithUserAndService();
+        return feedbacks.stream().map(this::toDTO).collect(Collectors.toList());
+    }
     // Customer tạo feedback với kiểm tra quyền
     @Override
     public FeedbackResponse createFeedback(FeedbackDTO feedbackDTO, String userEmail) {
@@ -111,8 +117,10 @@ public class FeedbackServiceImpl implements FeedbackService {
         if (!serviceRepository.existsById(serviceId)) {
             throw new RuntimeException("Dịch vụ không tồn tại");
         }
-        
-        List<Feedback> feedbacks = feedbackRepository.findByService_ServiceId(serviceId);
+
+        List<Feedback> feedbacks = feedbackRepository.findByServiceIdWithUser(serviceId);
+
+
         return feedbacks.stream().map(this::toDTO).collect(Collectors.toList());
     }
 
@@ -181,6 +189,8 @@ public class FeedbackServiceImpl implements FeedbackService {
         response.setFeedbackText(feedback.getFeedbackText());
         response.setRating(feedback.getRating());
         response.setFeedbackDate(feedback.getFeedbackDate());
+        response.setUserName(feedback.getUser().getName());
+        response.setServiceName(feedback.getService().getServiceName());
         return response;
     }
 }

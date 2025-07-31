@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import ServiceFeedback from './ServiceFeedback';
 import './Pricelist.css';
 import apiService from '../../service/api';
+import './ServiceDetail.css';
+
 
 function ServiceDetail() {
   const { id } = useParams();
@@ -34,13 +35,12 @@ function ServiceDetail() {
 
   return (
     <div className="pricelist-section">
-      {/* Đã xóa nút quay lại */}
       <div className="service-card-detail">
         <img
-          src={service.imageUrl || "https://via.placeholder.com/300x200?text=No+Image"}
+          src={service.imageUrl || "https://res.cloudinary.com/dbupz8o9s/image/upload/v1753671387/uploads/lrz1up7gc4cvniynnnon.jpg"}
           alt={service.serviceName}
           className="service-card-img"
-          style={{maxWidth: 400, marginBottom: 20}}
+          style={{maxWidth: none, marginBottom: 20}}
         />
         <h2>{service.serviceName}</h2>
         <div className="service-card-desc">{service.serviceDescription}</div>

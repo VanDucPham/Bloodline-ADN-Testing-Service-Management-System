@@ -1,4 +1,4 @@
-// src/pages/Pricelist.jsx
+import CustomerFeedbackList from './CustomerFeedbackList';
 import React, { useState, useEffect } from 'react';
 import './Pricelist.css';
 import { useNavigate } from 'react-router-dom';
@@ -102,6 +102,7 @@ function Pricelist() {
               <div className="service-card fade-in-card" key={service.serviceId} style={{animationDelay: `${idx * 80}ms`}}>
                 <img
                   src={service.imageUrl}
+                  
                   alt={service.serviceName}
                   className="service-card-img"
                 />
@@ -145,22 +146,8 @@ function Pricelist() {
       <aside className="pricelist-sidebar">
         <div className="sidebar-block">
           <h3 className="sidebar-title">Đánh giá khách hàng</h3>
-          <div className="review-list">
-            {sampleReviews.map((r, i) => (
-              <div className="review-card" key={i}>
-                <img src={r.avatar} alt={r.name} className="review-avatar" />
-                <div className="review-info">
-                  <div className="review-name">{r.name}</div>
-                  <div className="review-rating">
-                    {[...Array(r.rating)].map((_, idx) => (
-                      <FaStar key={idx} color="#fbc02d" style={{marginRight:2}} />
-                    ))}
-                  </div>
-                  <div className="review-comment">{r.comment}</div>
-                </div>
-              </div>
-            ))}
-          </div>
+          {/* Hiển thị danh sách đánh giá thực từ DB */}
+          <CustomerFeedbackList />
         </div>
       </aside>
     </div>

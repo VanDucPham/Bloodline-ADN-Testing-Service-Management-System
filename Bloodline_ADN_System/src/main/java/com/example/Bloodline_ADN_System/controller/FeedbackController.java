@@ -84,4 +84,9 @@ public class FeedbackController {
     public ResponseEntity<?> getFeedbackStats() {
         return ResponseEntity.ok(feedbackService.getFeedbackStats());
     }
+
+    @GetMapping("/public")
+    public List<FeedbackResponse> getPublicFeedback() {
+        return feedbackService.getAllPublicFeedback();
+    }
 }

@@ -1,0 +1,111 @@
+/* RevenueManagement.css */
+
+.p-4 {
+  max-width: 1200px;
+  margin: 32px auto 0 auto;
+  background: #f8fafc;
+  border-radius: 18px;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.08);
+  padding: 36px 28px 32px 28px;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.flex {
+  display: flex;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.mb-6 {
+  margin-bottom: 32px;
+}
+
+.mb-4 {
+  margin-bottom: 18px;
+}
+
+.admin-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #1a237e;
+  margin-bottom: 18px;
+  letter-spacing: 1px;
+}
+
+.card {
+  border-radius: 14px !important;
+  box-shadow: 0 2px 16px rgba(30, 64, 175, 0.07) !important;
+  background: #fff !important;
+}
+
+.ant-card-head-title {
+  font-size: 1.25rem !important;
+  font-weight: 600 !important;
+  color: #1a237e !important;
+}
+
+.ant-statistic-title {
+  color: #374151 !important;
+  font-size: 1.05rem !important;
+  font-weight: 500 !important;
+}
+
+.ant-statistic-content-value {
+  color: #0f296d !important;
+  font-size: 1.25rem !important;
+  font-weight: 700 !important;
+}
+
+.ant-statistic-content-suffix {
+  color: #888 !important;
+  font-size: 1rem !important;
+}
+
+.ant-row.mb-6 {
+  margin-bottom: 32px !important;
+}
+
+.ant-col {
+  margin-bottom: 18px !important;
+}
+
+.ant-select {
+  min-width: 120px;
+  font-size: 1rem;
+}
+
+.ant-select-selector {
+  border-radius: 8px !important;
+  background: #f1f5f9 !important;
+  border: 1px solid #dbeafe !important;
+}
+
+.ant-btn {
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+}
+
+@media (max-width: 900px) {
+  .p-4 {
+    padding: 18px 4px 18px 4px;
+  }
+  .admin-title {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .p-4 {
+    padding: 6px 0 6px 0;
+    border-radius: 0;
+  }
+  .admin-title {
+    font-size: 1.1rem;
+  }
+} 

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import com.example.Bloodline_ADN_System.dto.DailyRevenueDTO;
 
 @Data
 @AllArgsConstructor
@@ -23,4 +24,5 @@ public class RevenueDTO {
     private Map<String, Object> paymentMethodStats;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
+    private List<DailyRevenueDTO> dailyData;
 } 

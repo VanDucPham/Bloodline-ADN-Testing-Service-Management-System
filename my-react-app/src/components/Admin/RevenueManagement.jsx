@@ -1,12 +1,13 @@
 // src/pages/RevenueManagement.jsx
 import { Card, Row, Col, Statistic, DatePicker, Empty, Button, Spin, Alert, Select } from 'antd';
-import { Line } from '@ant-design/charts';
-import { useState, useMemo, useEffect } from 'react';
-import { DownloadOutlined, CalendarOutlined } from '@ant-design/icons';
+import {  Column } from '@ant-design/charts';
+import { useState, useMemo, useEffect, useRef } from 'react';
+import {  CalendarOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import revenueService from './revenueService.js';
+import './RevenueManagement.css';
 
 // Cấu hình dayjs plugins
 dayjs.extend(isSameOrAfter);
@@ -16,37 +17,91 @@ const { RangePicker } = DatePicker;
 const { Option } = Select;
 
 function RevenueManagement() {
+  const now = dayjs();
   const [dateRange, setDateRange] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [revenueData, setRevenueData] = useState(null);
-  const [timeRange, setTimeRange] = useState('current_month'); // Thêm state cho time range
+  const [selectedMonth, setSelectedMonth] = useState(null); // Không auto-select khi khởi tạo
+  const [selectedYear, setSelectedYear] = useState(now.year());
+  const didAutoSelectMonth = useRef(false); // Biến cờ để chỉ tự động chọn tháng 1 lần
+  const [yearOptions, setYearOptions] = useState([]);
+  const [monthOptions, setMonthOptions] = useState([]);
+  const [dailyData, setDailyData] = useState([]); // Thêm state để lưu dữ liệu ngày
+  const [backendMonthStats, setBackendMonthStats] = useState(null); // Thêm state để lưu thống kê từ backend
 
   // Load dữ liệu ban đầu
   useEffect(() => {
     loadRevenueData();
   }, []);
 
-  // Hàm tạo date range theo time range
-  const getDateRangeByTimeRange = (range) => {
-    const now = dayjs();
-    switch (range) {
-      case 'current_month':
-        return [now.startOf('month'), now.endOf('month')];
-      case 'last_month':
-        return [now.subtract(1, 'month').startOf('month'), now.subtract(1, 'month').endOf('month')];
-      case 'last_3_months':
-        return [now.subtract(3, 'month').startOf('month'), now.endOf('month')];
-      case 'last_6_months':
-        return [now.subtract(6, 'month').startOf('month'), now.endOf('month')];
-      case 'current_year':
-        return [now.startOf('year'), now.endOf('year')];
-      case 'last_year':
-        return [now.subtract(1, 'year').startOf('year'), now.subtract(1, 'year').endOf('year')];
-      default:
-        return [now.startOf('month'), now.endOf('month')];
+  // Khi dữ liệu doanh thu thay đổi, cập nhật danh sách năm thực tế
+  useEffect(() => {
+    if (revenueData && revenueData.monthlyData) {
+      const years = Array.from(new Set(revenueData.monthlyData.map(d => d.year))).sort((a, b) => b - a);
+      setYearOptions(years);
+      // Nếu năm hiện tại không có trong DB, tự động chọn năm mới nhất
+      if (!years.includes(selectedYear)) {
+        setSelectedYear(years[0]);
+      }
     }
-  };
+  }, [revenueData]);
+
+  // Khi dữ liệu doanh thu hoặc năm thay đổi, cập nhật danh sách tháng thực tế
+  useEffect(() => {
+    if (revenueData && revenueData.monthlyData && selectedYear) {
+      const months = Array.from(new Set(
+        revenueData.monthlyData.filter(d => d.year === selectedYear).map(d => d.month)
+      )).sort((a, b) => a - b);
+      setMonthOptions(months);
+      // Nếu tháng hiện tại không có trong DB, tự động bỏ chọn tháng
+      if (selectedMonth && !months.includes(selectedMonth)) {
+        setSelectedMonth(null);
+      }
+    }
+  }, [revenueData, selectedYear]);
+
+  // Chỉ auto-select tháng hiện tại đúng 1 lần khi trang mount và monthOptions đã có
+  useEffect(() => {
+    if (!didAutoSelectMonth.current && monthOptions.length > 0) {
+      if (monthOptions.includes(now.month() + 1)) {
+        setSelectedMonth(now.month() + 1);
+      }
+      didAutoSelectMonth.current = true;
+    }
+  }, [monthOptions, now]);
+
+  // Khi chọn cả tháng và năm, lấy dữ liệu từng ngày trong tháng đó
+  useEffect(() => {
+    const fetchDailyData = async () => {
+      if (selectedYear && selectedMonth) {
+        setLoading(true);
+        try {
+          const res = await revenueService.getRevenueByMonth(selectedYear, selectedMonth);
+          setDailyData(res.dailyData || []);
+          setBackendMonthStats({
+            growthPercent: res.growthPercent,
+            maxRevenue: res.maxRevenueMonth,
+            minRevenue: res.minRevenueMonth,
+            totalRevenue: res.totalRevenue,
+            totalCases: res.totalCases,
+            averageRevenuePerCase: res.averageRevenuePerCase
+          });
+        } catch  {
+          setDailyData([]);
+          setBackendMonthStats(null);
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        setDailyData([]);
+        setBackendMonthStats(null);
+      }
+    };
+    fetchDailyData();
+  }, [selectedYear, selectedMonth]);
+
+
 
   const loadRevenueData = async (startDate = null, endDate = null) => {
     setLoading(true);
@@ -83,52 +138,137 @@ function RevenueManagement() {
     });
   }, [dateRange, revenueData]);
 
-  // Xử lý thay đổi time range
-  const handleTimeRangeChange = (value) => {
-    setTimeRange(value);
-    const [start, end] = getDateRangeByTimeRange(value);
-    setDateRange([start, end]);
-    loadRevenueData(start.toDate(), end.toDate());
-  };
-
-  // Xử lý thay đổi date range
-  const handleDateRangeChange = (dates) => {
-    setDateRange(dates);
-    if (dates && dates.length === 2) {
-      const [start, end] = dates;
-      loadRevenueData(start.toDate(), end.toDate());
+  // Tính toán lại các chỉ số theo bộ lọc
+  let growthPercent = 0, maxRevenue = 0, minRevenue = 0, totalRevenue = 0, totalCases = 0, averageRevenuePerCase = 0;
+  if (selectedYear && selectedMonth && backendMonthStats) {
+    growthPercent = backendMonthStats.growthPercent || 0;
+    maxRevenue = backendMonthStats.maxRevenue || 0;
+    minRevenue = backendMonthStats.minRevenue || 0;
+    totalRevenue = backendMonthStats.totalRevenue || 0;
+    totalCases = backendMonthStats.totalCases || 0;
+    averageRevenuePerCase = backendMonthStats.averageRevenuePerCase || 0;
+  } else if (filteredData.length > 0) {
+    const revenues = filteredData.map(d => d.revenue || 0);
+    maxRevenue = Math.max(...revenues);
+    minRevenue = Math.min(...revenues);
+    if (revenues.length > 1 && revenues[0] !== 0) {
+      growthPercent = ((revenues[revenues.length - 1] - revenues[0]) / Math.abs(revenues[0])) * 100;
     } else {
-      loadRevenueData();
+      growthPercent = 0;
     }
+    totalRevenue = revenueData.totalRevenue || 0;
+    totalCases = revenueData.totalCases || 0;
+    averageRevenuePerCase = revenueData.averageRevenuePerCase || 0;
+  }
+
+  // Hàm load dữ liệu theo tháng/năm
+  const handleMonthYearChange = (month, year) => {
+    setSelectedMonth(month);
+    setSelectedYear(year);
+    let startDate, endDate;
+    if (year && month) {
+      startDate = dayjs(`${year}-${month}-01`).startOf('month');
+      endDate = dayjs(`${year}-${month}-01`).endOf('month');
+    } else if (year) {
+      startDate = dayjs(`${year}-01-01`).startOf('year');
+      endDate = dayjs(`${year}-12-31`).endOf('year');
+    } else {
+      startDate = null;
+      endDate = null;
+    }
+    setDateRange(startDate && endDate ? [startDate, endDate] : null);
+    loadRevenueData(startDate ? startDate.toDate() : null, endDate ? endDate.toDate() : null);
   };
 
-  // Cấu hình biểu đồ
-  const config = {
-    data: filteredData.map(d => ({
-      date: `${d.year}-${d.month.toString().padStart(2, '0')}`,
-      revenue: d.revenue || 0
-    })),
-    xField: 'date',
+  // Khi thay đổi tháng
+  const handleMonthChange = (value) => {
+    handleMonthYearChange(value, selectedYear);
+  };
+  // Khi thay đổi năm
+  const handleYearChange = (value) => {
+    handleMonthYearChange(selectedMonth, value);
+  };
+
+  // Tạo danh sách năm (ví dụ: 2020-2026)
+  // const yearOptions = [];
+  // for (let y = dayjs().year() - 5; y <= dayjs().year() + 1; y++) {
+  //   yearOptions.push(y);
+  // }
+
+
+
+  // Cấu hình biểu đồ cột
+  let chartData = [];
+  let xField = '';
+  let chartTitle = '';
+  if (selectedYear && selectedMonth) {
+    // Lấy số ngày trong tháng
+    const daysInMonth = dayjs(`${selectedYear}-${selectedMonth}-01`).daysInMonth();
+    // Tạo map ngày -> revenue
+    const dayRevenueMap = new Map();
+    dailyData.forEach(d => {
+      dayRevenueMap.set(d.day, d.revenue || 0);
+    });
+    chartData = Array.from({ length: daysInMonth }, (_, i) => ({
+      x: i + 1,
+      revenue: dayRevenueMap.get(i + 1) || 0
+    }));
+    xField = 'x';
+    chartTitle = `Biểu đồ doanh thu theo ngày (Tháng ${selectedMonth}/${selectedYear})`;
+  } else {
+    // Đảm bảo đủ 12 tháng, kể cả tháng không có doanh thu
+    const monthRevenueMap = new Map();
+    filteredData.forEach(d => {
+      monthRevenueMap.set(d.month, d.revenue || 0);
+    });
+    chartData = Array.from({ length: 12 }, (_, i) => ({
+      x: `${(i + 1).toString().padStart(2, '0')}/${selectedYear}`,
+      revenue: monthRevenueMap.get(i + 1) || 0
+    }));
+    xField = 'x';
+    chartTitle = `Biểu đồ doanh thu theo tháng (${selectedYear})`;
+  }
+
+
+
+  const columnConfig = {
+    data: chartData,
+    xField: xField,
     yField: 'revenue',
-    point: { size: 5, shape: 'diamond' },
-    label: { style: { fill: '#aaa' } },
-    smooth: true,
-    tooltip: { 
+    columnWidthRatio: 0.6,
+    tooltip: {
       showMarkers: true,
       formatter: (datum) => {
+        const value = Number(datum.revenue);
         return {
-          name: 'Doanh thu',
-          value: `${datum.revenue.toLocaleString()} ₫`
+          name: 'Tổng doanh thu',
+          value: value > 0 ? value.toLocaleString() + ' ₫' : '0 ₫',
         };
-      }
+      },
+    },
+    label: {
+      position: 'top',
+      style: {
+        fill: '#000',
+        fontSize: 13,
+        fontWeight: 600,
+        textShadow: '0 1px 2px #fff',
+      },
+      formatter: (value) => {
+        const num = Number(value);
+        return num > 0 ? num.toLocaleString() + ' ₫' : '';
+      },
+    },
+    color: '#1890ff',
+    xAxis: {
+      title: { text: selectedMonth ? 'Ngày' : 'Tháng' },
+    },
+    yAxis: {
+      title: { text: 'Doanh thu (₫)' },
     },
     interactions: [{ type: 'active-region' }],
   };
 
-  // Hàm xuất Excel (giả lập)
-  const handleExportExcel = () => {
-    alert("Tính năng xuất Excel chưa được tích hợp!");
-  };
 
   if (loading) {
     return (
@@ -170,42 +310,39 @@ function RevenueManagement() {
       <div className="flex justify-between items-center mb-6" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap" }}>
         <h1 className="text-2xl font-bold">Quản lý dòng tiền</h1>
         <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-          {/* Quick Time Range Selector */}
+          {/* Bộ lọc tháng/năm */}
           <Select
-            value={timeRange}
-            onChange={handleTimeRangeChange}
-            style={{ width: 150 }}
-            placeholder="Chọn khoảng thời gian"
-          >
-            <Option value="current_month">Tháng hiện tại</Option>
-            <Option value="last_month">Tháng trước</Option>
-            <Option value="last_3_months">3 tháng gần đây</Option>
-            <Option value="last_6_months">6 tháng gần đây</Option>
-            <Option value="current_year">Năm hiện tại</Option>
-            <Option value="last_year">Năm trước</Option>
-          </Select>
-          
-          {/* Custom Date Range Picker */}
-          <RangePicker
-            picker="month"
-            onChange={handleDateRangeChange}
-            style={{ width: 300 }}
+            value={selectedMonth}
+            onChange={handleMonthChange}
+            style={{ width: 120 }}
+            placeholder="Chọn tháng"
             allowClear
-            placeholder={['Từ tháng', 'Đến tháng']}
-          />
-          
-          <Button type="primary" icon={<DownloadOutlined />} onClick={handleExportExcel}>
-            Xuất Excel
-          </Button>
+          >
+            {monthOptions.map(m => (
+              <Option key={m} value={m}>Tháng {m}</Option>
+            ))}
+          </Select>
+          <Select
+            value={selectedYear}
+            onChange={handleYearChange}
+            style={{ width: 120 }}
+            placeholder="Chọn năm"
+          >
+            {yearOptions.map(y => (
+              <Option key={y} value={y}>{y}</Option>
+            ))}
+          </Select>
         </div>
       </div>
-
       {/* Hiển thị khoảng thời gian đang xem */}
-      {dateRange && dateRange.length === 2 && (
+      {selectedYear && (
         <div style={{ marginBottom: 16, padding: '8px 16px', backgroundColor: '#f0f0f0', borderRadius: 6 }}>
           <CalendarOutlined style={{ marginRight: 8 }} />
-          Đang xem dữ liệu từ: <strong>{dateRange[0].format('MM/YYYY')}</strong> 
-          đến: <strong>{dateRange[1].format('MM/YYYY')}</strong>
+          Đang xem dữ liệu: {selectedMonth ? (
+            <><strong>Tháng {selectedMonth}</strong> năm <strong>{selectedYear}</strong></>
+          ) : (
+            <>Cả năm <strong>{selectedYear}</strong></>
+          )}
         </div>
       )}
 
@@ -214,7 +351,7 @@ function RevenueManagement() {
           <Card>
             <Statistic
               title="Tổng doanh thu"
-              value={revenueData.totalRevenue || 0}
+              value={totalRevenue}
               prefix="₫"
               formatter={value => value.toLocaleString()}
             />
@@ -224,7 +361,7 @@ function RevenueManagement() {
           <Card>
             <Statistic
               title="Số lượng hồ sơ"
-              value={revenueData.totalCases || 0}
+              value={totalCases}
               suffix="hồ sơ"
             />
           </Card>
@@ -233,7 +370,7 @@ function RevenueManagement() {
           <Card>
             <Statistic
               title="Doanh thu trung bình/hồ sơ"
-              value={revenueData.averageRevenuePerCase || 0}
+              value={averageRevenuePerCase}
               prefix="₫"
               formatter={value => value.toLocaleString()}
             />
@@ -243,10 +380,10 @@ function RevenueManagement() {
           <Card>
             <Statistic
               title="Tăng trưởng doanh thu"
-              value={revenueData.growthPercent || 0}
+              value={growthPercent}
               precision={2}
               suffix="%"
-              valueStyle={{ color: (revenueData.growthPercent || 0) > 0 ? "#3f8600" : "#cf1322" }}
+              valueStyle={{ color: (growthPercent || 0) > 0 ? "#3f8600" : "#cf1322" }}
             />
           </Card>
         </Col>
@@ -254,7 +391,7 @@ function RevenueManagement() {
           <Card>
             <Statistic
               title="Doanh thu cao nhất"
-              value={revenueData.maxRevenueMonth || 0}
+              value={maxRevenue}
               prefix="₫"
               formatter={value => value.toLocaleString()}
             />
@@ -264,7 +401,7 @@ function RevenueManagement() {
           <Card>
             <Statistic
               title="Doanh thu thấp nhất"
-              value={revenueData.minRevenueMonth || 0}
+              value={minRevenue}
               prefix="₫"
               formatter={value => value.toLocaleString()}
             />
@@ -272,9 +409,9 @@ function RevenueManagement() {
         </Col>
       </Row>
 
-      <Card title="Biểu đồ doanh thu theo tháng">
-        {filteredData.length > 0 ? (
-          <Line {...config} />
+      <Card title={chartTitle}>
+        {chartData.length > 0 ? (
+          <Column {...columnConfig} />
         ) : (
           <Empty description="Không có dữ liệu trong khoảng thời gian này" />
         )}

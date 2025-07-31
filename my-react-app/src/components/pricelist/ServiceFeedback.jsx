@@ -16,30 +16,21 @@ const ServiceFeedback = ({ serviceId }) => {
   const fetchFeedbackData = async () => {
     try {
       setLoading(true);
-      
-      // Lấy feedback theo service
-      const feedbacksResponse = await apiService.auth.getFeedbackByService(serviceId);
-      
+      let feedbacksResponse = [];
+      if (serviceId) {
+        // Lấy feedback theo service nếu có serviceId
+        if (apiService.auth.getFeedbackByService) {
+          feedbacksResponse = await apiService.auth.getFeedbackByService(serviceId);
+        } else if (apiService.feedback.getFeedbackByService) {
+          feedbacksResponse = await apiService.feedback.getFeedbackByService(serviceId);
+        }
+      } else {
+        // Lấy toàn bộ feedback nếu không truyền serviceId
+        feedbacksResponse = await apiService.feedback.getAllFeedback();
+      }
       // Lấy tên của từng user
-      const feedbacksWithNames = await Promise.all(
-        feedbacksResponse.map(async (feedback) => {
-          try {
-            const userResponse = await apiService.auth.getUserById(feedback.userId);
-            return {
-              ...feedback,
-              userName: userResponse.name
-            };
-          } catch (error) {
-            console.error('Lỗi khi lấy tên user:', error);
-            return {
-              ...feedback,
-              userName: `Khách hàng #${feedback.userId}`
-            };
-          }
-        })
-      );
-      
-      setFeedbacks(feedbacksWithNames);
+      setFeedbacks(feedbacksResponse);
+
       setError('');
     } catch (error) {
       console.error('Lỗi khi lấy feedback:', error);
