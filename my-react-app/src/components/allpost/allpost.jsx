@@ -129,46 +129,6 @@ export default function AllPost() {
     <div>
 
 
-      <section
-        className="hero-section"
-        
-      >
-        <div style={{
-          maxWidth: "1280px",
-          width: "100%",
-          color: "#ce4d4dff",
-          textAlign: "center"
-        }}>
-          <h2 style={{
-            color: "#f59e0b",
-            fontSize: "1.3rem",
-            fontWeight: "600",
-            marginBottom: "10px",
-            textTransform: "uppercase",
-            letterSpacing: "1px"
-          }}>
-            CHUYÊN MỤC XÉT NGHIỆM ADN
-          </h2>
-          <h1 style={{
-            fontSize: "2.8rem",
-            fontWeight: "800",
-            margin: "0 0 24px 0",
-            lineHeight: "1.2",
-            letterSpacing: "1px"
-          }}>
-            TIN TỨC & <span style={{ color: "#f59e0b", fontWeight: "800" }}>BÀI VIẾT KHOA HỌC</span>
-          </h1>
-          <p style={{
-            fontSize: "1.1rem",
-            margin: "0 0 24px 0",
-            color: "#e0e7ef",
-            fontWeight: "500"
-          }}>
-            Khám phá kiến thức mới nhất về xét nghiệm ADN, di truyền học, sức khỏe và công nghệ sinh học hiện đại.
-          </p>
-        </div>
-      </section>
-
 
       <div className="blog-content-container">
         {/* Main Content Container */}
