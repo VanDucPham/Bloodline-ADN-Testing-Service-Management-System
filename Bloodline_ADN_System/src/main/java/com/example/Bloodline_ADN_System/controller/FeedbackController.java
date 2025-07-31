@@ -48,7 +48,9 @@ public class FeedbackController {
     // Admin/Manager/Staff: Xem tất cả feedback
     @GetMapping("/all")
     public ResponseEntity<List<FeedbackResponse>> getAllFeedback() {
+        System.out.println("Đã vào được /all");
         List<FeedbackResponse> responses = feedbackService.getAllFeedback();
+        System.out.println("Đã duyệt xong / all");
         return ResponseEntity.ok(responses);
     }
 

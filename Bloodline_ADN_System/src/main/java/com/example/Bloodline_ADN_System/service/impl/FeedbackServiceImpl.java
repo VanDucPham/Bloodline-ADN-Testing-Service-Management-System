@@ -10,6 +10,7 @@ import com.example.Bloodline_ADN_System.repository.FeedbackRepository;
 import com.example.Bloodline_ADN_System.repository.ServiceRepository;
 import com.example.Bloodline_ADN_System.repository.UserRepository;
 import com.example.Bloodline_ADN_System.service.FeedbackService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -104,9 +105,14 @@ public class FeedbackServiceImpl implements FeedbackService {
     }
 
     // Admin/Manager/Staff xem tất cả feedback
+
     @Override
+    @Transactional
     public List<FeedbackResponse> getAllFeedback() {
+        System.out.println("Hello1");
         List<Feedback> feedbacks = feedbackRepository.findAll();
+        System.out.println("Hello");
+        System.out.println(feedbacks.size());
         return feedbacks.stream().map(this::toDTO).collect(Collectors.toList());
     }
 
