@@ -9,6 +9,6 @@ import java.util.List;
 public interface PaymentService {
     Payment createPayment(PaymentRequest paymentRequest, Long appointmentId);
     PaymentDTO createPaymentAndReturnDTO(PaymentRequest paymentRequest, Long appointmentId);
-    List<PaymentDTO> getProcessingPayments();
+    List<PaymentDTO> getAllPayments();
     PaymentDTO markPaymentAsCompleted(Long paymentId);
 }

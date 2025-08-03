@@ -48,7 +48,7 @@ public class PaymentServiceImp implements PaymentService {
         payment.setAppointment(appointment); // luôn gán appointment
         payment.setPaymentDate(LocalDateTime.now());
         payment.setPaymentMethod(Payment.PaymentMethod.valueOf(paymentRequest.getPaymentMethod()));
-        payment.setStatus(Payment.PaymentStatus.PROCESSING);
+        payment.setStatus(Payment.PaymentStatus.COMPLETED);
         payment.setAmount((double) paymentRequest.getAmount());
 
         return paymentRepository.save(payment); // lưu mới hoặc cập nhật
@@ -61,8 +61,8 @@ public class PaymentServiceImp implements PaymentService {
     }
 
     @Transactional
-    public List<PaymentDTO> getProcessingPayments() {
-        List<Payment> payments = paymentRepository.findByStatus(Payment.PaymentStatus.PROCESSING);
+    public List<PaymentDTO> getAllPayments() {
+        List<Payment> payments = paymentRepository.findAll();
         return payments.stream().map(this::convertToDTO).toList();
     }
 
@@ -94,6 +94,7 @@ public class PaymentServiceImp implements PaymentService {
                 // Hoặc nếu serviceName nằm trực tiếp trong appointment
                 dto.setServiceName(payment.getAppointment().getService().getServiceName());
             }
+            dto.setCustomerName(payment.getAppointment().getUser().getName());
 
         }
 
