@@ -3,6 +3,13 @@ import { useParams, useNavigate } from 'react-router-dom';
 import apiService from '../../service/api';
 
 function PaymentPage() {
+    const paymentOptions = [
+        { value: 'CREDIT_CARD', label: 'Thẻ tín dụng' },
+        { value: 'BANK_TRANSFER', label: 'Chuyển khoản ngân hàng' },
+        { value: 'CASH', label: 'Tiền mặt' },
+        { value: 'E_WALLET', label: 'Ví điện tử (MoMo)' },
+    ];
+
     const { appointmentId } = useParams();
     const navigate = useNavigate();
 
@@ -72,11 +79,11 @@ function PaymentPage() {
             });
             setSuccessMsg('Thanh toán thành công!');
             setTimeout(() => navigate('/staff/appointments'), 2000);
-        }catch (err) {
-  console.error('Lỗi thanh toán:', err);
-  const msg =
-    err?.response?.data?.message || err?.message || 'Thanh toán thất bại. Xin thử lại.';
-  setError(msg);
+        } catch (err) {
+            console.error('Lỗi thanh toán:', err);
+            const msg =
+                err?.response?.data?.message || err?.message || 'Thanh toán thất bại. Xin thử lại.';
+            setError(msg);
 
 
         } finally {
@@ -98,26 +105,25 @@ function PaymentPage() {
                     <p><strong>Giá tiền:</strong> {serviceInfo?.servicePrice ? Number(serviceInfo.servicePrice).toLocaleString() + ' VNĐ' : 'Chưa có dữ liệu'}</p>
                     <p><strong>Ngày hẹn:</strong> {appointmentInfo.appointmentDate || 'Chưa có dữ liệu'}</p>
                     <p><strong>Giờ hẹn:</strong> {appointmentInfo.appointmentTime || 'Chưa có dữ liệu'}</p>
-                    
+
                 </div>
             )}
 
             <form onSubmit={handleSubmit}>
-                <div style={{ marginBottom: 12 }}>
-                    <label>Phương thức thanh toán</label>
-                    <select
-                        value={paymentMethod}
-                        onChange={e => setPaymentMethod(e.target.value)}
-                        required
-                        style={{ width: '100%', padding: 8, marginTop: 4 }}
-                    >
-                        <option value="">-- Chọn phương thức --</option>
-                        <option value="CREDIT_CARD">Thẻ tín dụng</option>
-                        <option value="CASH">Tiền mặt</option>
-                        <option value="MOMO">MoMo</option>
-                        <option value="BANK_TRANSFER">Chuyển khoản ngân hàng</option>
-                    </select>
-                </div>
+                <select
+                    value={paymentMethod}
+                    onChange={e => setPaymentMethod(e.target.value)}
+                    required
+                    style={{ width: '100%', padding: 8, marginTop: 4 }}
+                >
+                    <option value="">-- Chọn phương thức --</option>
+                    {paymentOptions.map(opt => (
+                        <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                        </option>
+                    ))}
+                </select>
+
 
                 <div style={{ marginBottom: 12 }}>
                     <label>Số tiền (VNĐ)</label>

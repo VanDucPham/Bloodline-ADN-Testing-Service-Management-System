@@ -15,5 +15,14 @@ class ManagerService extends BaseApiService {
   async assignStaff(caseId, staffData) {
     return this.put(`/manager/tracking/${caseId}/assign`, staffData);
   }
-}
+
+  async getAllPayments() {
+    // API /manager/payments hiện trả về các payment PROCESSING
+    return this.get('/manager/payments');
+  }
+
+  async completedPayment(id) {
+    return this.put(`/manager/payments/${id}`);
+  }
+  }
 export default ManagerService;

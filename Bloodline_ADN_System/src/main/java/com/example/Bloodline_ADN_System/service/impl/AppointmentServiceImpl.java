@@ -76,6 +76,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         CaseFile caseFile = new CaseFile();
         caseFile  = caseFileService.createCaseFile(caseFiledto);
 
+
         // 2. Validate
         AppointmentDTO dto = request.getAppointment();
         validateSlotAvailability(dto.getAppointmentDate(), dto.getAppointmentTime());
@@ -101,6 +102,11 @@ public class AppointmentServiceImpl implements AppointmentService {
         appointment.setCollectionStatus(Appointment.CollectionStatus.ASSIGNED);
         appointment.setCaseFile(caseFile);
         appointment.setAssignedStaff(user);
+        Payment payment = new Payment();
+        payment.setStatus(Payment.PaymentStatus.PENDING);
+        payment.setAppointment(appointment);
+
+        appointment.setPayment(payment);
 
         Appointment saved = appointmentRepository.save(appointment);
         return new AppointmentResponse<>("Đặt lịch thành công", toDTO(saved));
@@ -382,6 +388,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 
     @Override
+    @Transactional
     public AppointmentDTO updateAppointmentProgress(Long id, Appointment.AppointmentStatus status, Appointment.CollectionStatus collectionStatus) {
         Appointment appointment = appointmentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Lịch hẹn không tồn tại!"));
@@ -439,6 +446,11 @@ public class AppointmentServiceImpl implements AppointmentService {
         dto.setCollectionStatus(appointment.getCollectionStatus());
         dto.setAssignedStaff(appointment.getUser().getUserId());
         dto.setCaseCode(appointment.getCaseFile().getCaseCode());
+        if (appointment.getPayment() != null) {
+            dto.setPaymentStatus(appointment.getPayment().getStatus());
+        } else {
+            dto.setPaymentStatus(null);  // hoặc giá trị enum mặc định nếu bạn có
+        }
         return dto;
     }
 }

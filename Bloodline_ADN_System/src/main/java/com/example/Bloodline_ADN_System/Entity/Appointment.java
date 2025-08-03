@@ -94,11 +94,13 @@ public class Appointment {
 
     public enum DeliveryMethod {HOME_COLLECTION, SELF_DROP_OFF, HOME_DELIVERY}
 
-    public enum AppointmentStatus {SCHEDULED, CONFIRMED, COMPLETED, CANCELLED}
+    public enum AppointmentStatus {SCHEDULED, CONFIRMED, IN_PROGRESS, COMPLETED, CANCELLED}
 
     public enum CollectionStatus {
         ASSIGNED,      // Đã phân công nhân viên
-        TRAVELING,     // Nhân viên đang di chuyển
+        TRAVELING,
+        ARRIVED,
+        COLLECTING,// Nhân viên đang di chuyển
         COMPLETED      // Hoàn thành thu mẫu
     }
 }
