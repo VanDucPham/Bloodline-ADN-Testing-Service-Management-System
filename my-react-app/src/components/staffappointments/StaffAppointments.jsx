@@ -187,7 +187,18 @@ function StaffAppointments() {
       const data = await apiService.staff.getParticipantsByAppointmentId(appointmentId);
       const appointment = appointments.find(a => a.appointmentId === appointmentId);
       const limitPeople = appointment?.limitPeople || 1; // Lấy giới hạn người
-      setSelectedParticipants({ appointmentId, data, limitPeople });
+      
+      // Lấy thông tin service với participantType
+      let service = null;
+      if (appointment?.serviceId) {
+        try {
+          service = await apiService.staff.getServiceById(appointment.serviceId);
+        } catch (error) {
+          console.warn('Không thể lấy thông tin service:', error);
+        }
+      }
+      
+      setSelectedParticipants({ appointmentId, data, limitPeople, service });
       setParticipantModalOpen(true);
     } catch (error) {
       setParticipantError('Không thể tải thông tin participant!');
@@ -417,7 +428,7 @@ function StaffAppointments() {
 
   return (
     <div className="staff-appointments-container">
-      <h2>📅 Danh sách lịch hẹn</h2>
+      <h2>📅 Danh sách phiếu xét nghiệm ADN</h2>
       <div style={{ display: 'flex', gap: 16, marginBottom: 16, alignItems: 'center' }}>
         <div>
           <label>Lọc trạng thái: </label>
@@ -444,12 +455,12 @@ function StaffAppointments() {
           />
         </div>
         <div>
-          <label>Tìm theo mã lịch hẹn: </label>
+          <label>Tìm theo mã phiếu xét nghiệm: </label>
           <input
             type="text"
             value={searchId}
             onChange={e => setSearchId(e.target.value)}
-            placeholder="Nhập mã lịch hẹn"
+            placeholder="Nhập mã phiếu xét nghiệm"
             style={{ width: 120 }}
           />
         </div>
@@ -472,7 +483,7 @@ function StaffAppointments() {
           <table className="staff-appointments-table">
             <thead>
               <tr>
-                <th>Mã lịch hẹn</th>
+                <th>Mã phiếu xét nghiệm</th>
                 <th>Mã hồ sơ</th>
                 <th>Người dùng</th>
                 <th>Ngày</th>
@@ -481,7 +492,7 @@ function StaffAppointments() {
                 <th>Trạng thái kit</th>
                 <th>Dịch vụ</th>
                 <th>Phương thức lấy mẫu</th>
-                <th>Loại lịch hẹn</th>
+                <th>Loại dịch vụ</th>
                 <th>Hành động</th>
                 <th>Hành động</th>
               </tr>
@@ -518,7 +529,7 @@ function StaffAppointments() {
                       onChange={e => handleStatusOrCollectionChange(item.appointmentId, 'collectionStatus', e.target.value)}
                       style={{ minWidth: '120px' }}
                     >
-                      <option value="">-- Chọn trạng thái --</option>
+                      
                       {getAllowedCollectionStatus(item.collectionStatus).map(status => (
                         <option key={status} value={status} disabled={status === 'ARRIVED'}>{getCollectionStatusText(status) }</option>
                       ))}
@@ -548,7 +559,7 @@ function StaffAppointments() {
           {participantError && <p style={{ color: 'red' }}>{participantError}</p>}
         </div>
       ) : (
-        <p>Không có lịch hẹn nào!</p>
+        <p>Không có phiếu xét nghiệm nào nào!</p>
       )}
 
       <ParticipantModal
@@ -591,9 +602,8 @@ function StaffAppointments() {
             );
           })()
         }
-
-        participantCount={selectedParticipants?.limitPeople || 1} // <-- Thêm dòng này
-
+        service={selectedParticipants?.service}
+        participantCount={selectedParticipants?.limitPeople || 1}
       />
       <ResultModal
         open={resultModalOpen}
