@@ -133,7 +133,7 @@ function CreateAppointment() {
 
   return (
     <div className="create-appointment-container">
-      <h2>+ Tạo lịch hẹn mới</h2>
+      <h2>+ Tạo phiếu xét nghiệm ADN</h2>
       <form onSubmit={handleSubmit} className="create-appointment-form">
         {/* Hiển thị userId, chỉ đọc */}
         <div>
@@ -157,7 +157,7 @@ function CreateAppointment() {
           </select>
         </div>
         <div>
-          <label>Loại lịch hẹn:</label>
+          <label>Loại dịch vụ:</label>
           <select name="appointmentType" value={form.appointmentType} onChange={handleChange} required>
             <option value="">--Chọn--</option>
             {APPOINTMENT_TYPES.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
@@ -182,7 +182,7 @@ function CreateAppointment() {
         </div>
 
         <div>
-          <label>Trạng thái lịch hẹn:</label>
+          <label>Trạng thái phiếu xét nghiệm:</label>
 
            <input type="text" value="Đã đặt" readOnly />
 
@@ -198,7 +198,7 @@ function CreateAppointment() {
           <label>Ghi chú:</label>
           <input name="appointmentNote" value={form.appointmentNote} onChange={handleChange} />
         </div>
-        <button type="submit">Tạo lịch hẹn</button>
+        <button type="submit">Tạo phiếu xét nghiệm</button>
         {error && <p className="error-msg">{error}</p>}
         {success && <p className="success-msg">{success}</p>}
       </form>
