@@ -23,7 +23,7 @@ const COLLECTION_STATUS_OPTIONS = [
 ];
 
 function StaffAppointments() {
-  // Hàm chuyển đổi trạng thái lịch hẹn sang tiếng Việt
+  // Hàm chuyển đổi lịch hẹn sang tiếng Việt
   const getAppointmentStatusText = (status) => {
     const statusMap = {
       'SCHEDULED': 'Đã lên lịch',
@@ -35,17 +35,29 @@ function StaffAppointments() {
     return statusMap[status] || status;
   };
 
+  const getAllowedStatusOptions = (currentStatus) => {
+    const currentIndex = STATUS_OPTIONS.indexOf(currentStatus);
+    if (currentIndex === -1) return [];
+    return STATUS_OPTIONS.slice(currentIndex); // chỉ lấy từ trạng thái hiện tại trở đi
+  };
+
   // Hàm chuyển đổi trạng thái thu mẫu sang tiếng Việt
   const getCollectionStatusText = (status) => {
     const statusMap = {
       'ASSIGNED': 'Đã phân công',
       'TRAVELING': 'Đang di chuyển',
       'ARRIVED': 'Đã đến',
-      'COLLECTING': 'Đang thu mẫu',
+      'COLLECTING': 'Đã thu lại kit',
       'COMPLETED': 'Hoàn thành'
     };
     return statusMap[status] || status;
   };
+
+  const getAllowedCollectionStatus = (currentStatus) => {
+  const currentIndex = COLLECTION_STATUS_OPTIONS.indexOf(currentStatus);
+  if (currentIndex === -1) return [];
+  return COLLECTION_STATUS_OPTIONS.slice(currentIndex); // chỉ lấy từ trạng thái hiện tại trở đi
+};
 
   // Hàm chuyển đổi phương thức lấy mẫu sang tiếng Việt
   const getDeliveryMethodText = (method) => {
@@ -173,7 +185,9 @@ function StaffAppointments() {
     setCreateSampleSuccess('');
     try {
       const data = await apiService.staff.getParticipantsByAppointmentId(appointmentId);
-      setSelectedParticipants({ appointmentId, data });
+      const appointment = appointments.find(a => a.appointmentId === appointmentId);
+      const limitPeople = appointment?.limitPeople || 1; // Lấy giới hạn người
+      setSelectedParticipants({ appointmentId, data, limitPeople });
       setParticipantModalOpen(true);
     } catch (error) {
       setParticipantError('Không thể tải thông tin participant!');
@@ -224,7 +238,7 @@ function StaffAppointments() {
   const handleOpenResultModal = async (appointment) => {
     try {
       const result = await apiService.staff.getResultByAppointmentId(appointment.appointmentId);
-  
+
       setExistingResult(result); // null nếu chưa có kết quả
       setSelectedAppointmentForResult(appointment);
       setResultModalOpen(true);
@@ -249,11 +263,11 @@ function StaffAppointments() {
     setAddParticipantError('');
     setAddParticipantSuccess('');
     try {
-     const payload = values.map(p => ({
-      ...p,
-      appointmentId: selectedParticipants.appointmentId,
-      birthDate: p.birthDate ? moment(p.birthDate).format('YYYY-MM-DD') : null,
-    })); await apiService.staff.addParticipants(payload);
+      const payload = values.map(p => ({
+        ...p,
+        appointmentId: selectedParticipants.appointmentId,
+        birthDate: p.birthDate ? moment(p.birthDate).format('YYYY-MM-DD') : null,
+      })); await apiService.staff.addParticipants(payload);
       setAddParticipantSuccess('Thêm người tham gia thành công!');
       await handleShowParticipants(selectedParticipants.appointmentId);
       setShowAddParticipantForm(false);
@@ -341,7 +355,6 @@ function StaffAppointments() {
   const onEditSample = (sample) => setEditingSample(sample);
   const onCancelEditSample = () => setEditingSample(null);
 
-
   const handleExportResult = async (appointmentId) => {
     try {
       console.log(`Bắt đầu gọi API xuất file PDF cho appointmentId: ${appointmentId}`);
@@ -354,7 +367,7 @@ function StaffAppointments() {
       const disposition = response.headers && response.headers['content-disposition'];
       const filenameMatch = disposition && disposition.match(/filename="?(.+)"?/);
       const filename = filenameMatch ? filenameMatch[1] : `result_${appointmentId}.pdf`;
-      
+
       if (!(response instanceof Blob)) {
         alert('Dữ liệu trả về không phải file hợp lệ!');
         return;
@@ -376,6 +389,8 @@ function StaffAppointments() {
   // Lọc dữ liệu theo status, ngày, mã lịch hẹn và mã hồ sơ
   const filteredAppointments = appointments
     .filter(item => {
+      // Chỉ hiển thị nếu paymentStatus = COMPLETED
+      if (item.paymentStatus !== "COMPLETED") return false;
       const matchStatus = statusFilter ? item.appointmentStatus === statusFilter : true;
       // Khai báo itemDate đúng vị trí
       const itemDate = moment(item.appointmentDate, 'YYYY-MM-DD').startOf('day');
@@ -383,7 +398,6 @@ function StaffAppointments() {
       const matchDate = filterDate
         ? itemDate.format('YYYY-MM-DD') === filterDate.format('YYYY-MM-DD')
         : true;
-
       const matchId = searchId ? String(item.appointmentId) === searchId : true;
       const matchCaseCode = searchCaseCode ? (item.caseCode && item.caseCode.toLowerCase().includes(searchCaseCode.toLowerCase())) : true;
       return matchStatus && matchDate && matchId && matchCaseCode;
@@ -414,21 +428,21 @@ function StaffAppointments() {
             ))}
           </select>
         </div>
-         <div>
-      <label>Lọc theo ngày: </label>
-      <input
-        type="date"
-        value={dateFilter ? dateFilter.format('YYYY-MM-DD') : ''}
-        onChange={e => {
-          const value = e.target.value;
-          if (value) {
-            setDateFilter(moment(value, 'YYYY-MM-DD'));
-          } else {
-            setDateFilter(null);
-          }
-        }}
-      />
-    </div>
+        <div>
+          <label>Lọc theo ngày: </label>
+          <input
+            type="date"
+            value={dateFilter ? dateFilter.format('YYYY-MM-DD') : ''}
+            onChange={e => {
+              const value = e.target.value;
+              if (value) {
+                setDateFilter(moment(value, 'YYYY-MM-DD'));
+              } else {
+                setDateFilter(null);
+              }
+            }}
+          />
+        </div>
         <div>
           <label>Tìm theo mã lịch hẹn: </label>
           <input
@@ -464,7 +478,7 @@ function StaffAppointments() {
                 <th>Ngày</th>
                 <th>Giờ</th>
                 <th>Trạng thái</th>
-                <th>Trạng thái thu mẫu</th>
+                <th>Trạng thái kit</th>
                 <th>Dịch vụ</th>
                 <th>Phương thức lấy mẫu</th>
                 <th>Loại lịch hẹn</th>
@@ -484,15 +498,19 @@ function StaffAppointments() {
                     <select
                       value={item.appointmentStatus || ''}
                       disabled={updatingId === item.appointmentId}
-                      onChange={e => handleStatusOrCollectionChange(item.appointmentId, 'appointmentStatus', e.target.value)}
+                      onChange={e =>
+                        handleStatusOrCollectionChange(item.appointmentId, 'appointmentStatus', e.target.value)
+                      }
                       style={{ minWidth: '120px' }}
                     >
-                      <option value="">-- Chọn trạng thái --</option>
-                      {STATUS_OPTIONS.map(status => (
-                        <option key={status} value={status}>{getAppointmentStatusText(status)}</option>
+                      {getAllowedStatusOptions(item.appointmentStatus).map(status => (
+                        <option key={status} value={status}>
+                          {getAppointmentStatusText(status)}
+                        </option>
                       ))}
                     </select>
                   </td>
+
                   <td onClick={e => e.stopPropagation()}>
                     <select
                       value={item.collectionStatus || ''}
@@ -501,8 +519,8 @@ function StaffAppointments() {
                       style={{ minWidth: '120px' }}
                     >
                       <option value="">-- Chọn trạng thái --</option>
-                      {COLLECTION_STATUS_OPTIONS.map(status => (
-                        <option key={status} value={status}>{getCollectionStatusText(status)}</option>
+                      {getAllowedCollectionStatus(item.collectionStatus).map(status => (
+                        <option key={status} value={status} disabled={status === 'ARRIVED'}>{getCollectionStatusText(status) }</option>
                       ))}
                     </select>
                   </td>
@@ -510,7 +528,13 @@ function StaffAppointments() {
                   <td>{getDeliveryMethodText(item.deliveryMethod)}</td>
                   <td>{getAppointmentTypeText(item.appointmentType)}</td>
                   <td>
-                    <button onClick={() => handleShowParticipants(item.appointmentId)}>Xem participant</button>
+                    <button
+                      onClick={() => handleShowParticipants(item.appointmentId)}
+                      disabled={item.appointmentStatus === 'SCHEDULED'}
+                      title={item.appointmentStatus === 'SCHEDULED' ? 'Chỉ xem participant khi đã xác nhận' : ''}
+                    >
+                      Xem participant
+                    </button>
                   </td>
                   <td>
                     <button onClick={() => handleOpenResultModal(item)}>Kết quả</button>
@@ -552,6 +576,24 @@ function StaffAppointments() {
         addParticipantLoading={addParticipantLoading}
         addParticipantError={addParticipantError}
         addParticipantSuccess={addParticipantSuccess}
+        allowAddParticipant={
+          (() => {
+            const status = appointments.find(a => a.appointmentId === selectedParticipants?.appointmentId)?.appointmentStatus;
+            return status === 'IN_PROGRESS';
+          })()
+        }
+        allowShowSample={
+          (() => {
+            const appointment = appointments.find(a => a.appointmentId === selectedParticipants?.appointmentId);
+            return (
+              (appointment?.appointmentStatus === 'IN_PROGRESS' || appointment?.appointmentStatus === 'COMPLETED') &&
+              appointment?.collectionStatus === 'COMPLETED'
+            );
+          })()
+        }
+
+        participantCount={selectedParticipants?.limitPeople || 1} // <-- Thêm dòng này
+
       />
       <ResultModal
         open={resultModalOpen}

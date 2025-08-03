@@ -39,6 +39,8 @@ function ParticipantModal({
   createSampleLoading,
   createSampleError,
   createSampleSuccess,
+  allowShowSample,
+  allowAddParticipant,
 }) {
   const [sampleForm] = Form.useForm();
 
@@ -134,7 +136,9 @@ function ParticipantModal({
       key: 'action',
       width: 100,
       render: (_, record) => (
-        <Button type="primary" size="small" onClick={() => onShowSample(record.participantId)}>
+        <Button onClick={() => onShowSample(record.participantId)}
+          disabled={!allowShowSample}
+          title={!allowShowSample ? 'Chỉ xem sample khi lịch đang thực hiện và hoàn thành thu kit' : ''}>
           Xem sample
         </Button>
       ),
@@ -171,6 +175,8 @@ function ParticipantModal({
         type="primary"
         style={{ marginBottom: 12 }}
         onClick={() => setShowAddParticipantForm(true)}
+        disabled={!allowAddParticipant}
+        title={!allowAddParticipant ? 'Chỉ thêm được người tham gia khi thực hiện' : ''}
       >
         Thêm participant
       </Button>

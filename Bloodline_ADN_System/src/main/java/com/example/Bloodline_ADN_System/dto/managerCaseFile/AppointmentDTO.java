@@ -1,6 +1,7 @@
 package com.example.Bloodline_ADN_System.dto.managerCaseFile;
 
 import com.example.Bloodline_ADN_System.Entity.Appointment;
+import com.example.Bloodline_ADN_System.Entity.Payment;
 import com.example.Bloodline_ADN_System.dto.noneWhere.SampleDTO;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -60,6 +61,8 @@ public class AppointmentDTO {
 
     // Danh sách mẫu
     private List<SampleDTO> samples;
+
+    private Payment.PaymentStatus paymentStatus;
 }
 
 

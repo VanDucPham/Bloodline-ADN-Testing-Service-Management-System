@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class PaymentServiceImp implements PaymentService {
@@ -35,9 +36,45 @@ public class PaymentServiceImp implements PaymentService {
         paymentRepository.save(payment);
         return payment  ;
     }
+
+    @Transactional
+    public Payment updatePayment(PaymentRequest paymentRequest, Long appointmentId) {
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy lịch hẹn với ID: " + appointmentId));
+
+        Payment payment = paymentRepository.findByAppointment_AppointmentId(appointmentId)
+                .orElse(new Payment()); // nếu chưa có thì tạo mới
+
+        payment.setAppointment(appointment); // luôn gán appointment
+        payment.setPaymentDate(LocalDateTime.now());
+        payment.setPaymentMethod(Payment.PaymentMethod.valueOf(paymentRequest.getPaymentMethod()));
+        payment.setStatus(Payment.PaymentStatus.PROCESSING);
+        payment.setAmount((double) paymentRequest.getAmount());
+
+        return paymentRepository.save(payment); // lưu mới hoặc cập nhật
+    }
+
     @Transactional
     public PaymentDTO createPaymentAndReturnDTO(PaymentRequest paymentRequest, Long appointmentId) {
-        Payment payment = createPayment(paymentRequest, appointmentId);
+        Payment payment = updatePayment(paymentRequest, appointmentId);
+        return convertToDTO(payment);
+    }
+
+    @Transactional
+    public List<PaymentDTO> getProcessingPayments() {
+        List<Payment> payments = paymentRepository.findByStatus(Payment.PaymentStatus.PROCESSING);
+        return payments.stream().map(this::convertToDTO).toList();
+    }
+
+
+    @Transactional
+    public PaymentDTO markPaymentAsCompleted(Long paymentId) {
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new RuntimeException("Payment not found with ID: " + paymentId));
+
+        payment.setStatus(Payment.PaymentStatus.COMPLETED);
+        payment = paymentRepository.save(payment);
+
         return convertToDTO(payment);
     }
 

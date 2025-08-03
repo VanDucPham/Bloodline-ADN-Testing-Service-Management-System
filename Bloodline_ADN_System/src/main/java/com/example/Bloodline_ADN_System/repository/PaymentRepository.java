@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
@@ -77,4 +78,9 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
            "FROM Payment p WHERE p.status = 'COMPLETED' AND YEAR(p.paymentDate) = :year AND MONTH(p.paymentDate) = :month " +
            "GROUP BY DAY(p.paymentDate) ORDER BY day ASC")
     List<Object[]> getRevenueByDay(@Param("year") int year, @Param("month") int month);
+
+    List<Payment> findByStatus(Payment.PaymentStatus status);
+
+    Optional<Payment> findByAppointment_AppointmentId(Long appointmentId);
+
 } 

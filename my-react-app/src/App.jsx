@@ -37,9 +37,10 @@ import MyFeedbackList from './components/feedback/MyFeedbackList';
 import StaffAppointments from './components/staffappointments/StaffAppointments';
 import CreateAppointment from './components/staffappointments/CreateAppointment';
 import PaymentResult from './components/htmltest/tracking_customer/tracking_user/PaymentResult';
-import DistanceCalculator from './components/DistanceCalculator';
+// import DistanceCalculator from './components/DistanceCalculator';
 import AdminLayout from './components/dashboards/AdminLayout';
 import Payment from './components/staffappointments/Payment';
+import PaymentManager from './components/Manager/PaymentManager';
 
 function App() {
     return (
@@ -73,7 +74,7 @@ function App() {
                         <Route path="/staff/appointment/create" element={<CreateAppointment />} />
                         <Route path="/admin-dashboard" element={<AdminLayout activeSection="admin" />} />
                         <Route path="/payment_return" element={<PaymentResult />} />
-                        <Route path="/distance" element={<DistanceCalculator />} />
+                        {/* <Route path="/distance" element={<DistanceCalculator />} /> */}
                         <Route path="/payment/:appointmentId" element={<Payment />} />
                     </Route>
 
@@ -100,6 +101,7 @@ function App() {
                         <Route path="schedules" element={<FacilityScheduleSimple />} />
                         <Route path="blogs" element={<BlogManager />} />
                         <Route path="areas" element={<AllowedAreaManager />} />
+                        <Route path="payments" element={<PaymentManager />} />
                     </Route>
 
                 </Routes>

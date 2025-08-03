@@ -14,6 +14,7 @@ import {
   EnvironmentOutlined
 } from "@ant-design/icons";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import PaymentManager from "./PaymentManager";
 import "./ManagerLayout.css";
 
 const { Header, Sider, Content } = Layout;
@@ -34,13 +35,13 @@ const ManagerLayout = () => {
   const menuItems = [
     { key: "/manager/dashboard", icon: <DashboardOutlined />, label: "Dashboard" },
     { key: "/manager/employees", icon: <TeamOutlined />, label: "Danh sách nhân viên" },
-     { key: "/manager/services", icon: <AppstoreAddOutlined />, label: "Dịch vụ" },
+    { key: "/manager/services", icon: <AppstoreAddOutlined />, label: "Dịch vụ" },
     { key: "/manager/schedules", icon: <CalendarOutlined />, label: "Lịch làm việc" },
     { key: "/manager/areas", icon: <EnvironmentOutlined />, label: "Quản lý khu vực" },
     { key: "/manager/tracking", icon: <BarChartOutlined />, label: "Theo dõi hồ sơ" },
+    { key: "/manager/payments", icon: <FileTextOutlined />, label: "Quản lý thanh toán" },
     { key: "/manager/blogs", icon: <FileTextOutlined />, label: "Blog" },
     { key: "/manager/report", icon: <BarChartOutlined />, label: "Phản hổi khách hàng" },
-
   ];
 
   return (
@@ -82,7 +83,7 @@ const ManagerLayout = () => {
           </div>
         </Header>
         <Content style={{ margin: '24px', background: '#fff', padding: 24 }}>
-          <Outlet />
+          {location.pathname === "/manager/payments" ? <PaymentManager /> : <Outlet />}
         </Content>
       </Layout>
     </Layout>

@@ -81,6 +81,13 @@ public class CustomerServiceImp implements CustomerService {
                         payment.setPaymentMethod(pm.getPaymentMethod() != null ? pm.getPaymentMethod().name() : null);
                         payment.setPaymentStatus(pm.getStatus() != null ? pm.getStatus().name() : null);
                         payment.setPaymentDate(pm.getPaymentDate());
+                    }else {
+                        // Có thể để mặc định hoặc giá trị empty cho các trường paymentDTO
+                        payment.setPaymentID(null);
+                        payment.setPaymentAmount(1.5);
+                        payment.setPaymentMethod("");
+                        payment.setPaymentStatus("CHUA_THANH_TOAN"); // hoặc null tùy bạn định nghĩa
+                        payment.setPaymentDate(null);
                     }
                     dto.setPaymentDTO(payment);
 
