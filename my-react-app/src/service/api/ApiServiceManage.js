@@ -12,7 +12,10 @@ import AdminService from "../adminService";
 
 class ApiServiceManager {
   constructor() {
-    this.baseURL = import.meta.env.VITE_API_BASE_URL|| 'http://localhost:8080/api';
+    
+    const apiUrl = import.meta.env.VITE_API_BASE_URL;
+this.baseURL = (apiUrl && apiUrl.trim() !== '') ? apiUrl : 'http://localhost:8080/api';
+
     console.log("Base API URL:", import.meta.env.VITE_API_BASE_URL);
 
     this.apiClient = axios.create({

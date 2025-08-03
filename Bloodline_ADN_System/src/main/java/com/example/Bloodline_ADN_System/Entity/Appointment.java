@@ -2,6 +2,7 @@ package com.example.Bloodline_ADN_System.Entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.LocalDateTime;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -29,6 +30,7 @@ public class Appointment {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "staff_assigned_id")
     private User assignedStaff; // Nhân viên được phân công
+
 
     @OneToMany(mappedBy = "appointment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Participant> participants = new ArrayList<>();
@@ -58,10 +60,8 @@ public class Appointment {
     private DeliveryMethod deliveryMethod;
 
 
-
     @Enumerated(EnumType.STRING)
     private CollectionStatus collectionStatus; // Trạng thái thu mẫu
-
 
 
     @Column(columnDefinition = "TEXT")
@@ -80,9 +80,6 @@ public class Appointment {
     @OneToOne(mappedBy = "appointment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private QRCode qrCode;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "kit_status")
-    private KitStatus kitStatus;
 
     @PrePersist
     protected void onCreate() {
@@ -91,22 +88,17 @@ public class Appointment {
             collectionStatus = CollectionStatus.ASSIGNED;
         }
     }
-    public enum KitStatus {
-        NOT_REQUIRED, // Trường hợp không dùng kit
-        KIT_SENT,
-        USER_COLLECTED,
-        RETURNED
-    }
 
-    public enum AppointmentType { ADMINISTRATIVE, CIVIL }
-    public enum DeliveryMethod { HOME_COLLECTION, SELF_DROP_OFF , HOME_DELIVERY }
-    public enum AppointmentStatus { SCHEDULED, CONFIRMED, IN_PROGRESS, COMPLETED, CANCELLED }
+
+    public enum AppointmentType {ADMINISTRATIVE, CIVIL}
+
+    public enum DeliveryMethod {HOME_COLLECTION, SELF_DROP_OFF, HOME_DELIVERY}
+
+    public enum AppointmentStatus {SCHEDULED, CONFIRMED, COMPLETED, CANCELLED}
+
     public enum CollectionStatus {
         ASSIGNED,      // Đã phân công nhân viên
         TRAVELING,     // Nhân viên đang di chuyển
-        ARRIVED,       // Đã đến địa chỉ khách hàng
-        COLLECTING,    // Đang thu mẫu
-        
         COMPLETED      // Hoàn thành thu mẫu
     }
 }

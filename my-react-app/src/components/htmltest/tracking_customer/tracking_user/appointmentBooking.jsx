@@ -19,7 +19,6 @@ function AppointmentBooking() {
   const [loadingService, setLoadingService] = useState(false);
   const [loadingAreas, setLoadingAreas] = useState(false);
 
-
   const usedata = localStorage.getItem('userInfo');
   const user = usedata ? JSON.parse(usedata) : null;
 
@@ -42,18 +41,17 @@ function AppointmentBooking() {
     maxAppointment: ''
   }]);
 
+  // Cập nhật cấu trúc participants để bao gồm participantType
   const [participants, setParticipants] = useState([{
     name: '',
-    relationship: '',
     citizenId: '',
     address: '',
     birthDate: '',
-    gender: '',
+    participantType: '', // Thêm participantType
   }]);
 
-  const [samples, setSamples] = useState([
-    { participantCitizenId: '', sampleType: '' },
-  ]);
+  // Cập nhật cấu trúc samples để tự động điền
+  const [samples, setSamples] = useState([]);
 
   const [caseFile, setCaseFile] = useState({
     userId: '',
@@ -69,8 +67,31 @@ function AppointmentBooking() {
 
   const location = useLocation();
 
-  // Khi mount, nếu có state serviceId truyền sang thì tự động set
+  // Function để clear localStorage
+  const clearLocalStorage = () => {
+    localStorage.removeItem("appointment");
+    localStorage.removeItem("caseFile");
+    localStorage.removeItem("participants");
+    localStorage.removeItem("sample");
+    localStorage.removeItem("payment");
+    
+    // Clear tất cả state cũ
+    setParticipants([{
+      name: '',
+      citizenId: '',
+      address: '',
+      birthDate: '',
+      participantType: '',
+    }]);
+    setSamples([]);
+    
+    console.log("DEBUG - localStorage and state cleared");
+  };
+
+  // Khi mount, clear localStorage và set serviceId nếu có
   useEffect(() => {
+    clearLocalStorage();
+    
     if (location.state && location.state.serviceId) {
       setAppointment(prev => ({ ...prev, serviceId: location.state.serviceId }));
       setCaseFile(prev => ({ ...prev, serviceId: location.state.serviceId }));
@@ -97,6 +118,7 @@ function AppointmentBooking() {
           }));
         }
         const response = await apiService.user.getService();
+        console.log("API Response:", response); // Debug logging
         const timeSlot = await apiService.user.getTimeSlot();
         setTimeSlot(timeSlot);
         setService(response);
@@ -149,7 +171,6 @@ function AppointmentBooking() {
     setDistrictOptions(Array.from(new Set(districts)));
   };
 
-
   const checkAvailability = async () => {
     try {
       const response = await apiService.user.checkAvailability({
@@ -176,6 +197,11 @@ function AppointmentBooking() {
   const handleServiceChange = (e) => {
     setAppointment({ ...appointment, serviceId: e.target.value });
     setCaseFile({ ...caseFile, serviceId: e.target.value });
+    
+    // Clear localStorage và state khi chọn service mới
+    clearLocalStorage();
+    
+    console.log("DEBUG - Service changed, cleared localStorage and state");
   };
 
   const handleDateChange = (e) => {
@@ -195,129 +221,180 @@ function AppointmentBooking() {
     const updated = [...participants];
     updated[index][e.target.name] = e.target.value;
     setParticipants(updated);
+    
+    // Tự động cập nhật sample khi CCCD thay đổi
+    if (e.target.name === 'citizenId') {
+      updateSampleForParticipant(index, e.target.value);
+    }
+  };
+
+  // Validate CCCD không được trùng
+  const validateCitizenId = (citizenId, currentIndex) => {
+    if (!citizenId) return true; // Cho phép trống trong quá trình nhập
+    const duplicates = participants.filter((p, idx) => 
+      idx !== currentIndex && p.citizenId === citizenId
+    );
+    return duplicates.length === 0;
+  };
+
+  // Tự động điền loại mẫu dựa trên participantType
+  const getDefaultSampleType = (participantType) => {
+    const sampleTypeMap = {
+      'CHA': 'BLOOD',
+      'ME': 'BLOOD', 
+      'CON': 'BLOOD',
+      'ANH_EM': 'BLOOD',
+      'CHI_EM': 'BLOOD',
+      'ONG': 'BLOOD',
+      'BA': 'BLOOD',
+      'CHU': 'BLOOD',
+      'CO': 'BLOOD',
+      'CAU': 'BLOOD',
+      'MO': 'BLOOD',
+      'DI': 'BLOOD',
+      'BAC': 'BLOOD',
+      'CHAU': 'BLOOD',
+      'Father': 'BLOOD',
+      'Child': 'BLOOD',
+      'Mother': 'BLOOD',
+      'Son': 'BLOOD',
+      'Daughter': 'BLOOD'
+    };
+    return sampleTypeMap[participantType] || 'BLOOD';
+  };
+
+  // Xử lý thay đổi loại mẫu
+  const handleSampleTypeChange = (sampleIndex, sampleType) => {
+    const updatedSamples = [...samples];
+    updatedSamples[sampleIndex].sampleType = sampleType;
+    setSamples(updatedSamples);
+  };
+
+  // Cập nhật participantType và tự động điền sample
+  const handleParticipantTypeChange = (index, participantType) => {
+    const updatedParticipants = [...participants];
+    updatedParticipants[index].participantType = participantType;
+    setParticipants(updatedParticipants);
+
+    // Tự động cập nhật sample tương ứng
+    const updatedSamples = [...samples];
+    const participant = updatedParticipants[index];
+    const sampleIndex = updatedSamples.findIndex(s => s.participantCitizenId === participant.citizenId);
+    
+    if (sampleIndex !== -1) {
+      updatedSamples[sampleIndex].participantType = participantType;
+      updatedSamples[sampleIndex].sampleType = getDefaultSampleType(participantType);
+    }
+    setSamples(updatedSamples);
   };
 
   const addParticipant = () => {
     const newParticipant = {
       name: '',
-      relationship: '',
       citizenId: '',
       address: '',
       birthDate: '',
-      gender: ''
+      participantType: ''
     };
     setParticipants(prev => [...prev, newParticipant]);
-    setSamples(prev => [...prev, { participantCitizenId: '', sampleType: '' }]);
   };
 
   const removeParticipant = (index) => {
     const updatedParticipants = participants.filter((_, i) => i !== index);
     setParticipants(updatedParticipants);
-    const updatedSamples = samples.filter((_, i) => i !== index);
-    setSamples(updatedSamples);
   };
 
-  const handleSampleChange = (index, e) => {
-    const updated = [...samples];
-    const { name, value } = e.target;
-    updated[index][name] = value;
-    if (name === 'participantCitizenId') {
-      const matched = participants.find(p => p.citizenId.trim() === value);
-      updated[index]['participantName'] = matched?.name || '';
+  // Tự động cập nhật sample khi participant thay đổi
+  const updateSampleForParticipant = (participantIndex, citizenId) => {
+    const updatedSamples = [...samples];
+    const sampleIndex = updatedSamples.findIndex(s => s.participantIndex === participantIndex);
+    
+    if (sampleIndex !== -1) {
+      updatedSamples[sampleIndex].participantCitizenId = citizenId;
+      const participant = participants[participantIndex];
+      if (participant) {
+        updatedSamples[sampleIndex].participantName = participant.name;
+      }
     }
-    setSamples(updated);
+    setSamples(updatedSamples);
   };
 
   const handlePaymentMethodChange = (e) => {
     setAppointment({ ...appointment, paymentMethod: e.target.value });
   };
 
-  const handleSubmit = async () => {
+    const handleSubmit = async () => {
    const updateAppointment = {
-  ...appointment,
-  userId: user?.user_Id,
-  appointmentDate: appointment.appointmentDate || null, // chuyển "" thành null
-  appointmentTime: appointment.appointmentTime || null
-};
-    const updatedCaseFile = {
-      ...caseFile,
-      userId: user?.user_Id
-    };
+   ...appointment,
+   userId: user?.user_Id,
+   appointmentDate: appointment.appointmentDate || null, // chuyển "" thành null
+   appointmentTime: appointment.appointmentTime || null
+ };
+     const updatedCaseFile = {
+       ...caseFile,
+       userId: user?.user_Id
+     };
 
-    try {
-      // if (appointment.deliveryMethod === '') {
-      //   try {
+     try {
+       const filteredSamples = samples.filter(s =>
+         s.participantCitizenId?.trim() !== '' && s.sampleType?.trim() !== ''
+       );
 
-      //     const values = await  addressForm.validateFields();
-      //     // Gọi API kiểm tra khu vực hợp lệ
-      //     const token = localStorage.getItem('authToken');
-      //     const res = await fetch(`/api/areas/check?city=${encodeURIComponent(values.city)}&district=${encodeURIComponent(values.district)}`, {
-      //       headers: { Authorization: `Bearer ${token}` }
-      //     });
-      //     const isAllowed = await res.json();
-      //     if (!isAllowed) {
-      //       message.error('Khu vực này chưa hỗ trợ lấy mẫu tại nhà. Vui lòng chọn khu vực khác!');
-      //       return;
-      //     }
-      //     // Lưu địa chỉ vào appointment
-      //     setAppointment(prev => ({
-      //       ...prev,
-      //       collectionAddress: values.addressDetail,
-      //       collectionCity: values.city,
-      //       collectionDistrict: values.district
-      //     }));
-      //   } catch  {
-      //     // Nếu validate lỗi thì không submit
-      //     return;
-      //   }
-      // }
+               // Debug logging
+        console.log("DEBUG - Submit Data:");
+        console.log("Participants count:", participants.length);
+        console.log("Samples count:", samples.length);
+        console.log("Filtered samples count:", filteredSamples.length);
+        console.log("Participants:", participants);
+        console.log("Samples:", samples);
+        console.log("Filtered samples:", filteredSamples);
+        console.log("Selected service:", selectedService);
+        
+        // Kiểm tra localStorage trước khi lưu
+        console.log("DEBUG - localStorage before saving:");
+        console.log("Existing appointment:", localStorage.getItem("appointment"));
+        console.log("Existing participants:", localStorage.getItem("participants"));
+        console.log("Existing samples:", localStorage.getItem("sample"));
 
-      const filteredSamples = samples.filter(s =>
-        s.participantCitizenId?.trim() !== '' && s.sampleType?.trim() !== ''
-      );
+       const paymentRequest = {
+         amount: selectedService.servicePrice, // số tiền
+         orderInfo: `Thanh toán dịch vụ ${selectedService.serviceName}`,
+         txnRef: "ORDER" + Date.now(), // mã đơn hàng duy nhất
+         bankCode: "", // hoặc để trống
+         paymentMethod: "BANK_TRANSFER"
+       };
+       
+               // Debug logging trước khi lưu localStorage
+        console.log("DEBUG - Before saving to localStorage:");
+        console.log("UpdateAppointment:", updateAppointment);
+        console.log("UpdatedCaseFile:", updatedCaseFile);
+        console.log("Participants:", participants);
+        console.log("FilteredSamples:", filteredSamples);
+        console.log("PaymentRequest:", paymentRequest);
+        
+        localStorage.setItem("appointment", JSON.stringify(updateAppointment));
+        localStorage.setItem("caseFile", JSON.stringify(updatedCaseFile));
+        localStorage.setItem("participants", JSON.stringify(participants));
+        localStorage.setItem("sample", JSON.stringify(filteredSamples));
+        localStorage.setItem("payment", JSON.stringify(paymentRequest));
+        
+        // Debug logging sau khi lưu localStorage
+        console.log("DEBUG - After saving to localStorage:");
+        console.log("Stored appointment:", localStorage.getItem("appointment"));
+        console.log("Stored participants:", localStorage.getItem("participants"));
+        console.log("Stored samples:", localStorage.getItem("sample"));
 
+       const res = await apiService.user.createPay(paymentRequest);
+       console.log(res);
+       if (res) {
+        window.open(res, "_blank");
+       }
 
-
-      const paymentRequest = {
-        amount: selectedService.servicePrice, // số tiền
-        orderInfo: `Thanh toán dịch vụ ${selectedService.serviceName}`,
-        txnRef: "ORDER" + Date.now(), // mã đơn hàng duy nhất
-        bankCode: "", // hoặc để trống
-        paymentMethod: "BANK_TRANSFER"
-
-      };
-      localStorage.setItem("appointment", JSON.stringify(updateAppointment));
-localStorage.setItem("caseFile", JSON.stringify(updatedCaseFile));
-localStorage.setItem("participants", JSON.stringify(participants));
-localStorage.setItem("sample", JSON.stringify(filteredSamples));
-      localStorage.setItem("payment", JSON.stringify(paymentRequest)) ;
-      console.log(paymentRequest)
-
-      const res = await apiService.user.createPay(paymentRequest);
-      console.log(res)
-      if (res) {
-       window.open(res, "_blank");
-      }
-    //    const payLoad = {
-    //   appointment: updateAppointment,
-    //   participants: participants,
-    //   samples: filteredSamples,
-    //   caseFile: updatedCaseFile
-    // };
-
-    //   // Các phương thức khác
-    //   await apiService.user.create_app(payLoad);
-    //   alert("Lịch hẹn được đặt thành công!");
-    //   navigate("/tracking_user");
-
-
-  } catch (error) {
-    alert("Đặt lịch thất bại, vui lòng đặt lại");
-        setValidateMessage(error.message || "Đặt lịch thất bại, vui lòng đặt lại");
-
-    }
-};
-
+   } catch (error) {
+     alert("Đặt lịch thất bại, vui lòng đặt lại");
+         setValidateMessage(error.message || "Đặt lịch thất bại, vui lòng đặt lại");
+     }
+ };
 
   const nextStep = async () => {
     if (step === 1 && !caseFile.caseType) {
@@ -375,32 +452,49 @@ localStorage.setItem("sample", JSON.stringify(filteredSamples));
   };
 
   const selectedService = service.find(s => s.serviceId === parseInt(appointment.serviceId));
+
+  // Debug logging for selectedService
   useEffect(() => {
-  if (step === 3 && selectedService?.limitPeople) {
-    const requiredCount = selectedService.limitPeople;
-
-    // Nếu số người hiện tại nhỏ hơn thì thêm vào
-    if (participants.length < requiredCount) {
-      const diff = requiredCount - participants.length;
-      const additional = Array.from({ length: diff }, () => ({
-        name: '',
-        relationship: '',
-        citizenId: '',
-        address: '',
-        birthDate: '',
-        gender: '',
-      }));
-      setParticipants(prev => [...prev, ...additional]);
-      setSamples(prev => [...prev, ...Array.from({ length: diff }, () => ({ participantCitizenId: '', sampleType: '' }))]);
+    if (selectedService) {
+      console.log("Selected Service:", selectedService);
+      console.log("ParticipantTypes:", selectedService.participantsType);
     }
+  }, [selectedService]);
 
-    // Nếu nhiều hơn thì cắt bớt
-    if (participants.length > requiredCount) {
-      setParticipants(prev => prev.slice(0, requiredCount));
-      setSamples(prev => prev.slice(0, requiredCount));
+  // Cập nhật logic để sử dụng participantType thay vì limitPeople
+  useEffect(() => {
+    if (step === 3 && selectedService?.participantsType) {
+      const requiredCount = selectedService.participantsType.length;
+      console.log("DEBUG - Creating participants and samples:");
+      console.log("Required count:", requiredCount);
+      console.log("Current participants count:", participants.length);
+      console.log("ParticipantTypes:", selectedService.participantsType);
+
+      // Nếu số người hiện tại khác với số participantType thì cập nhật
+      if (participants.length !== requiredCount) {
+        const newParticipants = selectedService.participantsType.map(pt => ({
+          name: '',
+          citizenId: '',
+          address: '',
+          birthDate: '',
+          participantType: pt.participantType, // Tự động set participantType
+        }));
+        setParticipants(newParticipants);
+        
+        // Tự động tạo samples cho từng participant
+        const newSamples = selectedService.participantsType.map((pt, index) => ({
+          participantCitizenId: '', // Sẽ được cập nhật khi người dùng nhập CCCD
+          sampleType: getDefaultSampleType(pt.participantType), // Tự động điền loại mẫu
+          participantType: pt.participantType,
+          participantIndex: index // Để liên kết với participant
+        }));
+        setSamples(newSamples);
+        
+        console.log("Created participants:", newParticipants);
+        console.log("Created samples:", newSamples);
+      }
     }
-  }
-}, [step, selectedService, participants.length]);
+  }, [step, selectedService]);
 
   // Validate realtime cho participant
   const validateParticipant = (participant) => {
@@ -409,20 +503,25 @@ localStorage.setItem("sample", JSON.stringify(filteredSamples));
     if (!participant.birthDate) errors.birthDate = 'Vui lòng nhập ngày sinh';
     else if (participant.birthDate > today) errors.birthDate = 'Ngày sinh không hợp lệ';
     if (!participant.citizenId) errors.citizenId = 'Vui lòng nhập CCCD';
-    if (!participant.gender) errors.gender = 'Vui lòng chọn giới tính';
-    if (!participant.relationship) errors.relationship = 'Vui lòng nhập quan hệ';
+    else if (!validateCitizenId(participant.citizenId, participants.indexOf(participant))) {
+      errors.citizenId = 'CCCD đã được sử dụng';
+    }
+    if (!participant.participantType) errors.participantType = 'Vui lòng chọn loại người tham gia';
     return errors;
   };
+
   // Validate realtime cho sample
   const validateSample = (sample) => {
     const errors = {};
-    if (!sample.participantCitizenId) errors.participantCitizenId = 'Chọn người tham gia';
-    if (!sample.sampleType) errors.sampleType = 'Chọn loại mẫu';
+    if (!sample.participantCitizenId) errors.participantCitizenId = 'Chưa có CCCD';
+    if (!sample.sampleType) errors.sampleType = 'Chưa có loại mẫu';
     return errors;
   };
+
   // Validate realtime cho từng bước
   const [participantErrors, setParticipantErrors] = useState([]);
   const [sampleErrors, setSampleErrors] = useState([]);
+  
   useEffect(() => {
     if (step === 3) {
       setParticipantErrors(participants.map(validateParticipant));
@@ -434,9 +533,26 @@ localStorage.setItem("sample", JSON.stringify(filteredSamples));
 
   return (
     <div>
-      <header>
-        <h1>Đặt lịch hẹn xét nghiệm ADN</h1>
-      </header>
+             <header>
+         <h1>Đặt lịch hẹn xét nghiệm ADN</h1>
+         <button 
+           onClick={clearLocalStorage}
+           style={{
+             position: 'absolute',
+             top: '10px',
+             right: '10px',
+             padding: '5px 10px',
+             background: '#ff4d4f',
+             color: 'white',
+             border: 'none',
+             borderRadius: '4px',
+             cursor: 'pointer',
+             fontSize: '12px'
+           }}
+         >
+           Clear Data (Debug)
+         </button>
+       </header>
       <div className="step-container">
         <div className="step-nav">
           {[1, 2, 3, 4, 5, 6].map((stepNumber) => (
@@ -535,44 +651,21 @@ localStorage.setItem("sample", JSON.stringify(filteredSamples));
           {step === 3 && (
             <div className="form-section">
               <h2>3. Người tham gia <Tooltip title="Nhập thông tin từng người"><InfoCircleOutlined /></Tooltip></h2>
-              <p>Vui lòng nhập thông tin cho <strong>{selectedService?.limitPeople}</strong> người tham gia.</p>
-              {participants.map((participant, index) => (
-                <div key={index} className="participant">
+              {selectedService?.participantsType && (
+                <p>Vui lòng nhập thông tin cho <strong>{selectedService.participantsType.length}</strong> người tham gia theo yêu cầu của dịch vụ.</p>
+              )}
+                             {participants.map((participant, index) => (
+                 <div key={index} className="participant">
+                   <h3>{selectedService?.participantsType?.[index]?.participantType || `Người tham gia ${index + 1}`}</h3>
                   <label>Họ tên:</label>
                   <input type="text" name="name" placeholder="Nhập họ tên" value={participant.name} onChange={(e) => handleParticipantChange(index, e)} className="styled-input" />
                   {participantErrors[index]?.name && <div className="input-error">{participantErrors[index].name}</div>}
                   <label>Ngày sinh:</label>
                   <input type="date" name="birthDate" value={participant.birthDate} max={today} onChange={(e) => handleParticipantChange(index, e)} className="styled-input" />
                   {participantErrors[index]?.birthDate && <div className="input-error">{participantErrors[index].birthDate}</div>}
-                  <label>Căn cước công dân :</label>
-                  <input name="citizenId" value={participant.citizenId} onChange={(e) => handleParticipantChange(index, e)} className="styled-input" />
-                  {participantErrors[index]?.citizenId && <div className="input-error">{participantErrors[index].citizenId}</div>}
-                  <label>Giới tính:</label>
-                  <select name="gender" value={participant.gender} onChange={(e) => handleParticipantChange(index, e)} className="styled-select">
-                    <option value="">-- Chọn giới tính --</option>
-                    <option value="MALE">Nam</option>
-                    <option value="FEMALE">Nữ</option>
-                    <option value="OTHER">Khác</option>
-                  </select>
-                  {participantErrors[index]?.gender && <div className="input-error">{participantErrors[index].gender}</div>}
-                  <label>Quan hệ:
-                    <Tooltip title="Ví dụ: Cha, con, mẹ...">
-                      <InfoCircleOutlined style={{ marginLeft: 4 }} />
-                    </Tooltip>
-                  </label>
-                  <input type="text" name="relationship" placeholder="Cha, con, mẹ..." value={participant.relationship} onChange={(e) => handleParticipantChange(index, e)} className="styled-input" />
-                  {participantErrors[index]?.relationship && <div className="input-error">{participantErrors[index].relationship}</div>}
-                  {index === participants.length - 1 && participants.length < selectedService?.limitPeople && (
-                    <button className="btn-add" onClick={addParticipant}>+ Thêm người</button>
-                  )}
-                  <button
-                    className="btn-remove"
-                    onClick={() => removeParticipant(index)}
-                    style={{ color: 'white', background: '#e57373', marginLeft: '10px' }}
-                    disabled={participants.length <= 1}
-                  >
-                    🗑️ Xóa
-                  </button>
+                                     <label>Căn cước công dân:</label>
+                   <input name="citizenId" value={participant.citizenId} onChange={(e) => handleParticipantChange(index, e)} className="styled-input" />
+                   {participantErrors[index]?.citizenId && <div className="input-error">{participantErrors[index].citizenId}</div>}
                 </div>
               ))}
               <div className="form-actions">
@@ -632,56 +725,58 @@ localStorage.setItem("sample", JSON.stringify(filteredSamples));
                   </Form>
                 </div>
               )}
-              {samples.map((sample, index) => {
-                const participant = participants.find(p => p.citizenId === sample.participantCitizenId);
-                return (
-                  <div key={index} className="sample-info">
-                    <label>Mẫu số {index + 1} của ai:</label>
-                    <select
-                      name="participantCitizenId"
-                      value={sample.participantCitizenId}
-                      onChange={(e) => handleSampleChange(index, e)}
-                      className="styled-select"
-                    >
-                      <option value="">-- Chọn người tham gia --</option>
-                      {participants.map((p, idx) => (
-                        <option key={idx} value={p.citizenId}>
-                          {p.name} - {p.citizenId}
-                        </option>
-                      ))}
-                    </select>
-                    {sampleErrors[index]?.participantCitizenId && <div className="input-error">{sampleErrors[index].participantCitizenId}</div>}
-                    {participant && (
-                      <div
-                        className="participant-details"
-                        style={{
-                          marginTop: '10px',
-                          padding: '10px',
-                          background: '#f9f9f9',
-                          borderRadius: '5px',
-                        }}
-                      >
-                        <p><strong>Họ tên:</strong> {participant.name}</p>
-                        <p><strong>Ngày sinh:</strong> {participant.birthDate}</p>
-                        <p><strong>Giới tính:</strong> {participant.gender}</p>
-                      </div>
-                    )}
-                    <label>Loại mẫu:</label>
-                    <select
-                      name="sampleType"
-                      value={sample.sampleType || ''}
-                      onChange={(e) => handleSampleChange(index, e)}
-                      className="styled-select"
-                    >
-                      <option value="">-- Chọn loại mẫu --</option>
-                      <option value="BLOOD">Máu</option>
-                      <option value="HAIR">Tóc</option>
-                      <option value="SALIVA">Niêm mạc</option>
-                    </select>
-                    {sampleErrors[index]?.sampleType && <div className="input-error">{sampleErrors[index].sampleType}</div>}
-                  </div>
-                );
-              })}
+                             {samples.map((sample, index) => {
+                 const participant = participants[sample.participantIndex];
+                 return (
+                   <div key={index} className="sample-info">
+                     <h3>Mẫu cho {sample.participantType}</h3>
+                     
+                                           {participant && participant.citizenId ? (
+                        <div
+                          className="participant-details"
+                          style={{
+                            marginTop: '10px',
+                            padding: '10px',
+                            background: '#e8f5e8',
+                            borderRadius: '5px',
+                            border: '1px solid #4caf50'
+                          }}
+                        >
+                          <p><strong>Họ tên:</strong> {participant.name}</p>
+                          <p><strong>CCCD:</strong> {participant.citizenId}</p>
+                          <p><strong>Ngày sinh:</strong> {participant.birthDate}</p>
+                          <div style={{ marginTop: '10px' }}>
+                            <label><strong>Chọn loại mẫu:</strong></label>
+                            <select 
+                              value={sample.sampleType} 
+                              onChange={(e) => handleSampleTypeChange(index, e.target.value)}
+                              className="styled-select"
+                              style={{ marginTop: '5px', width: '100%' }}
+                            >
+                              <option value="BLOOD">Máu</option>
+                              <option value="SALIVA">Nước bọt</option>
+                              <option value="HAIR">Tóc</option>
+                              <option value="NAIL">Móng tay</option>
+                              <option value="BUCCAL">Niêm mạc miệng</option>
+                            </select>
+                          </div>
+                        </div>
+                      ) : (
+                        <div
+                          style={{
+                            marginTop: '10px',
+                            padding: '10px',
+                            background: '#fff3cd',
+                            borderRadius: '5px',
+                            border: '1px solid #ffeaa7'
+                          }}
+                        >
+                          <p><em>Vui lòng nhập thông tin người tham gia ở bước trước</em></p>
+                        </div>
+                      )}
+                   </div>
+                 );
+               })}
               <div className="form-actions">
                 <button className="btn-secondary" onClick={prevStep}>Quay lại</button>
                 <button className="btn-primary" onClick={nextStep} disabled={sampleErrors.some(e => Object.keys(e).length > 0)}>Tiếp theo</button>
@@ -695,8 +790,8 @@ localStorage.setItem("sample", JSON.stringify(filteredSamples));
                 <p><strong>Loại hồ sơ:</strong> {caseFile.caseType}</p>
                 <p><strong>Dịch vụ:</strong> {selectedService ? selectedService.serviceName : ''}</p>
                 <p><strong>Lịch hẹn:</strong> {appointment.appointmentDate || 'Chưa chọn ngày'}, {appointment.appointmentTime || 'Chưa chọn giờ'}</p>
-                <p><strong>Người tham gia:</strong> {participants.map(p => p.name).join(', ')}</p>
-                <p><strong>Loại mẫu:</strong> {samples.map(s => s.participantName ? `${s.participantName} (${s.sampleType})` : s.sampleType).join(', ')}</p>
+                <p><strong>Người tham gia:</strong> {participants.map(p => `${p.name} (${p.participantType})`).join(', ')}</p>
+                                 <p><strong>Loại mẫu:</strong> {samples.map(s => `${s.participantType} (${s.sampleType})`).join(', ')}</p>
                 <p><strong>Hình thức lấy mẫu:</strong> {appointment.deliveryMethod}</p>
               </div>
               <div className="form-actions">
@@ -719,7 +814,6 @@ localStorage.setItem("sample", JSON.stringify(filteredSamples));
               <select value={appointment.paymentMethod} onChange={handlePaymentMethodChange} className="styled-select">
                 <option value="">-- Chọn phương thức --</option>
                 <option value="vnpay">VNPay</option>
-               
               </select>
               <div className="form-actions" style={{ marginTop: '20px' }}>
                 <button className="btn-secondary" onClick={prevStep}>Quay lại</button>
@@ -729,41 +823,6 @@ localStorage.setItem("sample", JSON.stringify(filteredSamples));
           )}
         </div>
       </div>
-      <style>{`
-        .step-nav { display: flex; justify-content: space-between; margin-bottom: 16px; }
-        .step { padding: 8px 16px; border-radius: 8px; background: #f0f2f5; margin-right: 8px; font-weight: 500; display: flex; align-items: center; transition: background 0.2s; }
-        .step.active { background: #1890ff; color: #fff; }
-        .step.completed { background: #52c41a; color: #fff; }
-        .progress-bar { height: 6px; background: #e6f7ff; border-radius: 3px; margin-bottom: 24px; }
-        .progress { height: 100%; background: #1890ff; border-radius: 3px; transition: width 0.3s; }
-        .btn-primary { background: #1890ff; color: #fff; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 600; margin-left: 8px; cursor: pointer; transition: background 0.2s; }
-        .btn-primary:disabled { background: #b3d8fd; cursor: not-allowed; }
-        .btn-secondary { background: #f0f2f5; color: #333; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; margin-right: 8px; }
-        .btn-add { background: #52c41a; color: #fff; border: none; padding: 6px 14px; border-radius: 6px; font-weight: 500; margin-top: 8px; cursor: pointer; }
-        .btn-remove { background: #e57373; color: #fff; border: none; padding: 6px 14px; border-radius: 6px; font-weight: 500; margin-top: 8px; cursor: pointer; }
-        .styled-input, .styled-select { border: 1px solid #d9d9d9; border-radius: 6px; padding: 8px 14px; margin-bottom: 8px; width: 100%; font-size: 15px; box-sizing: border-box; }
-        .styled-input:focus, .styled-select:focus { border-color: #1890ff; outline: none; }
-        .input-error { color: #e57373; font-size: 13px; margin-bottom: 4px; margin-top: -2px; }
-        .validate-message { color: #e57373; background: #fff3f3; border: 1px solid #ffeaea; border-radius: 6px; padding: 8px 12px; margin-bottom: 12px; }
-        .form-actions { display: flex; justify-content: flex-end; margin-top: 16px; gap: 8px; }
-        .form-container.improved-form-layout { max-width: 700px; margin: 0 auto; background: #fff; border-radius: 12px; box-shadow: 0 2px 16px #e6e6e6; padding: 32px 24px; }
-        .form-section { margin-bottom: 32px; }
-        .form-section label { display: block; font-weight: 500; margin-bottom: 4px; margin-top: 12px; }
-        .participant, .sample-info { display: flex; flex-wrap: wrap; gap: 16px; background: #f8fafd; border-radius: 8px; padding: 16px 12px; margin-bottom: 18px; box-shadow: 0 1px 4px #f0f0f0; }
-        .participant > label, .sample-info > label { flex-basis: 100%; margin-bottom: 0; }
-        .participant > input, .participant > select, .sample-info > select, .sample-info > input { flex: 1 1 220px; min-width: 180px; margin-bottom: 0; }
-        .participant-details { flex-basis: 100%; }
-        .confirmation-card, .summary { background: #f6f8fa; border-radius: 8px; padding: 18px 16px; margin-bottom: 18px; box-shadow: 0 1px 4px #f0f0f0; }
-        @media (max-width: 900px) {
-          .form-container.improved-form-layout { padding: 16px 4px; }
-        }
-        @media (max-width: 600px) {
-          .step-nav { flex-direction: column; }
-          .step { margin-bottom: 8px; margin-right: 0; }
-          .form-section { padding: 8px; }
-          .participant, .sample-info { flex-direction: column; gap: 8px; padding: 10px 4px; }
-        }
-      `}</style>
     </div>
   );
 }

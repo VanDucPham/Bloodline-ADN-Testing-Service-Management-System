@@ -11,6 +11,8 @@ import {
   message,
   Upload,
   Typography,
+  Select,
+  Tag,
 } from "antd";
 import {
   UploadOutlined,
@@ -20,9 +22,11 @@ import {
 import apiService from "../../service/api";
 
 const { Paragraph, Text: AntText } = Typography;
+const { Option } = Select;
 
 const ServiceManager = () => {
   const [services, setServices] = useState([]);
+  const [participantTypes, setParticipantTypes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingService, setEditingService] = useState(null);
@@ -33,6 +37,7 @@ const ServiceManager = () => {
     setLoading(true);
     try {
       const data = await apiService.admin.getAllService();
+      console.log(data)
       setServices(data);
     } catch (error) {
       console.error("Lỗi khi tải dịch vụ:", error);
@@ -42,32 +47,40 @@ const ServiceManager = () => {
     }
   };
 
+  // Lấy danh sách loại người tham gia
+  const fetchParticipantTypes = async () => {
+    try {
+      const data = await apiService.admin.getAllParticipantTypes();
+      setParticipantTypes(data);
+    } catch (error) {
+      console.error("Lỗi khi tải loại người tham gia:", error);
+      message.error("Không thể tải danh sách loại người tham gia.");
+    }
+  };
+
   useEffect(() => {
     fetchServices();
+    fetchParticipantTypes();
   }, []);
 
   // Mở modal (sửa hoặc thêm mới)
-  const openModal = (service = null) => {
-    setEditingService(service);
-    setIsModalOpen(true);
-    if (service) {
-      form.setFieldsValue({
-        ...service,
-        imageFile: service.imageUrl
-          ? [
-              {
-                uid: "-1",
-                name: "current.jpg",
-                status: "done",
-                url: service.imageUrl, // Ảnh Cloudinary
-              },
-            ]
-          : [],
-      });
-    } else {
-      form.resetFields();
-    }
-  };
+const openModal = (service = null) => {
+  setEditingService(service);
+  setIsModalOpen(true);
+  if (service) {
+    form.setFieldsValue({
+      ...service,
+      participantsType: service.participantsType?.map((p) => p.id),
+      imageFile: service.imageUrl
+        ? [{ uid: "-1", name: "current.jpg", status: "done", url: service.imageUrl }]
+        : [],
+    });
+  } else {
+    form.resetFields();
+  }
+};
+
+
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -89,16 +102,21 @@ const ServiceManager = () => {
       ) {
         const file = values.imageFile[0].originFileObj;
         const response = await apiService.admin.uploadImage(file);
-        imageUrl = response.data?.url || response.url; // Link Cloudinary
+        imageUrl = response.data?.url || response.url;
       }
 
-      const payload = {
-        serviceName: values.serviceName,
-        servicePrice: values.servicePrice,
-        serviceDescription: values.serviceDescription,
-        imageUrl,
-        limitPeople: values.limitPeople,
-      };
+    const payload = {
+  serviceName: values.serviceName,
+  servicePrice: values.servicePrice,
+  serviceDescription: values.serviceDescription,
+  imageUrl,
+  limitPeople: values.limitPeople,
+  participantsType: values.participantsType.map(id => {
+    const pt = participantTypes.find(p => p.id === id);
+    return { id: pt.id, participantType: pt.participantType };
+  }),
+};
+
 
       if (editingService) {
         await apiService.admin.updateService(editingService.serviceId, payload);
@@ -110,27 +128,33 @@ const ServiceManager = () => {
 
       closeModal();
       fetchServices();
-    } catch (error) {
-      console.error("Lỗi khi lưu:", error);
-      message.error("Thao tác không thành công.");
-    }
+    }catch (error) {
+  console.error("Lỗi khi lưu:", error);
+  const errorMessage = error.respone?.data?.message || error.message || "Thao tác không thành công.";
+  message.error(errorMessage);
+}
+
   };
 
   // Xóa dịch vụ
-  const handleDelete = async (service) => {
-    try {
-      await apiService.admin.deleteService(service.serviceId);
-      message.success(`Đã xóa dịch vụ "${service.serviceName}"!`);
-      fetchServices();
-    } catch (error) {
-      console.error("Lỗi khi xóa:", error);
-      const errorMessage =
-        error.response?.data ||
-        error.message ||
-        "Không thể xóa dịch vụ. Có thể dịch vụ đang được sử dụng.";
-      message.error(errorMessage);
+const handleDelete = async (service) => {
+  try {
+    await apiService.admin.deleteService(service.serviceId);
+    message.success(`Đã xóa dịch vụ "${service.serviceName}"!`);
+    fetchServices();
+  } catch (error) {
+    console.error("Lỗi khi xóa:", error);
+    const backendMessage = error.response?.data;
+    if (backendMessage?.includes("đang được sử dụng")) {
+      // Nếu BE trả thông báo dịch vụ đang sử dụng → hiện rõ ràng
+      message.error(backendMessage);
+    } else {
+      // Thông báo mặc định
+      message.error("Không thể xóa dịch vụ. Vui lòng thử lại.");
     }
-  };
+  }
+};
+
 
   const columns = [
     { title: "Tên dịch vụ", dataIndex: "serviceName", key: "serviceName" },
@@ -152,17 +176,22 @@ const ServiceManager = () => {
       key: "imageUrl",
       render: (url) => (
         <img
-          src={url} // Ảnh Cloudinary
+          src={url}
           alt="Dịch vụ"
           width={60}
           style={{ borderRadius: 4, objectFit: "cover" }}
         />
       ),
     },
+    { title: "Số người", dataIndex: "limitPeople", key: "limitPeople" },
     {
-      title: "Số người",
-      dataIndex: "limitPeople",
-      key: "limitPeople",
+      title: "Người tham gia",
+      dataIndex: "participantsType",
+      key: "participantsType",
+      render: (types) =>
+        types && types.length > 0
+          ? types.map((t) => <Tag key={t.id}>{t.participantType}</Tag>)
+          : "—",
     },
     {
       title: "Hành động",
@@ -230,76 +259,92 @@ const ServiceManager = () => {
         pagination={{ pageSize: 10 }}
       />
 
-      <Modal
-        title={editingService ? "Chỉnh sửa dịch vụ" : "Thêm dịch vụ mới"}
-        open={isModalOpen}
-        onCancel={closeModal}
-        onOk={handleSave}
-        okText={editingService ? "Cập nhật" : "Thêm mới"}
-        cancelText="Hủy"
+    <Modal
+  title={editingService ? "Chỉnh sửa dịch vụ" : "Thêm dịch vụ mới"}
+  open={isModalOpen}
+  onCancel={closeModal}
+  onOk={handleSave}
+  okText={editingService ? "Cập nhật" : "Thêm mới"}
+  cancelText="Hủy"
+>
+  <Form form={form} layout="vertical">
+    {/* Tên dịch vụ */}
+    <Form.Item
+      label="Tên dịch vụ"
+      name="serviceName"
+      rules={[{ required: true, message: "Vui lòng nhập tên dịch vụ!" }]}
+    >
+      <Input disabled={editingService && editingService.inUse} />
+    </Form.Item>
+
+    {/* Giá dịch vụ */}
+    <Form.Item
+      label="Giá (VNĐ)"
+      name="servicePrice"
+      rules={[
+        { required: true, message: "Vui lòng nhập giá!" },
+        { type: "number", min: 0, message: "Giá phải lớn hơn hoặc bằng 0!" },
+      ]}
+    >
+      <Input type="number" disabled={editingService && editingService.inUse} />
+    </Form.Item>
+
+    {/* Số lượng người tham gia */}
+    <Form.Item
+      label="Số lượng người tham gia"
+      name="limitPeople"
+      rules={[{ required: true, message: "Vui lòng nhập số lượng người!" }]}
+    >
+      <Input type="number" disabled={editingService && editingService.inUse} />
+    </Form.Item>
+
+    {/* Người tham gia */}
+    <Form.Item
+      label="Người tham gia"
+      name="participantsType"
+      rules={[{ required: true, message: "Vui lòng chọn người tham gia!" }]}
+    >
+      <Select
+        mode="multiple"
+        placeholder="Chọn loại người tham gia"
+        disabled={editingService && editingService.inUse}
       >
-        <Form form={form} layout="vertical">
-          <Form.Item
-            label="Tên dịch vụ"
-            name="serviceName"
-            rules={[{ required: true, message: "Vui lòng nhập tên dịch vụ!" }]}
-          >
-            <Input />
-          </Form.Item>
+        {participantTypes.map((pt) => (
+          <Option key={pt.id} value={pt.id}>
+            {pt.participantType}
+          </Option>
+        ))}
+      </Select>
+    </Form.Item>
 
-          <Form.Item
-            label="Giá (VNĐ)"
-            name="servicePrice"
-            rules={[
-              { required: true, message: "Vui lòng nhập giá!" },
-              {
-                type: "number",
-                min: 0,
-                message: "Giá phải là số dương!",
-                transform: (v) => Number(v),
-              },
-            ]}
-          >
-            <Input type="number" />
-          </Form.Item>
+    {/* Mô tả dịch vụ */}
+    <Form.Item
+      label="Mô tả dịch vụ"
+      name="serviceDescription"
+      rules={[{ required: true, message: "Vui lòng nhập mô tả dịch vụ!" }]}
+    >
+      <Input.TextArea rows={4} placeholder="Nhập mô tả dịch vụ" />
+    </Form.Item>
 
-          <Form.Item
-            label="Mô tả"
-            name="serviceDescription"
-            rules={[{ required: true, message: "Vui lòng nhập mô tả!" }]}
-          >
-            <Input.TextArea rows={3} />
-          </Form.Item>
+    {/* Upload hình ảnh */}
+    <Form.Item
+      label="Hình ảnh dịch vụ"
+      name="imageFile"
+      valuePropName="fileList"
+      getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
+      rules={[{ required: !editingService, message: "Vui lòng chọn hình ảnh!" }]}
+    >
+      <Upload
+        listType="picture"
+        maxCount={1}
+        beforeUpload={() => false} // Không upload ngay
+      >
+        <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
+      </Upload>
+    </Form.Item>
+  </Form>
+</Modal>
 
-          <Form.Item
-            label="Hình ảnh"
-            name="imageFile"
-            valuePropName="fileList"
-            getValueFromEvent={(e) => Array.isArray(e) ? e : e?.fileList}
-            rules={[{ required: !editingService, message: "Vui lòng chọn ảnh!" }]}
-          >
-            <Upload beforeUpload={() => false} listType="picture" maxCount={1}>
-              <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
-            </Upload>
-          </Form.Item>
-
-          <Form.Item
-            label="Số lượng người tham gia"
-            name="limitPeople"
-            rules={[
-              { required: true, message: "Vui lòng nhập số lượng người!" },
-              {
-                type: "number",
-                min: 1,
-                message: "Số lượng phải >= 1",
-                transform: (v) => Number(v),
-              },
-            ]}
-          >
-            <Input type="number" />
-          </Form.Item>
-        </Form>
-      </Modal>
     </div>
   );
 };

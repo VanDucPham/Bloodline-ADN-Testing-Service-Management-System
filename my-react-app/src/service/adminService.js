@@ -147,6 +147,9 @@ class AdminService extends BaseApiService {
 //     });
 //   }
 }
+async getAllParticipantTypes(){
+  return this.get('/admin/relationshipType')
+}
 }
 
 export default AdminService;

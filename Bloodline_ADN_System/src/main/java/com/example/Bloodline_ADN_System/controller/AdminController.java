@@ -11,10 +11,7 @@ import com.example.Bloodline_ADN_System.dto.ScheduleManager.response.Caseassignm
 import com.example.Bloodline_ADN_System.dto.ScheduleManager.response.DayscheduleDTO;
 import com.example.Bloodline_ADN_System.dto.noneWhere.*;
 import com.example.Bloodline_ADN_System.repository.UserRepository;
-import com.example.Bloodline_ADN_System.service.BlogService;
-import com.example.Bloodline_ADN_System.service.ScheduleService;
-import com.example.Bloodline_ADN_System.service.ServiceList;
-import com.example.Bloodline_ADN_System.service.UserService;
+import com.example.Bloodline_ADN_System.service.*;
 import com.example.Bloodline_ADN_System.service.impl.AdminServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -55,6 +52,7 @@ public class AdminController {
     private final BlogService blogService;
     private final UserService userService;
     private final ScheduleService scheduleService;
+    private final ParticipantTypeService participantTypeService;
 
 
     @PostMapping("/create")
@@ -104,6 +102,7 @@ public class AdminController {
 
     @GetMapping("/service/get")
     public ResponseEntity<List<ServiceManagerDTO>> getAllServices() {
+        System.out.println("đã vào được ");
         List<ServiceManagerDTO> service = serviceList.getAllServices();
         return ResponseEntity.ok(service);
     }
@@ -129,14 +128,15 @@ public class AdminController {
     public ResponseEntity<?> deleteService(@PathVariable Long id) {
         try {
             serviceList.deleteService(id);
-            return ResponseEntity.ok("Xóa dịch vụ thành công");
+            return ResponseEntity.ok(Map.of("message", "Xóa dịch vụ thành công"));
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Lỗi khi xóa dịch vụ: " + e.getMessage());
+                    .body(Map.of("message", "Lỗi khi xóa dịch vụ: " + e.getMessage()));
         }
     }
+
 
     @GetMapping ("/profile")
     public ResponseEntity<UserUpdateDTO> getProfile(Authentication authentication) {
@@ -220,4 +220,25 @@ public class AdminController {
     public ResponseEntity<?> getBlogCategoryCount() {
         return ResponseEntity.ok(blogService.getBlogCategoryCount());
     }
+    // Manager relationship type
+    @GetMapping("/relationshipType")
+    public ResponseEntity<?> getRelationshipType() {
+        return  ResponseEntity.ok(participantTypeService.getAllParticipantTypes()) ;
+    }
+    @PostMapping("/relationshipType")
+    public ResponseEntity<?> createRelationshipType(@RequestBody ParticipantTypeDTO dto) {
+        try{
+            participantTypeService.createParticipantType(dto) ;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return ResponseEntity.ok("success");
+
+    }
+    @DeleteMapping("/relationshipType/{id}")
+    public ResponseEntity<?> deleteRelationshipType(@PathVariable Long id) {
+        participantTypeService.deleteParticipantType(id);
+        return ResponseEntity.ok("Success");
+    }
+
 }

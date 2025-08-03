@@ -87,7 +87,39 @@ header h1 {
   margin-top: 12px;
   color: #263238;
 }
-
+ .step-nav { display: flex; justify-content: space-between; margin-bottom: 16px; }
+        .step { padding: 8px 16px; border-radius: 8px; background: #f0f2f5; margin-right: 8px; font-weight: 500; display: flex; align-items: center; transition: background 0.2s; }
+        .step.active { background: #1890ff; color: #fff; }
+        .step.completed { background: #52c41a; color: #fff; }
+        .progress-bar { height: 6px; background: #e6f7ff; border-radius: 3px; margin-bottom: 24px; }
+        .progress { height: 100%; background: #1890ff; border-radius: 3px; transition: width 0.3s; }
+        .btn-primary { background: #1890ff; color: #fff; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 600; margin-left: 8px; cursor: pointer; transition: background 0.2s; }
+        .btn-primary:disabled { background: #b3d8fd; cursor: not-allowed; }
+        .btn-secondary { background: #f0f2f5; color: #333; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; margin-right: 8px; }
+        .btn-add { background: #52c41a; color: #fff; border: none; padding: 6px 14px; border-radius: 6px; font-weight: 500; margin-top: 8px; cursor: pointer; }
+        .btn-remove { background: #e57373; color: #fff; border: none; padding: 6px 14px; border-radius: 6px; font-weight: 500; margin-top: 8px; cursor: pointer; }
+        .styled-input, .styled-select { border: 1px solid #d9d9d9; border-radius: 6px; padding: 8px 14px; margin-bottom: 8px; width: 100%; font-size: 15px; box-sizing: border-box; }
+        .styled-input:focus, .styled-select:focus { border-color: #1890ff; outline: none; }
+        .input-error { color: #e57373; font-size: 13px; margin-bottom: 4px; margin-top: -2px; }
+        .validate-message { color: #e57373; background: #fff3f3; border: 1px solid #ffeaea; border-radius: 6px; padding: 8px 12px; margin-bottom: 12px; }
+        .form-actions { display: flex; justify-content: flex-end; margin-top: 16px; gap: 8px; }
+        .form-container.improved-form-layout { max-width: 700px; margin: 0 auto; background: #fff; border-radius: 12px; box-shadow: 0 2px 16px #e6e6e6; padding: 32px 24px; }
+        .form-section { margin-bottom: 32px; }
+        .form-section label { display: block; font-weight: 500; margin-bottom: 4px; margin-top: 12px; }
+        .participant, .sample-info { display: flex; flex-wrap: wrap; gap: 16px; background: #f8fafd; border-radius: 8px; padding: 16px 12px; margin-bottom: 18px; box-shadow: 0 1px 4px #f0f0f0; }
+        .participant > label, .sample-info > label { flex-basis: 100%; margin-bottom: 0; }
+        .participant > input, .participant > select, .sample-info > select, .sample-info > input { flex: 1 1 220px; min-width: 180px; margin-bottom: 0; }
+        .participant-details { flex-basis: 100%; }
+        .confirmation-card, .summary { background: #f6f8fa; border-radius: 8px; padding: 18px 16px; margin-bottom: 18px; box-shadow: 0 1px 4px #f0f0f0; }
+        @media (max-width: 900px) {
+          .form-container.improved-form-layout { padding: 16px 4px; }
+        }
+        @media (max-width: 600px) {
+          .step-nav { flex-direction: column; }
+          .step { margin-bottom: 8px; margin-right: 0; }
+          .form-section { padding: 8px; }
+          .participant, .sample-info { flex-direction: column; gap: 8px; padding: 10px 4px; }
+        }
 .styled-input, .styled-select, input[type="date"] {
   border: 1px solid #b0bec5;
   border-radius: 7px;

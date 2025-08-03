@@ -29,7 +29,14 @@ public class Service {
 
     @Column(name = "limit_people")
     private Integer limitPeople;
+    @ManyToMany(fetch = FetchType.EAGER)
 
+    @JoinTable(
+            name = "service_paticipantType",
+            joinColumns = @JoinColumn(name = "service_id"),
+            inverseJoinColumns = @JoinColumn(name = "participant_type_participantId")
+    )
+    private List<ParticipantType> participantType = new ArrayList<>();
     @Column(name = "service_price")
     private Double servicePrice;
 
