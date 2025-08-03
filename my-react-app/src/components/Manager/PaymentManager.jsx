@@ -13,7 +13,7 @@ const PaymentManager = () => {
       setError("");
       try {
         const res = await apiService.manager.getAllPayments();
-        setPayments(res);
+        setPayments(res.sort((a, b) => b.paymentId - a.paymentId)); // Sắp xếp giảm dần
       } catch (e) {
         setError("Không thể tải danh sách thanh toán!");
       } finally {
@@ -23,39 +23,16 @@ const PaymentManager = () => {
     fetchPayments();
   }, []);
 
-  const handleConfirmPayment = async (id) => {
-    try {
-      await apiService.manager.completedPayment(id);
-      message.success("Xác nhận thanh toán thành công!");
-      // Reload lại danh sách
-      const res = await apiService.manager.getAllPayments();
-      setPayments(res);
-    } catch (e) {
-      message.error("Xác nhận thất bại!");
-    }
-  };
 
   const columns = [
     { title: "Mã thanh toán", dataIndex: "paymentId", key: "paymentId" },
+    { title: "Tên người thanh toán", dataIndex: "customerName", key: "customerName" },
     { title: "Mã phiếu yêu cầu", dataIndex: "appointmentId", key: "appointmentId" },
     { title: "Số tiền", dataIndex: "amount", key: "amount" },
     { title: "Thời gian thanh toán", dataIndex: "paymentDate", key: "paymentDate" },
     { title: "Phương thức", dataIndex: "paymentMethod", key: "paymentMethod" },
     { title: "Trạng thái", dataIndex: "status", key: "status" },
-    { title: "Ghi chú", dataIndex: "notes", key: "notes" },
-    {
-      title: "Xác nhận",
-      key: "action",
-      render: (_, record) => (
-        <Button
-          type="primary"
-          onClick={() => handleConfirmPayment(record.paymentId)}
-          disabled={record.status === "COMPLETED"}
-        >
-          Xác nhận thành công
-        </Button>
-      ),
-    },
+    
   ];
 
   return (

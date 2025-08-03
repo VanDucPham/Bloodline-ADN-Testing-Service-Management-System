@@ -28,7 +28,7 @@ public class ManagerController {
 
     @GetMapping("/payments")
     public ResponseEntity<List<PaymentDTO>> getProcessingPayments() {
-        List<PaymentDTO> payments = paymentService.getProcessingPayments();
+        List<PaymentDTO> payments = paymentService.getAllPayments();
         return ResponseEntity.ok(payments);
     }
 

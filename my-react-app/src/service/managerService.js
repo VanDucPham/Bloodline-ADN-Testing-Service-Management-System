@@ -21,8 +21,5 @@ class ManagerService extends BaseApiService {
     return this.get('/manager/payments');
   }
 
-  async completedPayment(id) {
-    return this.put(`/manager/payments/${id}`);
-  }
   }
 export default ManagerService;
