@@ -156,6 +156,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Override
     @Transactional
     public AppointmentResponse<AppointmentDTO> createAppointment(AppointmentRequest request) {
+
         // 1. Save Case File
         caseFileDTO caseFiledto = request.getCaseFile();
         String caseCodegen = caseFileService.generateCaseCode(String.valueOf(caseFiledto.getCaseType())) ;
@@ -266,7 +267,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     private ParticipantDTO toParticipantDTO(Participant p) {
         return new ParticipantDTO(p.getParticipantId(), p.getName(), p.getRelationship(), p.getCitizenId(),
-                p.getAddress(), p.getBirthDate(), p.getGender());
+                p.getAddress(), p.getBirthDate());
     }
 
     private SampleDTO toSampleDTO(SampleDTO s) {

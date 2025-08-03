@@ -59,7 +59,7 @@ public class AppointmentController {
     public ResponseEntity<AppointmentResponse<AppointmentDTO>> createAppointment(
             @RequestBody AppointmentRequest request) {
         AppointmentResponse<AppointmentDTO> response = appointmentService.createAppointment(request);
-        return ResponseEntity.status(201).body(response);
+        return ResponseEntity.status(201).body( response);
     }
 
     /**
