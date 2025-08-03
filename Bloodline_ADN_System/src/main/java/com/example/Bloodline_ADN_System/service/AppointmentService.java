@@ -21,7 +21,7 @@ public interface AppointmentService {
 
 
     // --------------------- CUSTOMER CREATE APPOINTMENT ---------------------
-    @Transactional
+
     AppointmentResponse<AppointmentDTO> createAppointment(AppointmentRequest request);
 
     AppointmentDTO getAppointmentById(Long id);

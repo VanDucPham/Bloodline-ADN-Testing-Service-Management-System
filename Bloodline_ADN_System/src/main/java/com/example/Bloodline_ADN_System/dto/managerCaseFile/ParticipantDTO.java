@@ -22,7 +22,7 @@ public class ParticipantDTO {
     private LocalDate birthDate;
     private String gender;
 
-    public ParticipantDTO(Long participantId, String name, String relationship, String citizenId, String address, LocalDate birthDate, Participant.Gender gender) {
+    public ParticipantDTO(Long participantId, String name, String relationship, String citizenId, String address, LocalDate birthDate) {
     }
 
     public Participant toEntity(Appointment appointment) {
@@ -34,7 +34,6 @@ public class ParticipantDTO {
         p.setCitizenId(this.citizenId);
         p.setAddress(this.address);
         p.setBirthDate(this.birthDate);
-        p.setGender(Participant.Gender.valueOf(this.gender));
         return p;
     }
 
