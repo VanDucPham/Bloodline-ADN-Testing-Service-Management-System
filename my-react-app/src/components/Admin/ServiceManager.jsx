@@ -6,6 +6,7 @@ import {
   Modal,
   Form,
   Input,
+  InputNumber,
   Space,
   Popconfirm,
   message,
@@ -37,7 +38,7 @@ const ServiceManager = () => {
     setLoading(true);
     try {
       const data = await apiService.admin.getAllService();
-      console.log(data)
+      console.log(data);
       setServices(data);
     } catch (error) {
       console.error("Lỗi khi tải dịch vụ:", error);
@@ -64,23 +65,21 @@ const ServiceManager = () => {
   }, []);
 
   // Mở modal (sửa hoặc thêm mới)
-const openModal = (service = null) => {
-  setEditingService(service);
-  setIsModalOpen(true);
-  if (service) {
-    form.setFieldsValue({
-      ...service,
-      participantsType: service.participantsType?.map((p) => p.id),
-      imageFile: service.imageUrl
-        ? [{ uid: "-1", name: "current.jpg", status: "done", url: service.imageUrl }]
-        : [],
-    });
-  } else {
-    form.resetFields();
-  }
-};
-
-
+  const openModal = (service = null) => {
+    setEditingService(service);
+    setIsModalOpen(true);
+    if (service) {
+      form.setFieldsValue({
+        ...service,
+        participantsType: service.participantsType?.map((p) => p.id),
+        imageFile: service.imageUrl
+          ? [{ uid: "-1", name: "current.jpg", status: "done", url: service.imageUrl }]
+          : [],
+      });
+    } else {
+      form.resetFields();
+    }
+  };
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -105,18 +104,16 @@ const openModal = (service = null) => {
         imageUrl = response.data?.url || response.url;
       }
 
-    const payload = {
-  serviceName: values.serviceName,
-  servicePrice: values.servicePrice,
-  serviceDescription: values.serviceDescription,
-  imageUrl,
-  limitPeople: values.limitPeople,
-  participantsType: values.participantsType.map(id => {
-    const pt = participantTypes.find(p => p.id === id);
-    return { id: pt.id, participantType: pt.participantType };
-  }),
-};
-
+      const payload = {
+        serviceName: values.serviceName,
+        servicePrice: Number(values.servicePrice), // Ép kiểu sang số
+        serviceDescription: values.serviceDescription,
+        imageUrl,
+        participantsType: values.participantsType.map((id) => {
+          const pt = participantTypes.find((p) => p.id === id);
+          return { id: pt.id, participantType: pt.participantType };
+        }),
+      };
 
       if (editingService) {
         await apiService.admin.updateService(editingService.serviceId, payload);
@@ -128,33 +125,30 @@ const openModal = (service = null) => {
 
       closeModal();
       fetchServices();
-    }catch (error) {
-  console.error("Lỗi khi lưu:", error);
-  const errorMessage = error.respone?.data?.message || error.message || "Thao tác không thành công.";
-  message.error(errorMessage);
-}
-
+    } catch (error) {
+      console.error("Lỗi khi lưu:", error);
+      const errorMessage =
+        error.response?.data?.message || error.message || "Thao tác không thành công.";
+      message.error(errorMessage);
+    }
   };
 
   // Xóa dịch vụ
-const handleDelete = async (service) => {
-  try {
-    await apiService.admin.deleteService(service.serviceId);
-    message.success(`Đã xóa dịch vụ "${service.serviceName}"!`);
-    fetchServices();
-  } catch (error) {
-    console.error("Lỗi khi xóa:", error);
-    const backendMessage = error.response?.data;
-    if (backendMessage?.includes("đang được sử dụng")) {
-      // Nếu BE trả thông báo dịch vụ đang sử dụng → hiện rõ ràng
-      message.error(backendMessage);
-    } else {
-      // Thông báo mặc định
-      message.error("Không thể xóa dịch vụ. Vui lòng thử lại.");
+  const handleDelete = async (service) => {
+    try {
+      await apiService.admin.deleteService(service.serviceId);
+      message.success(`Đã xóa dịch vụ "${service.serviceName}"!`);
+      fetchServices();
+    } catch (error) {
+      console.error("Lỗi khi xóa:", error);
+      const backendMessage = error.response?.data;
+      if (backendMessage?.includes("đang được sử dụng")) {
+        message.error(backendMessage);
+      } else {
+        message.error("Không thể xóa dịch vụ. Vui lòng thử lại.");
+      }
     }
-  }
-};
-
+  };
 
   const columns = [
     { title: "Tên dịch vụ", dataIndex: "serviceName", key: "serviceName" },
@@ -183,7 +177,6 @@ const handleDelete = async (service) => {
         />
       ),
     },
-    { title: "Số người", dataIndex: "limitPeople", key: "limitPeople" },
     {
       title: "Người tham gia",
       dataIndex: "participantsType",
@@ -204,12 +197,8 @@ const handleDelete = async (service) => {
           <Popconfirm
             title={
               <div>
-                <div
-                  style={{ display: "flex", alignItems: "center", marginBottom: 8 }}
-                >
-                  <ExclamationCircleOutlined
-                    style={{ color: "#faad14", marginRight: 8 }}
-                  />
+                <div style={{ display: "flex", alignItems: "center", marginBottom: 8 }}>
+                  <ExclamationCircleOutlined style={{ color: "#faad14", marginRight: 8 }} />
                   <AntText strong>Xác nhận xóa dịch vụ</AntText>
                 </div>
                 <Paragraph style={{ marginBottom: 8 }}>
@@ -259,92 +248,86 @@ const handleDelete = async (service) => {
         pagination={{ pageSize: 10 }}
       />
 
-    <Modal
-  title={editingService ? "Chỉnh sửa dịch vụ" : "Thêm dịch vụ mới"}
-  open={isModalOpen}
-  onCancel={closeModal}
-  onOk={handleSave}
-  okText={editingService ? "Cập nhật" : "Thêm mới"}
-  cancelText="Hủy"
->
-  <Form form={form} layout="vertical">
-    {/* Tên dịch vụ */}
-    <Form.Item
-      label="Tên dịch vụ"
-      name="serviceName"
-      rules={[{ required: true, message: "Vui lòng nhập tên dịch vụ!" }]}
-    >
-      <Input disabled={editingService && editingService.inUse} />
-    </Form.Item>
-
-    {/* Giá dịch vụ */}
-    <Form.Item
-      label="Giá (VNĐ)"
-      name="servicePrice"
-      rules={[
-        { required: true, message: "Vui lòng nhập giá!" },
-        { type: "number", min: 0, message: "Giá phải lớn hơn hoặc bằng 0!" },
-      ]}
-    >
-      <Input type="number" disabled={editingService && editingService.inUse} />
-    </Form.Item>
-
-    {/* Số lượng người tham gia */}
-    <Form.Item
-      label="Số lượng người tham gia"
-      name="limitPeople"
-      rules={[{ required: true, message: "Vui lòng nhập số lượng người!" }]}
-    >
-      <Input type="number" disabled={editingService && editingService.inUse} />
-    </Form.Item>
-
-    {/* Người tham gia */}
-    <Form.Item
-      label="Người tham gia"
-      name="participantsType"
-      rules={[{ required: true, message: "Vui lòng chọn người tham gia!" }]}
-    >
-      <Select
-        mode="multiple"
-        placeholder="Chọn loại người tham gia"
-        disabled={editingService && editingService.inUse}
+      <Modal
+        title={editingService ? "Chỉnh sửa dịch vụ" : "Thêm dịch vụ mới"}
+        open={isModalOpen}
+        onCancel={closeModal}
+        onOk={handleSave}
+        okText={editingService ? "Cập nhật" : "Thêm mới"}
+        cancelText="Hủy"
       >
-        {participantTypes.map((pt) => (
-          <Option key={pt.id} value={pt.id}>
-            {pt.participantType}
-          </Option>
-        ))}
-      </Select>
-    </Form.Item>
+        <Form form={form} layout="vertical">
+          {/* Tên dịch vụ */}
+          <Form.Item
+            label="Tên dịch vụ"
+            name="serviceName"
+            rules={[{ required: true, message: "Vui lòng nhập tên dịch vụ!" }]}
+          >
+            <Input disabled={editingService && editingService.inUse} />
+          </Form.Item>
 
-    {/* Mô tả dịch vụ */}
-    <Form.Item
-      label="Mô tả dịch vụ"
-      name="serviceDescription"
-      rules={[{ required: true, message: "Vui lòng nhập mô tả dịch vụ!" }]}
-    >
-      <Input.TextArea rows={4} placeholder="Nhập mô tả dịch vụ" />
-    </Form.Item>
+          {/* Giá dịch vụ */}
+          <Form.Item
+            label="Giá (VNĐ)"
+            name="servicePrice"
+            rules={[
+              { required: true, message: "Vui lòng nhập giá!" },
+              { type: "number", min: 0, message: "Giá phải lớn hơn hoặc bằng 0!" },
+            ]}
+          >
+            <InputNumber
+              min={0}
+              style={{ width: "100%" }}
+              disabled={editingService && editingService.inUse}
+            />
+          </Form.Item>
 
-    {/* Upload hình ảnh */}
-    <Form.Item
-      label="Hình ảnh dịch vụ"
-      name="imageFile"
-      valuePropName="fileList"
-      getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
-      rules={[{ required: !editingService, message: "Vui lòng chọn hình ảnh!" }]}
-    >
-      <Upload
-        listType="picture"
-        maxCount={1}
-        beforeUpload={() => false} // Không upload ngay
-      >
-        <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
-      </Upload>
-    </Form.Item>
-  </Form>
-</Modal>
+          {/* Người tham gia */}
+          <Form.Item
+            label="Người tham gia"
+            name="participantsType"
+            rules={[{ required: true, message: "Vui lòng chọn người tham gia!" }]}
+          >
+            <Select
+              mode="multiple"
+              placeholder="Chọn loại người tham gia"
+              disabled={editingService && editingService.inUse}
+            >
+              {participantTypes.map((pt) => (
+                <Option key={pt.id} value={pt.id}>
+                  {pt.participantType}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
 
+          {/* Mô tả dịch vụ */}
+          <Form.Item
+            label="Mô tả dịch vụ"
+            name="serviceDescription"
+            rules={[{ required: true, message: "Vui lòng nhập mô tả dịch vụ!" }]}
+          >
+            <Input.TextArea rows={4} placeholder="Nhập mô tả dịch vụ" />
+          </Form.Item>
+
+          {/* Upload hình ảnh */}
+          <Form.Item
+            label="Hình ảnh dịch vụ"
+            name="imageFile"
+            valuePropName="fileList"
+            getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
+            rules={[{ required: !editingService, message: "Vui lòng chọn hình ảnh!" }]}
+          >
+            <Upload
+              listType="picture"
+              maxCount={1}
+              beforeUpload={() => false} // Không upload ngay
+            >
+              <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
+            </Upload>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };

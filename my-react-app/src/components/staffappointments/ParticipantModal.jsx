@@ -1,23 +1,14 @@
+// src/components/ParticipantModal.jsx
 import React, { useEffect, useState } from 'react';
-import {
-  Modal,
-  Table,
-  Typography,
-  Spin,
-  Alert,
-  Button,
-  Form,
-  Input,
-  Select,
-  DatePicker,
-} from 'antd';
-import { UsergroupAddOutlined } from '@ant-design/icons';
+import { Modal, Table, Button, Form, Input, Select, DatePicker, message } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import moment from 'moment';
 
-const { Title, Text } = Typography;
 const { Option } = Select;
-const today = new Date().toISOString().split('T')[0];
+const today = moment();
 
+function ParticipantModal({ open, onClose, participants, onAddParticipant, allowAddParticipant }) {
+  const [form] = Form.useForm();
 
 function ParticipantModal({
   open,
@@ -196,11 +187,14 @@ function ParticipantModal({
     onUpdateSample(values);
   };
 
+
   return (
     <Modal
       open={open}
       onCancel={onClose}
+      title="Danh sách người tham gia"
       footer={null}
+
       width={900}
       title={
         <span>
@@ -398,73 +392,45 @@ function ParticipantModal({
               </Form>
             )
           ) : (
-            <>
-              <Table
-                dataSource={[selectedSample.data]}
-                pagination={false}
-                size="small"
-                bordered
-                columns={[
-                  { title: 'ID', dataIndex: 'sampleId', key: 'sampleId', render: (v) => <Text code>{v}</Text> },
-                  { title: 'Loại', dataIndex: 'sampleType', key: 'sampleType' },
-                  {
-                    title: 'Thời gian',
-                    dataIndex: 'collectionDateTime',
-                    key: 'collectionDateTime',
-                    render: (value) => {
-                      if (!value) return '';
-                      const m = moment(value);
-                      if (!m.isValid()) {
-                        console.warn('Invalid date value:', value);
-                        return '';
-                      }
-                      return m.format('YYYY-MM-DD HH:mm:ss');
-                    }
 
-                  },
-                  { title: 'Chất lượng', dataIndex: 'quality', key: 'quality' },
-                  { title: 'Trạng thái', dataIndex: 'status', key: 'status' },
-                  { title: 'Kết quả', dataIndex: 'result', key: 'result' },
-                  { title: 'Ghi chú', dataIndex: 'notes', key: 'notes' },
-                ]}
-              />
-              {editingSample && editingSample.sampleId === selectedSample.data.sampleId ? (
-                <Form
-                  form={sampleForm}
-                  layout="vertical"
-                  onFinish={onFinishUpdateSample}
-                  style={{ marginTop: 16, border: '1px solid #ccc', padding: 16, borderRadius: 8 }}
-                >
-                  <Form.Item name="quality" label="Chất lượng" rules={[{ required: true }]}>
-                    <Select>
-                      <Option value="POOR">POOR</Option>
-                      <Option value="FAIR">FAIR</Option>
-                      <Option value="GOOD">GOOD</Option>
-                      <Option value="EXCELLENT">EXCELLENT</Option>
+            <>
+              {fields.map(({ key, name, ...restField }) => (
+                <div key={key} style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                  <Form.Item {...restField} name={[name, 'name']} rules={[{ required: true, message: 'Nhập tên' }]}>
+                    <Input placeholder="Tên" />
+                  </Form.Item>
+                  <Form.Item {...restField} name={[name, 'relationship']} rules={[{ required: true, message: 'Nhập quan hệ' }]}>
+                    <Input placeholder="Quan hệ" />
+                  </Form.Item>
+                  <Form.Item {...restField} name={[name, 'gender']} rules={[{ required: true }]}>
+                    <Select placeholder="Giới tính">
+                      <Option value="MALE">Nam</Option>
+                      <Option value="FEMALE">Nữ</Option>
+                      <Option value="OTHER">Khác</Option>
                     </Select>
                   </Form.Item>
-                  <Form.Item name="result" label="Kết quả">
-                    <Input />
+                  <Form.Item {...restField} name={[name, 'citizenId']} rules={[{ required: true, pattern: /^\d{12}$/, message: 'CCCD 12 số' }]}>
+                    <Input placeholder="CMND/CCCD" maxLength={12} />
                   </Form.Item>
-                  <Form.Item name="notes" label="Ghi chú">
-                    <Input />
+                  <Form.Item {...restField} name={[name, 'address']} rules={[{ required: true }]}>
+                    <Input placeholder="Địa chỉ" />
                   </Form.Item>
-                  <Form.Item>
-                    <Button type="primary" htmlType="submit">
-                      Lưu
-                    </Button>{' '}
-                    <Button onClick={onCancelEditSample}>Hủy</Button>
+                  <Form.Item {...restField} name={[name, 'birthDate']} rules={[{ required: true }]}>
+                    <DatePicker placeholder="Ngày sinh" disabledDate={(d) => d && d > today} />
                   </Form.Item>
-                </Form>
-              ) : (
-                <Button type="primary" style={{ marginTop: 16 }} onClick={() => onEditSample(selectedSample.data)}>
-                  Sửa sample
-                </Button>
-              )}
+                  <Button type="text" danger onClick={() => remove(name)}>-</Button>
+                </div>
+              ))}
+              <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                Thêm người tham gia
+              </Button>
             </>
           )}
-        </div>
-      )}
+        </Form.List>
+      </Form>
+      <Button type="primary" onClick={handleAddParticipants} disabled={!allowAddParticipant} style={{ marginTop: 16 }}>
+        Lưu participant
+      </Button>
     </Modal>
   );
 }
