@@ -85,6 +85,9 @@ public class ResultServiceImpl implements ResultService {
         Appointment appointment = appointmentRepository.findById(dto.getAppointmentId())
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy lịch hẹn"));
 
+        //  Cập nhật trạng thái lịch hẹn sang COMPLETED
+        appointment.setStatus(Appointment.AppointmentStatus.COMPLETED);
+        appointmentRepository.save(appointment);  // cần gọi save
         Result result = new Result();
         result.setAppointment(appointment);
         result.setResultValue(dto.getResultValue());

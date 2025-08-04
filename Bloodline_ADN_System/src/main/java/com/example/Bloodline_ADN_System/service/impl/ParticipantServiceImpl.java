@@ -12,6 +12,7 @@ import com.example.Bloodline_ADN_System.repository.ParticipantRepository;
 import com.example.Bloodline_ADN_System.repository.SampleRepository;
 import com.example.Bloodline_ADN_System.service.ParticipantService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -42,7 +43,6 @@ public class ParticipantServiceImpl implements ParticipantService {
                         Participant participant = new Participant();
                         participant.setName(dto.getName());
                         participant.setRelationship(dto.getRelationship());
-                        participant.setGender(Participant.Gender.valueOf(dto.getGender()));
                         participant.setCitizenId(dto.getCitizenId());
                         participant.setAddress(dto.getAddress());
                         participant.setBirthDate(dto.getBirthDate());
@@ -60,6 +60,7 @@ public class ParticipantServiceImpl implements ParticipantService {
     }
 
     //Lấy danh sách participant từ appointmentId
+    @Transactional(readOnly = true)
     public List<ParticipantResponeDTO> getParticipantByAppointmentId(Long appointmentId) {
         List<Participant> participants = participantRepository.findByAppointment_AppointmentId(appointmentId);
 
@@ -70,7 +71,6 @@ public class ParticipantServiceImpl implements ParticipantService {
                     participantDTO.setParticipantId(dto.getParticipantId());
                     participantDTO.setName(dto.getName());
                     participantDTO.setRelationship(dto.getRelationship());
-                    participantDTO.setGender(dto.getGender());
                     participantDTO.setCitizenId(dto.getCitizenId());
                     participantDTO.setAddress(dto.getAddress());
                     participantDTO.setBirthDate(dto.getBirthDate());
@@ -129,7 +129,6 @@ public class ParticipantServiceImpl implements ParticipantService {
         ParticipantDTO dto = new ParticipantDTO();
         dto.setName(participant.getName());
         dto.setRelationship(participant.getRelationship());
-        dto.setGender(String.valueOf(participant.getGender()));
         dto.setCitizenId(participant.getCitizenId());
         dto.setAddress(participant.getAddress());
         dto.setBirthDate(participant.getBirthDate());

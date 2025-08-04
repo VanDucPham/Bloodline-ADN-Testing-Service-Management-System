@@ -24,9 +24,6 @@ public class Participant {
     private String name;
     private String relationship;
 
-    @Enumerated(EnumType.STRING)
-    private Gender gender;
-
     private String citizenId;
     private String address;
     private LocalDate birthDate;
@@ -40,5 +37,4 @@ public class Participant {
     @JsonIgnore
     private Sample sample;
 
-    public enum Gender { MALE, FEMALE, OTHER }
 }

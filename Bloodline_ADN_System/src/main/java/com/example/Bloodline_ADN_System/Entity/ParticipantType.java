@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ public class ParticipantType {
     private String participantName;
 
     @ManyToMany(mappedBy = "participantType")
+    @JsonIgnore
     private List<Service> services = new ArrayList<>() ;
 
 }

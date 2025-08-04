@@ -10,7 +10,6 @@ public class ParticipantResponeDTO {
     private Long participantId;
     private String name;
     private String relationship;
-    private Participant.Gender gender;
     private String citizenId;
     private String address;
     private LocalDate birthDate;

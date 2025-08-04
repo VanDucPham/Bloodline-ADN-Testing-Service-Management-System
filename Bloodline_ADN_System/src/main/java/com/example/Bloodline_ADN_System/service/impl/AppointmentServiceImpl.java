@@ -240,7 +240,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                         Sample sample = new Sample();
                         sample.setParticipant(participant);
                         sample.setSampleType(sampleDto.getSampleType());
-                        sample.setCollectionDateTime(LocalDateTime.now());
+                        sample.setCollectionDateTime(sampleDto.getCollectionDateTime());
                         sample.setQuality(sampleDto.getQuality());
                         sample.setStatus(sampleDto.getStatus());
                         sample.setResult(sampleDto.getResult());
@@ -394,9 +394,33 @@ public class AppointmentServiceImpl implements AppointmentService {
         Appointment appointment = appointmentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Lịch hẹn không tồn tại!"));
 
+        // Validation logic cho appointment status
+        validateAppointmentStatusTransition(appointment.getStatus(), status);
+        
+        // Validation logic cho collection status
+        validateCollectionStatusTransition(appointment.getCollectionStatus(), collectionStatus);
+
         appointment.setStatus(status);
         appointment.setCollectionStatus(collectionStatus);
         return toDTO(appointmentRepository.save(appointment));
+    }
+
+    private void validateAppointmentStatusTransition(Appointment.AppointmentStatus currentStatus, Appointment.AppointmentStatus newStatus) {
+        // Logic validation cho appointment status
+        if (currentStatus == Appointment.AppointmentStatus.COMPLETED && newStatus != Appointment.AppointmentStatus.COMPLETED) {
+            throw new RuntimeException("Không thể thay đổi trạng thái sau khi đã hoàn thành");
+        }
+        
+        // Có thể thêm các validation khác nếu cần
+    }
+
+    private void validateCollectionStatusTransition(Appointment.CollectionStatus currentStatus, Appointment.CollectionStatus newStatus) {
+        // Logic validation cho collection status
+        if (currentStatus == Appointment.CollectionStatus.COMPLETED && newStatus != Appointment.CollectionStatus.COMPLETED) {
+            throw new RuntimeException("Không thể thay đổi trạng thái thu mẫu sau khi đã hoàn thành");
+        }
+        
+        // Có thể thêm các validation khác nếu cần
     }
 
 
@@ -447,11 +471,17 @@ public class AppointmentServiceImpl implements AppointmentService {
         dto.setCollectionStatus(appointment.getCollectionStatus());
         dto.setAssignedStaff(appointment.getUser().getUserId());
         dto.setCaseCode(appointment.getCaseFile().getCaseCode());
+        if (appointment.getCollectionAddress() != null) {
+            dto.setCollectionAddress(appointment.getCollectionAddress());
+        }else{
+            dto.setCollectionAddress(null);
+        }
         if (appointment.getPayment() != null) {
             dto.setPaymentStatus(appointment.getPayment().getStatus());
         } else {
             dto.setPaymentStatus(null);  // hoặc giá trị enum mặc định nếu bạn có
         }
+        dto.setParticipantType(appointment.getService().getParticipantType());
         return dto;
     }
 }

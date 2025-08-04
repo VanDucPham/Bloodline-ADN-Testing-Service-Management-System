@@ -100,103 +100,77 @@ function CreateAppointment() {
 
   return (
     <div className="create-appointment-container">
-      <Title level={3}>+ Tạo lịch hẹn mới</Title>
-      <Form form={form} layout="vertical" onFinish={handleSubmit} className="create-appointment-form">
-        <Form.Item label="Mã nhân viên" name="userId">
-          <Input readOnly style={{ background: '#f0f0f0' }} />
-        </Form.Item>
-        <Form.Item label="Dịch vụ" name="serviceId" rules={[{ required: true, message: 'Chọn dịch vụ' }]}>
-          <Select onChange={handleServiceChange} placeholder="--Chọn dịch vụ--">
-            {services.map(s => <Option key={s.serviceId} value={s.serviceId}>{s.serviceName}</Option>)}
-          </Select>
-        </Form.Item>
-        <Form.Item label="Loại lịch hẹn" name="appointmentType" rules={[{ required: true, message: 'Chọn loại lịch hẹn' }]}>
-          <Select placeholder="--Chọn--">
-            {APPOINTMENT_TYPES.map(opt => <Option key={opt.value} value={opt.value}>{opt.label}</Option>)}
-          </Select>
-        </Form.Item>
-        <Form.Item label="Phương thức lấy mẫu" name="deliveryMethod" initialValue="SELF_DROP_OFF">
-          <Input readOnly />
-        </Form.Item>
-        <Form.Item label="Trạng thái lịch hẹn" name="appointmentStatus">
-          <Input readOnly />
-        </Form.Item>
-        <Form.Item label="Trạng thái thu mẫu" name="collectionStatus">
-          <Input readOnly />
-        </Form.Item>
-        <Form.Item label="Ghi chú" name="appointmentNote">
-          <Input.TextArea maxLength={255} />
-        </Form.Item>
 
-        {participants.length > 0 && (
-          <div style={{ marginBottom: 20 }}>
-            <Title level={5}>Thông tin người tham gia</Title>
-            {participants.map((p, idx) => (
-              <div key={idx} className="participant-form-row">
-                <Input
-                  placeholder={`Tên (${p.type})`}
-                  value={p.name}
-                  onChange={(e) => {
-                    const updated = [...participants];
-                    updated[idx].name = e.target.value;
-                    setParticipants(updated);
-                  }}
-                  style={{ marginBottom: 8 }}
-                />
-                <Select
-                  placeholder="Giới tính"
-                  value={p.gender}
-                  onChange={(val) => {
-                    const updated = [...participants];
-                    updated[idx].gender = val;
-                    setParticipants(updated);
-                  }}
-                  style={{ marginBottom: 8 }}
-                >
-                  <Option value="MALE">Nam</Option>
-                  <Option value="FEMALE">Nữ</Option>
-                  <Option value="OTHER">Khác</Option>
-                </Select>
-                <Input
-                  placeholder="CMND/CCCD"
-                  value={p.citizenId}
-                  maxLength={12}
-                  onChange={(e) => {
-                    const updated = [...participants];
-                    updated[idx].citizenId = e.target.value;
-                    setParticipants(updated);
-                  }}
-                  style={{ marginBottom: 8 }}
-                />
-                <Input
-                  placeholder="Địa chỉ"
-                  value={p.address}
-                  onChange={(e) => {
-                    const updated = [...participants];
-                    updated[idx].address = e.target.value;
-                    setParticipants(updated);
-                  }}
-                  style={{ marginBottom: 8 }}
-                />
-                <Input
-                  placeholder="Ngày sinh"
-                  type="date"
-                  value={p.birthDate}
-                  max={new Date().toISOString().split('T')[0]}
-                  onChange={(e) => {
-                    const updated = [...participants];
-                    updated[idx].birthDate = e.target.value;
-                    setParticipants(updated);
-                  }}
-                  style={{ marginBottom: 8 }}
-                />
-              </div>
+      <h2>+ Tạo phiếu xét nghiệm ADN</h2>
+      <form onSubmit={handleSubmit} className="create-appointment-form">
+        {/* Hiển thị userId, chỉ đọc */}
+        <div>
+          <label>Mã nhân viên (userId):</label>
+          <input
+            type="text"
+            name="userId"
+            value={form.userId || ''}
+            readOnly
+            style={{ background: '#f0f0f0' }}
+          />
+        </div>
+        <div>
+          <label>Dịch vụ:</label>
+          <select name="serviceId" value={form.serviceId} onChange={handleChange} required>
+            <option value="">--Chọn dịch vụ--</option>
+            {services.map(s => (
+              //Sẽ hiển thị cho người dùng chọn tên service nhưng lưu về lại là id
+              <option key={s.serviceId} value={s.serviceId}>{s.serviceName}</option>
             ))}
-          </div>
-        )}
+          </select>
+        </div>
+        <div>
+          <label>Loại dịch vụ:</label>
+          <select name="appointmentType" value={form.appointmentType} onChange={handleChange} required>
+            <option value="">--Chọn--</option>
+            {APPOINTMENT_TYPES.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+          </select>
+        </div>
+        {/* Loại hồ sơ sẽ tự động đồng bộ với loại lịch hẹn, không cho chọn riêng */}
+        {/* <div>
+          <label></label>
+          <input type="hidden" value={caseFile.caseType ? (APPOINTMENT_TYPES.find(t => t.value === caseFile.caseType)?.label || caseFile.caseType) : ''} readOnly style={{ background: '#f0f0f0' }} />
+        </div> */}
+        {/* <div>
+          <label>Ngày hẹn:</label>
+          <input type="date" name="appointmentDate" value={form.appointmentDate} onChange={handleChange} required />
+        </div>
+        <div>
+          <label>Giờ hẹn:</label>
+          <input type="time" name="appointmentTime" value={form.appointmentTime} onChange={handleChange} required />
+        </div> */}
+        {/* <div>
+          <label></label>
+          <input type="hidden" value="Đến cơ sở lấy mẫu cơ sở" readOnly />
+        </div>
 
-        <Button type="primary" htmlType="submit">Tạo lịch hẹn</Button>
-      </Form>
+        <div>
+          <label></label>
+
+           <input type="hidden" value="Đã đặt" readOnly />
+
+
+        </div>
+        <div>
+          <label></label>
+
+           <input type="hidden" value="Đã phân công" readOnly />
+        </div> */}
+
+        <div>
+          <label>Ghi chú:</label>
+          <input name="appointmentNote" value={form.appointmentNote} onChange={handleChange} />
+        </div>
+        <button type="submit">Tạo phiếu xét nghiệm</button>
+        {error && <p className="error-msg">{error}</p>}
+        {success && <p className="success-msg">{success}</p>}
+      </form>
+
     </div>
   );
 }
