@@ -59,20 +59,20 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     Long findCaseIdByAppointmentId(@Param("appointmentId") Long appointmentId);
 
 
-    @Query("SELECT a FROM Appointment a " +
-            "LEFT JOIN FETCH a.caseFile " +
-            "LEFT JOIN FETCH a.user " +
-            "LEFT JOIN FETCH a.assignedStaff " +
-            "WHERE FUNCTION('DATE_FORMAT', a.appointmentDate, '%Y-%m') = :year_month")
-    List<Appointment> findByMonth(@Param("year_month") String yearMonth);
-
 //    @Query("SELECT a FROM Appointment a " +
 //            "LEFT JOIN FETCH a.caseFile " +
 //            "LEFT JOIN FETCH a.user " +
 //            "LEFT JOIN FETCH a.assignedStaff " +
-//            "WHERE FUNCTION('to_char', a.appointmentDate, 'YYYY-MM') = :yearMonth")
-//
-//    List<Appointment> findByMonth(@Param("yearMonth") String yearMonth);
+//            "WHERE FUNCTION('DATE_FORMAT', a.appointmentDate, '%Y-%m') = :year_month")
+//    List<Appointment> findByMonth(@Param("year_month") String yearMonth);
+
+    @Query("SELECT a FROM Appointment a " +
+            "LEFT JOIN FETCH a.caseFile " +
+            "LEFT JOIN FETCH a.user " +
+            "LEFT JOIN FETCH a.assignedStaff " +
+            "WHERE FUNCTION('to_char', a.appointmentDate, 'YYYY-MM') = :yearMonth")
+
+    List<Appointment> findByMonth(@Param("yearMonth") String yearMonth);
 
     Optional<Appointment> findByCaseFile_CaseCode(String caseCode);
 
