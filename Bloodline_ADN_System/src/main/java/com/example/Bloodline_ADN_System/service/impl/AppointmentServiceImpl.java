@@ -240,7 +240,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                         Sample sample = new Sample();
                         sample.setParticipant(participant);
                         sample.setSampleType(sampleDto.getSampleType());
-                        sample.setCollectionDateTime(LocalDateTime.now());
+                        sample.setCollectionDateTime(sampleDto.getCollectionDateTime());
                         sample.setQuality(sampleDto.getQuality());
                         sample.setStatus(sampleDto.getStatus());
                         sample.setResult(sampleDto.getResult());

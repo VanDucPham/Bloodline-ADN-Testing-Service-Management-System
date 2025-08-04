@@ -44,7 +44,7 @@ function StaffAppointments() {
       case 'SCHEDULED':
         return ['SCHEDULED', 'IN_PROGRESS', 'CANCELLED'];
       case 'IN_PROGRESS':
-        return ['IN_PROGRESS', 'COMPLETED', 'CANCELLED'];
+        return ['IN_PROGRESS', 'CANCELLED'];
       case 'COMPLETED':
         return ['COMPLETED']; // Không thể thay đổi sau khi hoàn thành
       case 'CANCELLED':
