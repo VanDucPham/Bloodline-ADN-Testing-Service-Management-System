@@ -11,7 +11,7 @@ function AppointmentBooking() {
   const [validateMessage, setValidateMessage] = useState('');
   const [minDate, setMinDate] = useState("");
   const [today, setToday] = useState("");
-  const [addressForm] = Form.useForm();
+  const [addressForm] = Form.useForm(); 
   const [allowedAreas, setAllowedAreas] = useState([]);
   const [cityOptions, setCityOptions] = useState([]);
   const [districtOptions, setDistrictOptions] = useState([]);
