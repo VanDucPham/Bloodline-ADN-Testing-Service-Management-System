@@ -1,14 +1,23 @@
 // src/components/ParticipantModal.jsx
 import React, { useEffect, useState } from 'react';
-import { Modal, Table, Button, Form, Input, Select, DatePicker, message } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import {
+  Modal,
+  Table,
+  Button,
+  Form,
+  Input,
+  Select,
+  DatePicker,
+  Spin,
+  Alert,
+  Typography
+} from 'antd';
+import { PlusOutlined, UsergroupAddOutlined } from '@ant-design/icons';
 import moment from 'moment';
 
 const { Option } = Select;
+const { Title, Text } = Typography;
 const today = moment();
-
-function ParticipantModal({ open, onClose, participants, onAddParticipant, allowAddParticipant }) {
-  const [form] = Form.useForm();
 
 function ParticipantModal({
   open,
@@ -18,7 +27,7 @@ function ParticipantModal({
   sampleLoading,
   sampleError,
   selectedSample,
-  onAddParticipant, // Hàm thêm participant (nhận mảng participant)
+  onAddParticipant,
   onCreateSample,
   onUpdateSample,
   editingSample,
@@ -32,8 +41,7 @@ function ParticipantModal({
   createSampleSuccess,
   allowShowSample,
   allowAddParticipant,
-  service, // Thêm prop service để lấy thông tin participantType
-  // Thêm các props còn thiếu
+  service,
   showAddParticipantForm,
   onShowAddParticipantForm,
   addParticipantLoading,
@@ -42,33 +50,26 @@ function ParticipantModal({
   participantCount,
 }) {
   const [sampleForm] = Form.useForm();
-
-  // State quản lý hiển thị form thêm participant - sử dụng prop từ parent
-  // const [showAddParticipantForm, setShowAddParticipantForm] = useState(false);
-
-  // State quản lý form thuần thêm nhiều participant
+  const [participantForm] = Form.useForm();
   const [newParticipants, setNewParticipants] = useState([]);
 
-         // Khởi tạo form dựa trên participantsType của service
-   useEffect(() => {
-      if (service && service.participantsType && service.participantsType.length > 0) {
-        const initialParticipants = service.participantsType.map(participantType => ({
-          name: '',
-          relationship: participantType.participantType, // Sử dụng participantType làm relationship
-          citizenId: '',
-          address: '',
-          birthDate: '',
-        }));
-        setNewParticipants(initialParticipants);
-      } else {
-        // Fallback nếu không có participantsType
-        setNewParticipants([
-          { name: '', relationship: '', citizenId: '', address: '', birthDate: '' },
-        ]);
-      }
-    }, [service]);
+  // Khởi tạo form participant theo service
+  useEffect(() => {
+    if (service && service.participantsType && service.participantsType.length > 0) {
+      const initialParticipants = service.participantsType.map((pt) => ({
+        name: '',
+        relationship: pt.participantType,
+        citizenId: '',
+        address: '',
+        birthDate: null,
+      }));
+      setNewParticipants(initialParticipants);
+    } else {
+      setNewParticipants([{ name: '', relationship: '', citizenId: '', address: '', birthDate: null }]);
+    }
+  }, [service]);
 
-  // Đồng bộ dữ liệu khi chỉnh sửa sample
+  // Đồng bộ khi edit sample
   useEffect(() => {
     if (editingSample) {
       sampleForm.setFieldsValue({
@@ -82,82 +83,20 @@ function ParticipantModal({
     }
   }, [editingSample, sampleForm]);
 
-  // Xử lý thay đổi input form thuần
-  const handleNewParticipantChange = (index, e) => {
-    const { name, value } = e.target;
-    setNewParticipants((prev) => {
-      const updated = [...prev];
-      updated[index][name] = value;
-      return updated;
-    });
-  };
-
-  // Thêm dòng participant mới (chỉ khi không có participantsType từ service)
-  const addNewParticipantRow = () => {
-    if (!service || !service.participantsType || service.participantsType.length === 0) {
-      setNewParticipants((prev) => [
-        ...prev,
-        { name: '', relationship: '', citizenId: '', address: '', birthDate: '' },
-      ]);
+  const handleAddParticipants = async () => {
+    try {
+      const values = await participantForm.validateFields();
+      await onAddParticipant(values.participants);
+      participantForm.resetFields();
+      message.success('Thêm người tham gia thành công');
+    } catch (error) {
+      console.error('Error in handleAddParticipants:', error);
+      message.error('Lỗi khi thêm participant');
     }
   };
 
-  // Xóa dòng participant theo index (chỉ khi không có participantsType từ service)
-  const removeNewParticipantRow = (index) => {
-    if (!service || !service.participantsType || service.participantsType.length === 0) {
-      setNewParticipants((prev) => prev.filter((_, i) => i !== index));
-    }
-  };
-
-     // Xử lý submit form thuần thêm nhiều participant
-   const handleAddParticipants = async (e) => {
-     e.preventDefault();
-           // Validate đơn giản
-      for (const p of newParticipants) {
-        if (
-          !p.name.trim() ||
-          !p.relationship.trim() ||
-          
-          !p.citizenId.trim() ||
-          !p.address.trim() ||
-          !p.birthDate
-        ) {
-          alert('Vui lòng điền đầy đủ thông tin tất cả người tham gia');
-          return;
-        }
-      }
-      try {
-        await onAddParticipant(newParticipants);
-       
-       // Reset form sau khi thêm thành công
-        if (service && service.participantsType && service.participantsType.length > 0) {
-          const initialParticipants = service.participantsType.map(participantType => ({
-            name: '',
-            relationship: participantType.participantType,
-            citizenId: '',
-            address: '',
-            birthDate: '',
-          }));
-          setNewParticipants(initialParticipants);
-        } else {
-         setNewParticipants([{ name: '', relationship: '', citizenId: '', address: '', birthDate: '' }]);
-       }
-       // Form sẽ được ẩn bởi parent component
-     } catch (error) {
-       console.error('Error in handleAddParticipants:', error);
-       alert('Lỗi khi thêm participant: ' + (error.message || 'Không rõ lỗi'));
-     }
-   };
-
-  // Cột bảng participant
   const columns = [
-    {
-      title: 'ID',
-      dataIndex: 'participantId',
-      key: 'participantId',
-      width: 80,
-      render: (id) => <span>{id}</span>,
-    },
+    { title: 'ID', dataIndex: 'participantId', key: 'participantId', width: 80 },
     { title: 'Tên', dataIndex: 'name', key: 'name' },
     { title: 'Quan hệ', dataIndex: 'relationship', key: 'relationship' },
     { title: 'Địa chỉ', dataIndex: 'address', key: 'address', responsive: ['md'] },
@@ -168,176 +107,112 @@ function ParticipantModal({
       key: 'action',
       width: 100,
       render: (_, record) => (
-        <Button onClick={() => onShowSample(record.participantId)}
+        <Button
+          onClick={() => onShowSample(record.participantId)}
           disabled={!allowShowSample}
-          title={!allowShowSample ? 'Chỉ xem sample khi lịch đang thực hiện và hoàn thành thu kit' : ''}>
+          title={!allowShowSample ? 'Chỉ xem sample khi lịch đang thực hiện và hoàn thành thu kit' : ''}
+        >
           Xem sample
         </Button>
       ),
     },
   ];
 
-  // Xử lý submit form tạo sample
   const onFinishCreateSample = (values) => {
     onCreateSample(values);
   };
-
-  // Xử lý submit form cập nhật sample
-  const onFinishUpdateSample = (values) => {
-    onUpdateSample(values);
-  };
-
 
   return (
     <Modal
       open={open}
       onCancel={onClose}
-      title="Danh sách người tham gia"
       footer={null}
-
       width={900}
+      centered
       title={
         <span>
           <UsergroupAddOutlined style={{ color: '#722ed1', marginRight: 8, fontSize: 22 }} />{' '}
           <b>Danh sách người tham gia</b>
         </span>
       }
-             centered
-       styles={{ body: { paddingTop: 12 } }}
     >
-                           {/* Nút thêm participant bật form - chỉ hiển thị khi chưa có participant */}
-        {(!participants || participants.length === 0) && (
-          <Button
-            type="primary"
-            style={{ marginBottom: 12 }}
-            onClick={() => onShowAddParticipantForm()}
-            disabled={!allowAddParticipant}
-            title={!allowAddParticipant ? 'Chỉ thêm được người tham gia khi thực hiện' : ''}
-          >
-            Thêm participant
-          </Button>
-        )}
+      {/* Nút bật form thêm participant */}
+      {(!participants || participants.length === 0) && (
+        <Button
+          type="primary"
+          style={{ marginBottom: 12 }}
+          onClick={onShowAddParticipantForm}
+          disabled={!allowAddParticipant}
+          title={!allowAddParticipant ? 'Chỉ thêm được người tham gia khi thực hiện' : ''}
+        >
+          Thêm participant
+        </Button>
+      )}
 
-      {/* Form thêm participant chỉ hiển thị khi bật */}
+      {/* Form thêm participant */}
       {showAddParticipantForm && (
         <div>
-                     {service && service.participantsType && service.participantsType.length > 0 ? (
-             <div style={{ marginBottom: 16 }}>
-               <Alert 
-                 message={`Dịch vụ này yêu cầu ${service.participantsType.length} người tham gia: ${service.participantsType.map(pt => pt.participantType).join(', ')}`} 
-                 type="info" 
-                 showIcon 
-               />
-             </div>
-           ) : (
-            <p>Không có participant nào! Hãy thêm participant</p>
+          {service && service.participantsType && service.participantsType.length > 0 && (
+            <div style={{ marginBottom: 16 }}>
+              <Alert
+                message={`Dịch vụ này yêu cầu ${service.participantsType.length} người tham gia: ${service.participantsType
+                  .map((pt) => pt.participantType)
+                  .join(', ')}`}
+                type="info"
+                showIcon
+              />
+            </div>
           )}
-          
-                     {/* Hiển thị loading và error/success messages */}
-           {addParticipantLoading && (
-             <div style={{ marginBottom: 16, textAlign: 'center' }}>
-               <Spin size="large" />
-               <div style={{ marginTop: 8 }}>Đang thêm người tham gia...</div>
-             </div>
-           )}
-           {addParticipantError && (
-             <Alert message={addParticipantError} type="error" showIcon style={{ marginBottom: 16 }} />
-           )}
-           {addParticipantSuccess && (
-             <Alert message={addParticipantSuccess} type="success" showIcon style={{ marginBottom: 16 }} />
-           )}
-           
-           <form onSubmit={handleAddParticipants} className="participant-form">
-            {newParticipants.map((p, idx) => (
-              <div key={idx} className="participant-row" style={{ marginBottom: 10 }}>
-                <input
-                  name="name"
-                  placeholder="Họ tên"
-                  value={p.name}
-                  onChange={(e) => handleNewParticipantChange(idx, e)}
-                  required
-                />
-                <input
-                  name="relationship"
-                  placeholder="Quan hệ"
-                  value={p.relationship}
-                  onChange={(e) => handleNewParticipantChange(idx, e)}
-                  required
-                  readOnly={service && service.participantsType && service.participantsType.length > 0}
-                  style={service && service.participantsType && service.participantsType.length > 0 ? { backgroundColor: '#f5f5f5' } : {}}
-                />
-                
-                <input
-                  name="citizenId"
-                  placeholder="CMND/CCCD"
-                  value={p.citizenId}
-                  onChange={(e) => handleNewParticipantChange(idx, e)}
-                  required
-                />
-                <input
-                  name="address"
-                  placeholder="Địa chỉ"
-                  value={p.address}
-                  onChange={(e) => handleNewParticipantChange(idx, e)}
-                  required
-                />
-                <input
-                  name="birthDate"
-                  type="date"
-                  placeholder="Ngày sinh"
-                  value={p.birthDate}
-                  max={today} // Giới hạn ngày sinh không được lớn hơn hôm nay
-                  onChange={(e) => handleNewParticipantChange(idx, e)}
-                  required
-                />
-                {/* Chỉ hiển thị nút xóa/thêm khi không có participantsType từ service */}
-                {(!service || !service.participantsType || service.participantsType.length === 0) && (
-                  <>
-                    <button
-                      type="button"
-                      onClick={() => removeNewParticipantRow(idx)}
-                      disabled={newParticipants.length === 1}
-                      style={{ marginLeft: 5 }}
-                    >
-                      -
-                    </button>
-                    {idx === newParticipants.length - 1 && (
-                      <button type="button" onClick={addNewParticipantRow} style={{ marginLeft: 5 }}>
-                        +
-                      </button>
-                    )}
-                  </>
-                )}
-              </div>
-            ))}
-                         <button 
-               type="submit" 
-               style={{ marginTop: 10 }}
-               disabled={addParticipantLoading}
-             >
-               {addParticipantLoading ? 'Đang lưu...' : 'Lưu người tham gia'}
-             </button>
-                         <button
-               type="button"
-               onClick={() => onShowAddParticipantForm()}
-               style={{ marginLeft: 8 }}
-             >
-               Hủy
-             </button>
-          </form>
+          {addParticipantError && <Alert message={addParticipantError} type="error" showIcon style={{ marginBottom: 16 }} />}
+          {addParticipantSuccess && <Alert message={addParticipantSuccess} type="success" showIcon style={{ marginBottom: 16 }} />}
+
+          <Form form={participantForm} layout="vertical">
+            <Form.List name="participants" initialValue={newParticipants}>
+              {(fields, { add, remove }) => (
+                <>
+                  {fields.map(({ key, name, ...restField }, idx) => (
+                    <div key={key} style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
+                      <Form.Item {...restField} name={[name, 'name']} rules={[{ required: true, message: 'Nhập họ tên' }]} style={{ flex: 1 }}>
+                        <Input placeholder="Họ tên" />
+                      </Form.Item>
+                      <Form.Item {...restField} name={[name, 'relationship']} rules={[{ required: true, message: 'Nhập quan hệ' }]} style={{ flex: 1 }}>
+                        <Input placeholder="Quan hệ" readOnly={!!(service && service.participantsType && service.participantsType.length > 0)} />
+                      </Form.Item>
+                      <Form.Item {...restField} name={[name, 'citizenId']} rules={[{ required: true, message: 'Nhập CMND/CCCD' }]} style={{ flex: 1 }}>
+                        <Input placeholder="CMND/CCCD" maxLength={12} />
+                      </Form.Item>
+                      <Form.Item {...restField} name={[name, 'address']} rules={[{ required: true, message: 'Nhập địa chỉ' }]} style={{ flex: 2 }}>
+                        <Input placeholder="Địa chỉ" />
+                      </Form.Item>
+                      <Form.Item {...restField} name={[name, 'birthDate']} rules={[{ required: true, message: 'Chọn ngày sinh' }]} style={{ flex: 1 }}>
+                        <DatePicker placeholder="Ngày sinh" disabledDate={(d) => d && d > today} style={{ width: '100%' }} />
+                      </Form.Item>
+                      {(!service || !service.participantsType || service.participantsType.length === 0) && (
+                        <Button type="text" danger onClick={() => remove(name)}>-</Button>
+                      )}
+                    </div>
+                  ))}
+                  {(!service || !service.participantsType || service.participantsType.length === 0) && (
+                    <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                      Thêm người tham gia
+                    </Button>
+                  )}
+                </>
+              )}
+            </Form.List>
+            <Button type="primary" onClick={handleAddParticipants} loading={addParticipantLoading} style={{ marginTop: 10 }}>
+              Lưu người tham gia
+            </Button>
+            <Button type="default" onClick={onShowAddParticipantForm} style={{ marginLeft: 8 }}>
+              Hủy
+            </Button>
+          </Form>
         </div>
       )}
 
       {/* Bảng danh sách participant */}
       {Array.isArray(participants) && participants.length > 0 ? (
-        <Table
-          dataSource={participants}
-          columns={columns}
-          rowKey="participantId"
-          pagination={false}
-          size="middle"
-          bordered
-        />
+        <Table dataSource={participants} columns={columns} rowKey="participantId" pagination={false} size="middle" bordered />
       ) : (
         <Alert message="Không có participant nào!" type="info" showIcon style={{ marginBottom: 16 }} />
       )}
@@ -356,18 +231,13 @@ function ParticipantModal({
             🧪 Sample của participant <Text code>{selectedSample.participantId}</Text>
           </Title>
 
-          {(!selectedSample.data || !selectedSample.data.sampleId) ? (
+          {!selectedSample.data || !selectedSample.data.sampleId ? (
             !showCreateSample ? (
               <Button type="primary" onClick={onShowCreateSampleForm}>
                 Tạo sample
               </Button>
             ) : (
-              <Form
-                form={sampleForm}
-                layout="vertical"
-                onFinish={onFinishCreateSample}
-                style={{ border: '1px solid #ccc', padding: 16, borderRadius: 8 }}
-              >
+              <Form form={sampleForm} layout="vertical" onFinish={onFinishCreateSample} style={{ border: '1px solid #ccc', padding: 16, borderRadius: 8 }}>
                 <Form.Item name="sampleType" label="Loại mẫu" rules={[{ required: true }]}>
                   <Select placeholder="Chọn loại mẫu">
                     <Option value="BLOOD">Máu (BLOOD)</Option>
@@ -376,8 +246,6 @@ function ParticipantModal({
                     <Option value="OTHER">Khác (OTHER)</Option>
                   </Select>
                 </Form.Item>
-                {/* Bỏ phần chọn thời gian lấy mẫu nếu backend tự lấy */}
-                {/* Bỏ phần chọn chất lượng nếu không cần */}
                 <Form.Item name="notes" label="Ghi chú">
                   <Input.TextArea />
                 </Form.Item>
@@ -392,45 +260,10 @@ function ParticipantModal({
               </Form>
             )
           ) : (
-
-            <>
-              {fields.map(({ key, name, ...restField }) => (
-                <div key={key} style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-                  <Form.Item {...restField} name={[name, 'name']} rules={[{ required: true, message: 'Nhập tên' }]}>
-                    <Input placeholder="Tên" />
-                  </Form.Item>
-                  <Form.Item {...restField} name={[name, 'relationship']} rules={[{ required: true, message: 'Nhập quan hệ' }]}>
-                    <Input placeholder="Quan hệ" />
-                  </Form.Item>
-                  <Form.Item {...restField} name={[name, 'gender']} rules={[{ required: true }]}>
-                    <Select placeholder="Giới tính">
-                      <Option value="MALE">Nam</Option>
-                      <Option value="FEMALE">Nữ</Option>
-                      <Option value="OTHER">Khác</Option>
-                    </Select>
-                  </Form.Item>
-                  <Form.Item {...restField} name={[name, 'citizenId']} rules={[{ required: true, pattern: /^\d{12}$/, message: 'CCCD 12 số' }]}>
-                    <Input placeholder="CMND/CCCD" maxLength={12} />
-                  </Form.Item>
-                  <Form.Item {...restField} name={[name, 'address']} rules={[{ required: true }]}>
-                    <Input placeholder="Địa chỉ" />
-                  </Form.Item>
-                  <Form.Item {...restField} name={[name, 'birthDate']} rules={[{ required: true }]}>
-                    <DatePicker placeholder="Ngày sinh" disabledDate={(d) => d && d > today} />
-                  </Form.Item>
-                  <Button type="text" danger onClick={() => remove(name)}>-</Button>
-                </div>
-              ))}
-              <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
-                Thêm người tham gia
-              </Button>
-            </>
+            <Alert message="Sample đã tồn tại" type="success" />
           )}
-        </Form.List>
-      </Form>
-      <Button type="primary" onClick={handleAddParticipants} disabled={!allowAddParticipant} style={{ marginTop: 16 }}>
-        Lưu participant
-      </Button>
+        </div>
+      )}
     </Modal>
   );
 }
