@@ -430,14 +430,26 @@ function AppointmentBooking() {
         return;
       }
     }
-    if (step === 4) {
-      const errors = samples.map(validateSample);
-      setSampleErrors(errors);
-      if (errors.some(e => Object.keys(e).length > 0)) {
-        setValidateMessage('Vui lòng nhập đầy đủ thông tin mẫu xét nghiệm.');
-        return;
-      }
+if (step === 4) {
+  try {
+    // Chỉ ép validate địa chỉ nếu là lấy mẫu tại nhà
+    if (appointment.deliveryMethod === 'HOME_COLLECTION' || appointment.deliveryMethod === 'HOME_DELIVERY') {
+      await addressForm.validateFields();
     }
+
+    const errors = samples.map(validateSample);
+    setSampleErrors(errors);
+    if (errors.some(e => Object.keys(e).length > 0)) {
+      setValidateMessage('Vui lòng nhập đầy đủ thông tin mẫu xét nghiệm.');
+      return;
+    }
+  } catch (err) {
+    setValidateMessage('Vui lòng nhập địa chỉ lấy mẫu.');
+    return;
+  }
+}
+
+
     if (step === 6 && !appointment.paymentMethod) {
       setValidateMessage('Vui lòng chọn phương thức thanh toán.');
       return;
@@ -511,12 +523,27 @@ function AppointmentBooking() {
   };
 
   // Validate realtime cho sample
-  const validateSample = (sample) => {
-    const errors = {};
-    if (!sample.participantCitizenId) errors.participantCitizenId = 'Chưa có CCCD';
-    if (!sample.sampleType) errors.sampleType = 'Chưa có loại mẫu';
-    return errors;
-  };
+  // const validateSample = (sample) => {
+  //   const errors = {};
+  //   if(appointment.deliveryMethod != 'SELF_DROP_OFF'){
+  //     if(!districtOptions){
+  //           errors
+  //     }
+  //   }
+  //   if (!sample.participantCitizenId) errors.participantCitizenId = 'Chưa có CCCD';
+  //   if (!sample.sampleType) errors.sampleType = 'Chưa có loại mẫu';
+  //   return errors;
+  // };
+const validateSample = (sample) => {
+  const errors = {};
+
+  // Chỉ validate địa chỉ nếu là lấy mẫu tại nhà
+ 
+
+  if (!sample.participantCitizenId) errors.participantCitizenId = 'Chưa có CCCD';
+  if (!sample.sampleType) errors.sampleType = 'Chưa có loại mẫu';
+  return errors;
+};
 
   // Validate realtime cho từng bước
   const [participantErrors, setParticipantErrors] = useState([]);
@@ -534,7 +561,7 @@ function AppointmentBooking() {
   return (
     <div>
              <header>
-         <h1>Đặt lịch hẹn xét nghiệm ADN</h1>
+         <h1>Đặt dịch vụ xét nghiệm ADN</h1>
          <button 
            onClick={clearLocalStorage}
            style={{
@@ -674,125 +701,183 @@ function AppointmentBooking() {
               </div>
             </div>
           )}
-          {step === 4 && (
-            <div className="form-section">
-              <h2>4. Mẫu xét nghiệm</h2>
-              {appointment?.deliveryMethod === "SELF_DROP_OFF" && (
-                <div style={{ padding: '20px', background: '#fff3cd', borderRadius: '5px', border: '1px solid #ffeeba' }}>
-                  <strong>Lưu ý:</strong> Vui lòng đến cơ sở để lấy mẫu và đem đầy đủ giấy tờ cần thiết.
-                </div>
-              )}
-              {(appointment?.deliveryMethod === "HOME_DELIVERY"  || appointment?.deliveryMethod === "HOME_COLLECTION") && (
-                <div style={{ background: '#fff', padding: 16, borderRadius: 8, marginBottom: 16, boxShadow: '0 2px 8px #eee' }}>
-                  <h3>Địa chỉ lấy mẫu tại nhà</h3>
-                  <Form
-                    form={addressForm}
-                    layout="vertical"
-                    style={{ maxWidth: 900 }}
-                    initialValues={{ city: undefined, district: undefined }}
-                  >
-                    <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-                      <Form.Item name="addressDetail" label="Số nhà, đường, xã/phường..." rules={[{ required: true, message: 'Vui lòng nhập địa chỉ chi tiết' }]} style={{ flex: 2, minWidth: 220, marginBottom: 0 }}>
-                        <Input placeholder="Nhập số nhà, đường, xã/phường..." />
-                      </Form.Item>
-                      <Form.Item name="city" label="Tỉnh/Thành phố" rules={[{ required: true, message: 'Vui lòng chọn tỉnh/thành phố' }]} style={{ flex: 1, minWidth: 180, marginBottom: 0 }}>
-                        <Select
-                          showSearch
-                          placeholder="Chọn tỉnh/thành phố"
-                          loading={loadingAreas}
-                          onChange={handleCityChange}
-                          filterOption={(input, option) => (option?.children ?? '').toLowerCase().includes(input.toLowerCase())}
-                        >
-                          {cityOptions.map(city => (
-                            <Select.Option key={city} value={city}>{city}</Select.Option>
-                          ))}
-                        </Select>
-                      </Form.Item>
-                      <Form.Item name="district" label="Quận/Huyện" rules={[{ required: true, message: 'Vui lòng chọn quận/huyện' }]} style={{ flex: 1, minWidth: 180, marginBottom: 0 }}>
-                        <Select
-                          showSearch
-                          placeholder="Chọn quận/huyện"
-                          loading={loadingAreas}
-                          disabled={!addressForm.getFieldValue('city')}
-                          filterOption={(input, option) => (option?.children ?? '').toLowerCase().includes(input.toLowerCase())}
-                        >
-                          {districtOptions.map(district => (
-                            <Select.Option key={district} value={district}>{district}</Select.Option>
-                          ))}
-                        </Select>
-                      </Form.Item>
-                    </div>
-                  </Form>
-                </div>
-              )}
-                             {samples.map((sample, index) => {
-                 const participant = participants[sample.participantIndex];
-                 return (
-                   <div key={index} className="sample-info">
-                     <h3>Mẫu cho {sample.participantType}</h3>
-                     
-                                           {participant && participant.citizenId ? (
-                        <div
-                          className="participant-details"
-                          style={{
-                            marginTop: '10px',
-                            padding: '10px',
-                            background: '#e8f5e8',
-                            borderRadius: '5px',
-                            border: '1px solid #4caf50'
-                          }}
-                        >
-                          <p><strong>Họ tên:</strong> {participant.name}</p>
-                          <p><strong>CCCD:</strong> {participant.citizenId}</p>
-                          <p><strong>Ngày sinh:</strong> {participant.birthDate}</p>
-                          <div style={{ marginTop: '10px' }}>
-                            <label><strong>Chọn loại mẫu:</strong></label>
-                            <select 
-                              value={sample.sampleType} 
-                              onChange={(e) => handleSampleTypeChange(index, e.target.value)}
-                              className="styled-select"
-                              style={{ marginTop: '5px', width: '100%' }}
-                            >
-                              <option value="BLOOD">Máu</option>
-                              <option value="SALIVA">Nước bọt</option>
-                              <option value="HAIR">Tóc</option>
-                              <option value="NAIL">Móng tay</option>
-                              <option value="BUCCAL">Niêm mạc miệng</option>
-                            </select>
-                          </div>
-                        </div>
-                      ) : (
-                        <div
-                          style={{
-                            marginTop: '10px',
-                            padding: '10px',
-                            background: '#fff3cd',
-                            borderRadius: '5px',
-                            border: '1px solid #ffeaa7'
-                          }}
-                        >
-                          <p><em>Vui lòng nhập thông tin người tham gia ở bước trước</em></p>
-                        </div>
-                      )}
-                   </div>
-                 );
-               })}
-              <div className="form-actions">
-                <button className="btn-secondary" onClick={prevStep}>Quay lại</button>
-                <button className="btn-primary" onClick={nextStep} disabled={sampleErrors.some(e => Object.keys(e).length > 0)}>Tiếp theo</button>
+        {step === 4 && (
+  <div className="form-section">
+    <h2>4. Mẫu xét nghiệm</h2>
+
+    {/* Nếu tự đến */}
+    {appointment?.deliveryMethod === "SELF_DROP_OFF" && (
+      <div style={{ padding: '20px', background: '#fff3cd', borderRadius: '5px', border: '1px solid #ffeeba' }}>
+        <strong>Lưu ý:</strong> Vui lòng đến cơ sở để lấy mẫu và đem đầy đủ giấy tờ cần thiết.
+      </div>
+    )}
+
+    {/* Nếu lấy mẫu tại nhà */}
+    {(appointment?.deliveryMethod === "HOME_DELIVERY" || appointment?.deliveryMethod === "HOME_COLLECTION") && (
+      <div style={{ background: '#fff', padding: 16, borderRadius: 8, marginBottom: 16, boxShadow: '0 2px 8px #eee' }}>
+        <h3>Địa chỉ lấy mẫu tại nhà</h3>
+        <Form
+          form={addressForm}
+          layout="vertical"
+          style={{ maxWidth: 900 }}
+          initialValues={{ city: undefined, district: undefined }}
+        >
+          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+            <Form.Item
+              name="addressDetail"
+              label="Số nhà, đường, xã/phường..."
+              rules={[{ required: true, message: 'Vui lòng nhập địa chỉ chi tiết' }]}
+              style={{ flex: 2, minWidth: 220, marginBottom: 0 }}
+            >
+              <Input placeholder="Nhập số nhà, đường, xã/phường..." />
+            </Form.Item>
+            <Form.Item
+              name="city"
+              label="Tỉnh/Thành phố"
+              rules={[{ required: true, message: 'Vui lòng chọn tỉnh/thành phố' }]}
+              style={{ flex: 1, minWidth: 180, marginBottom: 0 }}
+            >
+              <Select
+                showSearch
+                placeholder="Chọn tỉnh/thành phố"
+                loading={loadingAreas}
+                onChange={handleCityChange}
+                filterOption={(input, option) =>
+                  (option?.children ?? '').toLowerCase().includes(input.toLowerCase())
+                }
+              >
+                {cityOptions.map(city => (
+                  <Select.Option key={city} value={city}>{city}</Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Form.Item
+              name="district"
+              label="Quận/Huyện"
+              rules={[{ required: true, message: 'Vui lòng chọn quận/huyện' }]}
+              style={{ flex: 1, minWidth: 180, marginBottom: 0 }}
+            >
+              <Select
+                showSearch
+                placeholder="Chọn quận/huyện"
+                loading={loadingAreas}
+                disabled={!addressForm.getFieldValue('city')}
+                filterOption={(input, option) =>
+                  (option?.children ?? '').toLowerCase().includes(input.toLowerCase())
+                }
+              >
+                {districtOptions.map(district => (
+                  <Select.Option key={district} value={district}>{district}</Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </div>
+        </Form>
+      </div>
+    )}
+
+    {/* Hiển thị danh sách mẫu */}
+    {samples.map((sample, index) => {
+      const participant = participants[sample.participantIndex];
+      return (
+        <div key={index} className="sample-info">
+          <h3>Mẫu cho {sample.participantType}</h3>
+          {participant && participant.citizenId ? (
+            <div
+              className="participant-details"
+              style={{
+                marginTop: '10px',
+                padding: '10px',
+                background: '#e8f5e8',
+                borderRadius: '5px',
+                border: '1px solid #4caf50'
+              }}
+            >
+              <p><strong>Họ tên:</strong> {participant.name}</p>
+              <p><strong>CCCD:</strong> {participant.citizenId}</p>
+              <p><strong>Ngày sinh:</strong> {participant.birthDate}</p>
+              <div style={{ marginTop: '10px' }}>
+                <label><strong>Chọn loại mẫu:</strong></label>
+                <select
+                  value={sample.sampleType}
+                  onChange={(e) => handleSampleTypeChange(index, e.target.value)}
+                  className="styled-select"
+                  style={{ marginTop: '5px', width: '100%' }}
+                >
+                  <option value="BLOOD">Máu</option>
+                  <option value="SALIVA">Nước bọt</option>
+                  <option value="HAIR">Tóc</option>
+                  <option value="NAIL">Móng tay</option>
+                  <option value="BUCCAL">Niêm mạc miệng</option>
+                </select>
               </div>
             </div>
+          ) : (
+            <div
+              style={{
+                marginTop: '10px',
+                padding: '10px',
+                background: '#fff3cd',
+                borderRadius: '5px',
+                border: '1px solid #ffeaa7'
+              }}
+            >
+              <p><em>Vui lòng nhập thông tin người tham gia ở bước trước</em></p>
+            </div>
           )}
+        </div>
+      );
+    })}
+
+    {/* Nút điều hướng */}
+    <div className="form-actions">
+      <button className="btn-secondary" onClick={prevStep}>Quay lại</button>
+      <button className="btn-primary" onClick={async () => {
+        try {
+          // Nếu là lấy mẫu tại nhà -> validate & build địa chỉ
+          if (appointment.deliveryMethod === "HOME_DELIVERY" || appointment.deliveryMethod === "HOME_COLLECTION") {
+            await addressForm.validateFields();
+            const addr = addressForm.getFieldsValue();
+            const fullAddress = `${addr.addressDetail}, ${addr.district}, ${addr.city}`;
+            setAppointment(prev => ({
+              ...prev,
+              collectionAddress: fullAddress
+            }));
+          }
+          nextStep();
+        } catch {
+          setValidateMessage("Vui lòng nhập đầy đủ địa chỉ lấy mẫu.");
+        }
+      }}
+        disabled={sampleErrors.some(e => Object.keys(e).length > 0)}>
+        Tiếp theo
+      </button>
+    </div>
+  </div>
+)}
+
           {step === 5 && (
             <div className="form-section">
               <h2>5. Xác nhận thông tin</h2>
               <div className="confirmation-card">
-                <p><strong>Loại hồ sơ:</strong> {caseFile.caseType}</p>
+                <p><strong>Loại hồ sơ:</strong> {caseFile.caseType === 'ADMINISTRATIVE' ? 'Hành chính' : 'Dân sự'}</p>
                 <p><strong>Dịch vụ:</strong> {selectedService ? selectedService.serviceName : ''}</p>
                 <p><strong>Lịch hẹn:</strong> {appointment.appointmentDate || 'Chưa chọn ngày'}, {appointment.appointmentTime || 'Chưa chọn giờ'}</p>
                 <p><strong>Người tham gia:</strong> {participants.map(p => `${p.name} (${p.participantType})`).join(', ')}</p>
                                  <p><strong>Loại mẫu:</strong> {samples.map(s => `${s.participantType} (${s.sampleType})`).join(', ')}</p>
-                <p><strong>Hình thức lấy mẫu:</strong> {appointment.deliveryMethod}</p>
+             <p>
+  <strong>Hình thức lấy mẫu:</strong>{" "}
+  
+  {appointment.deliveryMethod === "SELF_DROP_OFF"
+    ? "Tại cơ sở"
+    : appointment.deliveryMethod === "HOME_COLLECTION"
+    ? "Tại nhà"
+    : appointment.deliveryMethod === "HOME_DELIVERY"
+    ? "Nhân viên đến lấy mẫu"
+    : ""}
+</p>
+ {/* <p><strong>Địa chỉ:</strong> {addressForm ? addressForm : ''}</p> */}
+
               </div>
               <div className="form-actions">
                 <button className="btn-secondary" onClick={prevStep}>Quay lại</button>
@@ -812,7 +897,7 @@ function AppointmentBooking() {
               </div>
               <label>Phương thức thanh toán:</label>
               <select value={appointment.paymentMethod} onChange={handlePaymentMethodChange} className="styled-select">
-                <option value="">-- Chọn phương thức --</option>
+               
                 <option value="vnpay">VNPay</option>
               </select>
               <div className="form-actions" style={{ marginTop: '20px' }}>
