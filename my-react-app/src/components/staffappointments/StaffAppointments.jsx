@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Tooltip } from 'antd';
 import apiService from '../../service/api';
 import './StaffAppointments.css';
 import moment from 'moment';
@@ -27,7 +28,6 @@ function StaffAppointments() {
   const getAppointmentStatusText = (status) => {
     const statusMap = {
       'SCHEDULED': 'Đã lên lịch',
-      'CONFIRMED': 'Đã xác nhận',
       'IN_PROGRESS': 'Đang thực hiện',
       'COMPLETED': 'Hoàn thành',
       'CANCELLED': 'Đã hủy'
@@ -37,8 +37,21 @@ function StaffAppointments() {
 
   const getAllowedStatusOptions = (currentStatus) => {
     const currentIndex = STATUS_OPTIONS.indexOf(currentStatus);
-    if (currentIndex === -1) return [];
-    return STATUS_OPTIONS.slice(currentIndex); // chỉ lấy từ trạng thái hiện tại trở đi
+    if (currentIndex === -1) return STATUS_OPTIONS;
+    
+    // Logic hợp lý cho việc thay đổi status
+    switch (currentStatus) {
+      case 'SCHEDULED':
+        return ['SCHEDULED', 'IN_PROGRESS', 'CANCELLED'];
+      case 'IN_PROGRESS':
+        return ['IN_PROGRESS', 'COMPLETED', 'CANCELLED'];
+      case 'COMPLETED':
+        return ['COMPLETED']; // Không thể thay đổi sau khi hoàn thành
+      case 'CANCELLED':
+        return ['CANCELLED', 'IN_PROGRESS']; // Có thể xác nhận lại sau khi hủy
+      default:
+        return STATUS_OPTIONS;
+    }
   };
 
   // Hàm chuyển đổi trạng thái thu mẫu sang tiếng Việt
@@ -48,15 +61,36 @@ function StaffAppointments() {
       'TRAVELING': 'Đang di chuyển',
       'ARRIVED': 'Đã đến',
       'COLLECTING': 'Đã thu lại kit',
-      'COMPLETED': 'Hoàn thành'
     };
     return statusMap[status] || status;
   };
 
-  const getAllowedCollectionStatus = (currentStatus) => {
+  const getAllowedCollectionStatus = (currentStatus, deliveryMethod = '') => {
+    if (deliveryMethod === 'SELF_DROP_OFF') {
+      if (currentStatus === 'ASSIGNED') {
+        return ['ASSIGNED', 'COLLECTING'];
+      }
+      if (currentStatus === 'COLLECTING') {
+        return ['COLLECTING'];
+      }
+      return [currentStatus];
+  }
   const currentIndex = COLLECTION_STATUS_OPTIONS.indexOf(currentStatus);
-  if (currentIndex === -1) return [];
-  return COLLECTION_STATUS_OPTIONS.slice(currentIndex); // chỉ lấy từ trạng thái hiện tại trở đi
+  if (currentIndex === -1) return COLLECTION_STATUS_OPTIONS;
+  
+  // Logic hợp lý cho việc thay đổi collection status
+  switch (currentStatus) {
+    case 'ASSIGNED':
+      return ['ASSIGNED', 'TRAVELING'];
+    case 'TRAVELING':
+      return ['TRAVELING', 'ARRIVED'];
+    case 'ARRIVED':
+      return ['ARRIVED', 'COLLECTING'];
+    case 'COLLECTING':
+      return ['COLLECTING'];
+    default:
+      return COLLECTION_STATUS_OPTIONS;
+  }
 };
 
   // Hàm chuyển đổi phương thức lấy mẫu sang tiếng Việt
@@ -265,7 +299,7 @@ function StaffAppointments() {
   };
 
 
-  const onAddParticipant = async (values) => {
+    const onAddParticipant = async (values) => {
     if (!selectedParticipants?.appointmentId) {
       setAddParticipantError('Không xác định được lịch hẹn!');
       return;
@@ -278,10 +312,11 @@ function StaffAppointments() {
         ...p,
         appointmentId: selectedParticipants.appointmentId,
         birthDate: p.birthDate ? moment(p.birthDate).format('YYYY-MM-DD') : null,
-      })); await apiService.staff.addParticipants(payload);
+      }));
+      await apiService.staff.addParticipants(payload);
       setAddParticipantSuccess('Thêm người tham gia thành công!');
-      await handleShowParticipants(selectedParticipants.appointmentId);
       setShowAddParticipantForm(false);
+      await handleShowParticipants(selectedParticipants.appointmentId);
     } catch (err) {
       const msg = err?.response?.data?.message || err?.message;
       setAddParticipantError(msg || 'Thêm người tham gia thất bại!');
@@ -428,7 +463,8 @@ function StaffAppointments() {
 
   return (
     <div className="staff-appointments-container">
-      <h2>📅 Danh sách phiếu xét nghiệm ADN</h2>
+             <h2>📅 Danh sách phiếu xét nghiệm ADN</h2>
+       
       <div style={{ display: 'flex', gap: 16, marginBottom: 16, alignItems: 'center' }}>
         <div>
           <label>Lọc trạng thái: </label>
@@ -506,43 +542,62 @@ function StaffAppointments() {
                   <td>{item.appointmentDate}</td>
                   <td>{item.appointmentTime}</td>
                   <td onClick={e => e.stopPropagation()}>
-                    <select
-                      value={item.appointmentStatus || ''}
-                      disabled={updatingId === item.appointmentId}
-                      onChange={e =>
-                        handleStatusOrCollectionChange(item.appointmentId, 'appointmentStatus', e.target.value)
-                      }
-                      style={{ minWidth: '120px' }}
-                    >
-                      {getAllowedStatusOptions(item.appointmentStatus).map(status => (
-                        <option key={status} value={status}>
-                          {getAppointmentStatusText(status)}
-                        </option>
-                      ))}
+                                         <select
+                       value={item.appointmentStatus || ''}
+                       disabled={updatingId === item.appointmentId}
+                       onChange={e =>
+                         handleStatusOrCollectionChange(item.appointmentId, 'appointmentStatus', e.target.value)
+                       }
+                       style={{ minWidth: '120px' }}
+                     >
+                                             {getAllowedStatusOptions(item.appointmentStatus).map(status => (
+                         <option key={status} value={status}>
+                           {getAppointmentStatusText(status)}
+                           {status === item.appointmentStatu}
+                         </option>
+                       ))}
                     </select>
                   </td>
 
                   <td onClick={e => e.stopPropagation()}>
                     <select
                       value={item.collectionStatus || ''}
-                      disabled={updatingId === item.appointmentId}
+                      disabled={updatingId === item.appointmentId || item.appointmentStatus !== 'IN_PROGRESS'}
                       onChange={e => handleStatusOrCollectionChange(item.appointmentId, 'collectionStatus', e.target.value)}
                       style={{ minWidth: '120px' }}
+                      title={item.appointmentStatus !== 'IN_PROGRESS' ? 'Chỉ chỉnh khi lịch hẹn đang thực hiện' : 'Có thể quay lại trạng thái trước đó nếu chọn nhầm'}
                     >
-                      
-                      {getAllowedCollectionStatus(item.collectionStatus).map(status => (
-                        <option key={status} value={status} disabled={status === 'ARRIVED'}>{getCollectionStatusText(status) }</option>
+                      {getAllowedCollectionStatus(item.collectionStatus, item.deliveryMethod).map(status => (
+                        <option key={status} value={status} disabled={status === 'ARRIVED'}>
+                          {getCollectionStatusText(status)}
+                          {status === item.collectionStatus}
+                        </option>
                       ))}
                     </select>
                   </td>
                   <td>{item.serviceName}</td>
-                  <td>{getDeliveryMethodText(item.deliveryMethod)}</td>
+                  <td>
+                    {(item.deliveryMethod === 'HOME_COLLECTION' || item.deliveryMethod === 'HOME_DELIVERY') ? (
+                      <Tooltip
+                        overlayInnerStyle={{ fontSize: 20, padding: 28, lineHeight: 1.7, minWidth: 320 }}
+                        title={
+                          <div style={{ minWidth: 320 }}>
+                            <div style={{ fontWeight: 200, marginBottom: 8, fontSize: 18 }}>Địa chỉ: <span style={{ fontWeight: 200 }}>{item.collectionAddress || item.address || '-'}</span></div>
+                          </div>
+                        }
+                      >
+                        <span style={{ cursor: 'pointer', color: '#1890ff', fontWeight: 200, fontSize: 16 }}>
+                          {getDeliveryMethodText(item.deliveryMethod)} <i className="fa fa-info-circle" />
+                        </span>
+                      </Tooltip>
+                    ) : getDeliveryMethodText(item.deliveryMethod)}
+                  </td>
                   <td>{getAppointmentTypeText(item.appointmentType)}</td>
                   <td>
                     <button
                       onClick={() => handleShowParticipants(item.appointmentId)}
                       disabled={item.appointmentStatus === 'SCHEDULED'}
-                      title={item.appointmentStatus === 'SCHEDULED' ? 'Chỉ xem participant khi đã xác nhận' : ''}
+                      title={item.appointmentStatus === 'SCHEDULED' ? 'Chỉ xem participant khi đang thực hiện' : ''}
                     >
                       Xem participant
                     </button>
@@ -598,7 +653,7 @@ function StaffAppointments() {
             const appointment = appointments.find(a => a.appointmentId === selectedParticipants?.appointmentId);
             return (
               (appointment?.appointmentStatus === 'IN_PROGRESS' || appointment?.appointmentStatus === 'COMPLETED') &&
-              appointment?.collectionStatus === 'COMPLETED'
+              appointment?.collectionStatus === 'COLLECTING'
             );
           })()
         }

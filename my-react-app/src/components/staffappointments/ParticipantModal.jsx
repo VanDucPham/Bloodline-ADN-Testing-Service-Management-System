@@ -42,34 +42,40 @@ function ParticipantModal({
   allowShowSample,
   allowAddParticipant,
   service, // Thêm prop service để lấy thông tin participantType
+  // Thêm các props còn thiếu
+  showAddParticipantForm,
+  onShowAddParticipantForm,
+  addParticipantLoading,
+  addParticipantError,
+  addParticipantSuccess,
+  participantCount,
 }) {
   const [sampleForm] = Form.useForm();
 
-  // State quản lý hiển thị form thêm participant
-  const [showAddParticipantForm, setShowAddParticipantForm] = useState(false);
+  // State quản lý hiển thị form thêm participant - sử dụng prop từ parent
+  // const [showAddParticipantForm, setShowAddParticipantForm] = useState(false);
 
   // State quản lý form thuần thêm nhiều participant
   const [newParticipants, setNewParticipants] = useState([]);
 
-  // Khởi tạo form dựa trên participantsType của service
-  useEffect(() => {
-    if (service && service.participantsType && service.participantsType.length > 0) {
-      const initialParticipants = service.participantsType.map(participantType => ({
-        name: '',
-        relationship: participantType.participantName, // Sử dụng participantName làm relationship
-        gender: '',
-        citizenId: '',
-        address: '',
-        birthDate: '',
-      }));
-      setNewParticipants(initialParticipants);
-    } else {
-      // Fallback nếu không có participantsType
-      setNewParticipants([
-        { name: '', relationship: '', gender: '', citizenId: '', address: '', birthDate: '' },
-      ]);
-    }
-  }, [service]);
+         // Khởi tạo form dựa trên participantsType của service
+   useEffect(() => {
+      if (service && service.participantsType && service.participantsType.length > 0) {
+        const initialParticipants = service.participantsType.map(participantType => ({
+          name: '',
+          relationship: participantType.participantType, // Sử dụng participantType làm relationship
+          citizenId: '',
+          address: '',
+          birthDate: '',
+        }));
+        setNewParticipants(initialParticipants);
+      } else {
+        // Fallback nếu không có participantsType
+        setNewParticipants([
+          { name: '', relationship: '', citizenId: '', address: '', birthDate: '' },
+        ]);
+      }
+    }, [service]);
 
   // Đồng bộ dữ liệu khi chỉnh sửa sample
   useEffect(() => {
@@ -100,7 +106,7 @@ function ParticipantModal({
     if (!service || !service.participantsType || service.participantsType.length === 0) {
       setNewParticipants((prev) => [
         ...prev,
-        { name: '', relationship: '', gender: '', citizenId: '', address: '', birthDate: '' },
+        { name: '', relationship: '', citizenId: '', address: '', birthDate: '' },
       ]);
     }
   };
@@ -112,44 +118,45 @@ function ParticipantModal({
     }
   };
 
-  // Xử lý submit form thuần thêm nhiều participant
-  const handleAddParticipants = async (e) => {
-    e.preventDefault();
-    // Validate đơn giản
-    for (const p of newParticipants) {
-      if (
-        !p.name.trim() ||
-        !p.relationship.trim() ||
-        !p.gender ||
-        !p.citizenId.trim() ||
-        !p.address.trim() ||
-        !p.birthDate
-      ) {
-        alert('Vui lòng điền đầy đủ thông tin tất cả người tham gia');
-        return;
+     // Xử lý submit form thuần thêm nhiều participant
+   const handleAddParticipants = async (e) => {
+     e.preventDefault();
+           // Validate đơn giản
+      for (const p of newParticipants) {
+        if (
+          !p.name.trim() ||
+          !p.relationship.trim() ||
+          
+          !p.citizenId.trim() ||
+          !p.address.trim() ||
+          !p.birthDate
+        ) {
+          alert('Vui lòng điền đầy đủ thông tin tất cả người tham gia');
+          return;
+        }
       }
-    }
-    try {
-      await onAddParticipant(newParticipants);
-      // Reset form sau khi thêm thành công
-      if (service && service.participantsType && service.participantsType.length > 0) {
-        const initialParticipants = service.participantsType.map(participantType => ({
-          name: '',
-          relationship: participantType.participantName,
-          gender: '',
-          citizenId: '',
-          address: '',
-          birthDate: '',
-        }));
-        setNewParticipants(initialParticipants);
-      } else {
-        setNewParticipants([{ name: '', relationship: '', gender: '', citizenId: '', address: '', birthDate: '' }]);
-      }
-      setShowAddParticipantForm(false); // Ẩn form sau khi thêm thành công
-    } catch (error) {
-      alert('Lỗi khi thêm participant');
-    }
-  };
+      try {
+        await onAddParticipant(newParticipants);
+       
+       // Reset form sau khi thêm thành công
+        if (service && service.participantsType && service.participantsType.length > 0) {
+          const initialParticipants = service.participantsType.map(participantType => ({
+            name: '',
+            relationship: participantType.participantType,
+            citizenId: '',
+            address: '',
+            birthDate: '',
+          }));
+          setNewParticipants(initialParticipants);
+        } else {
+         setNewParticipants([{ name: '', relationship: '', citizenId: '', address: '', birthDate: '' }]);
+       }
+       // Form sẽ được ẩn bởi parent component
+     } catch (error) {
+       console.error('Error in handleAddParticipants:', error);
+       alert('Lỗi khi thêm participant: ' + (error.message || 'Không rõ lỗi'));
+     }
+   };
 
   // Cột bảng participant
   const columns = [
@@ -164,7 +171,6 @@ function ParticipantModal({
     { title: 'Quan hệ', dataIndex: 'relationship', key: 'relationship' },
     { title: 'Địa chỉ', dataIndex: 'address', key: 'address', responsive: ['md'] },
     { title: 'Ngày sinh', dataIndex: 'birthDate', key: 'birthDate' },
-    { title: 'Giới tính', dataIndex: 'gender', key: 'gender' },
     { title: 'CCCD', dataIndex: 'citizenId', key: 'citizenId', responsive: ['md'] },
     {
       title: 'Hành động',
@@ -202,36 +208,52 @@ function ParticipantModal({
           <b>Danh sách người tham gia</b>
         </span>
       }
-      centered
-      bodyStyle={{ paddingTop: 12 }}
+             centered
+       styles={{ body: { paddingTop: 12 } }}
     >
-      {/* Nút thêm participant bật form */}
-      <Button
-        type="primary"
-        style={{ marginBottom: 12 }}
-        onClick={() => setShowAddParticipantForm(true)}
-        disabled={!allowAddParticipant}
-        title={!allowAddParticipant ? 'Chỉ thêm được người tham gia khi thực hiện' : ''}
-      >
-        Thêm participant
-      </Button>
+                           {/* Nút thêm participant bật form - chỉ hiển thị khi chưa có participant */}
+        {(!participants || participants.length === 0) && (
+          <Button
+            type="primary"
+            style={{ marginBottom: 12 }}
+            onClick={() => onShowAddParticipantForm()}
+            disabled={!allowAddParticipant}
+            title={!allowAddParticipant ? 'Chỉ thêm được người tham gia khi thực hiện' : ''}
+          >
+            Thêm participant
+          </Button>
+        )}
 
       {/* Form thêm participant chỉ hiển thị khi bật */}
       {showAddParticipantForm && (
         <div>
-          {service && service.participantsType && service.participantsType.length > 0 ? (
-            <div style={{ marginBottom: 16 }}>
-              <Alert 
-                message={`Dịch vụ này yêu cầu ${service.participantsType.length} người tham gia: ${service.participantsType.map(pt => pt.participantName).join(', ')}`} 
-                type="info" 
-                showIcon 
-              />
-            </div>
-          ) : (
+                     {service && service.participantsType && service.participantsType.length > 0 ? (
+             <div style={{ marginBottom: 16 }}>
+               <Alert 
+                 message={`Dịch vụ này yêu cầu ${service.participantsType.length} người tham gia: ${service.participantsType.map(pt => pt.participantType).join(', ')}`} 
+                 type="info" 
+                 showIcon 
+               />
+             </div>
+           ) : (
             <p>Không có participant nào! Hãy thêm participant</p>
           )}
           
-          <form onSubmit={handleAddParticipants} className="participant-form">
+                     {/* Hiển thị loading và error/success messages */}
+           {addParticipantLoading && (
+             <div style={{ marginBottom: 16, textAlign: 'center' }}>
+               <Spin size="large" />
+               <div style={{ marginTop: 8 }}>Đang thêm người tham gia...</div>
+             </div>
+           )}
+           {addParticipantError && (
+             <Alert message={addParticipantError} type="error" showIcon style={{ marginBottom: 16 }} />
+           )}
+           {addParticipantSuccess && (
+             <Alert message={addParticipantSuccess} type="success" showIcon style={{ marginBottom: 16 }} />
+           )}
+           
+           <form onSubmit={handleAddParticipants} className="participant-form">
             {newParticipants.map((p, idx) => (
               <div key={idx} className="participant-row" style={{ marginBottom: 10 }}>
                 <input
@@ -250,17 +272,7 @@ function ParticipantModal({
                   readOnly={service && service.participantsType && service.participantsType.length > 0}
                   style={service && service.participantsType && service.participantsType.length > 0 ? { backgroundColor: '#f5f5f5' } : {}}
                 />
-                <select
-                  name="gender"
-                  value={p.gender}
-                  onChange={(e) => handleNewParticipantChange(idx, e)}
-                  required
-                >
-                  <option value="">Giới tính</option>
-                  <option value="MALE">Nam</option>
-                  <option value="FEMALE">Nữ</option>
-                  <option value="OTHER">Khác</option>
-                </select>
+                
                 <input
                   name="citizenId"
                   placeholder="CMND/CCCD"
@@ -304,16 +316,20 @@ function ParticipantModal({
                 )}
               </div>
             ))}
-            <button type="submit" style={{ marginTop: 10 }}>
-              Lưu người tham gia
-            </button>
-            <button
-              type="button"
-              onClick={() => setShowAddParticipantForm(false)}
-              style={{ marginLeft: 8 }}
-            >
-              Hủy
-            </button>
+                         <button 
+               type="submit" 
+               style={{ marginTop: 10 }}
+               disabled={addParticipantLoading}
+             >
+               {addParticipantLoading ? 'Đang lưu...' : 'Lưu người tham gia'}
+             </button>
+                         <button
+               type="button"
+               onClick={() => onShowAddParticipantForm()}
+               style={{ marginLeft: 8 }}
+             >
+               Hủy
+             </button>
           </form>
         </div>
       )}

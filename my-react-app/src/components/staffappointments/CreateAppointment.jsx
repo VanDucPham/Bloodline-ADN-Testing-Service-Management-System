@@ -164,10 +164,10 @@ function CreateAppointment() {
           </select>
         </div>
         {/* Loại hồ sơ sẽ tự động đồng bộ với loại lịch hẹn, không cho chọn riêng */}
-        <div>
-          <label>Loại hồ sơ:</label>
-          <input type="text" value={caseFile.caseType ? (APPOINTMENT_TYPES.find(t => t.value === caseFile.caseType)?.label || caseFile.caseType) : ''} readOnly style={{ background: '#f0f0f0' }} />
-        </div>
+        {/* <div>
+          <label></label>
+          <input type="hidden" value={caseFile.caseType ? (APPOINTMENT_TYPES.find(t => t.value === caseFile.caseType)?.label || caseFile.caseType) : ''} readOnly style={{ background: '#f0f0f0' }} />
+        </div> */}
         {/* <div>
           <label>Ngày hẹn:</label>
           <input type="date" name="appointmentDate" value={form.appointmentDate} onChange={handleChange} required />
@@ -176,23 +176,23 @@ function CreateAppointment() {
           <label>Giờ hẹn:</label>
           <input type="time" name="appointmentTime" value={form.appointmentTime} onChange={handleChange} required />
         </div> */}
-        <div>
-          <label>Phương thức lấy mẫu:</label>
-          <input type="text" value="Đến cơ sở lấy mẫu cơ sở" readOnly />
+        {/* <div>
+          <label></label>
+          <input type="hidden" value="Đến cơ sở lấy mẫu cơ sở" readOnly />
         </div>
 
         <div>
-          <label>Trạng thái phiếu xét nghiệm:</label>
+          <label></label>
 
-           <input type="text" value="Đã đặt" readOnly />
+           <input type="hidden" value="Đã đặt" readOnly />
 
 
         </div>
         <div>
-          <label>Trạng thái thu mẫu:</label>
+          <label></label>
 
-           <input type="text" value="Đã phân công" readOnly />
-        </div>
+           <input type="hidden" value="Đã phân công" readOnly />
+        </div> */}
 
         <div>
           <label>Ghi chú:</label>

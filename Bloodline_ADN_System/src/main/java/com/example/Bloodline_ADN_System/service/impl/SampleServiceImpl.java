@@ -171,7 +171,6 @@ public class SampleServiceImpl implements SampleService {
             dto.setParticipantCitizenId(p.getCitizenId());
 
             dto.setParticipantName(p.getName());
-            dto.setGender(p.getGender().name());
         }
 
         return dto;

@@ -1,7 +1,9 @@
 package com.example.Bloodline_ADN_System.dto.managerCaseFile;
 
 import com.example.Bloodline_ADN_System.Entity.Appointment;
+import com.example.Bloodline_ADN_System.Entity.ParticipantType;
 import com.example.Bloodline_ADN_System.Entity.Payment;
+import com.example.Bloodline_ADN_System.Entity.Service;
 import com.example.Bloodline_ADN_System.dto.noneWhere.SampleDTO;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -29,6 +31,7 @@ public class AppointmentDTO {
     // Thông tin dịch vụ
     private Long serviceId;
     private String serviceName;
+    private List<ParticipantType> ParticipantType;
 
     // Kiểu lịch hẹn (Hành chính / Dịch vụ)
     private Appointment.AppointmentType appointmentType;

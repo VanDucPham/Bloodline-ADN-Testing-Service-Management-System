@@ -11,6 +11,7 @@ import com.example.Bloodline_ADN_System.repository.FeedbackRepository;
 import com.example.Bloodline_ADN_System.repository.CaseFileRepository;
 import com.example.Bloodline_ADN_System.repository.ParticipantTypeRepository;
 import com.example.Bloodline_ADN_System.service.ServiceList;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,17 +38,20 @@ public class ServiceListImpl implements ServiceList {
     }
 
     // Lấy toàn bộ dịch vụ
+    @Transactional(readOnly = true)
     public List<ServiceManagerDTO> getAllServices() {
         return serviceRepository.findAll().stream().map(this::toDTO).collect(Collectors.toList());
     }
 
     // Lấy dịch vụ theo ID
+    @Transactional(readOnly = true)
     public ServiceManagerDTO getServiceById(Long id) {
         return toDTO(serviceRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Dịch vụ không tồn tại")));
     }
 
     // Tạo dịch vụ mới
+    @Transactional
     public ServiceManagerDTO createService(ServiceManagerDTO dto) {
         if (serviceRepository.existsByServiceName(dto.getServiceName())) {
             throw new IllegalArgumentException("Tên dịch vụ đã tồn tại");

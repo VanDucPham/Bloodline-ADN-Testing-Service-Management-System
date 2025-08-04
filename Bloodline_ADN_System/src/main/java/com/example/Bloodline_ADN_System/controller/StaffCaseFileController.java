@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
 import java.time.LocalDate;
@@ -36,6 +37,7 @@ public class StaffCaseFileController {
     private final ResultService resultService;
     private final PaymentService paymentService;
     @GetMapping("/appointment")
+    @Transactional(readOnly = true)
     public ResponseEntity<List<AppointmentDTO>> getAppointmentsForStaff(
             @RequestParam(required = false) Appointment.AppointmentStatus status,
             @RequestParam(required = false) Appointment.AppointmentType type,
@@ -48,12 +50,14 @@ public class StaffCaseFileController {
     }
 
     @GetMapping("/appointment/{id}")
+    @Transactional(readOnly = true)
     public ResponseEntity<AppointmentDTO> getAppointmentById(@PathVariable Long id) {
         AppointmentDTO appointment = appointmentService.getAppointmentById(id);
         return ResponseEntity.ok(appointment);
     }
 
     @GetMapping("/service/{id}")
+    @Transactional(readOnly = true)
     public ResponseEntity<ServiceManagerDTO> getServiceById(@PathVariable Long id) {
         ServiceManagerDTO service = serviceList.getServiceById(id);
         return ResponseEntity.ok(service);
@@ -70,6 +74,7 @@ public class StaffCaseFileController {
     }
 
     @GetMapping("/participant/{id}")
+    @Transactional(readOnly = true)
     public ResponseEntity<List<ParticipantResponeDTO>> getParticipantsByAppointment(@PathVariable("id") Long id) {
         List<ParticipantResponeDTO> list = participantService.getParticipantByAppointmentId(id);
         return ResponseEntity.ok(list);
@@ -82,6 +87,7 @@ public class StaffCaseFileController {
     }
 
     @GetMapping("/sample/get/{id}")
+    @Transactional(readOnly = true)
     public ResponseEntity<SampleDTO> getSampleByParticipant(@PathVariable Long id){
         SampleDTO sample = sampleService.getSampleByParticipantId(id);
         return ResponseEntity.ok(sample);
@@ -95,11 +101,13 @@ public class StaffCaseFileController {
     }
 
     @GetMapping("/services")
+    @Transactional(readOnly = true)
     public List<ServiceManagerDTO> getAllService() {
         return serviceList.getAllServices();
     }
 
     @GetMapping ("/profile")
+    @Transactional(readOnly = true)
     public ResponseEntity<UserUpdateDTO> getProfile(Authentication authentication) {
         String email = authentication.getName();
         return ResponseEntity.ok(userService.getUserByEmail(email));
