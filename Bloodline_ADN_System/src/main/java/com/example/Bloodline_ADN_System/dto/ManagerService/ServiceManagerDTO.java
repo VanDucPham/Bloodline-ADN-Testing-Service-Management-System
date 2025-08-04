@@ -14,7 +14,7 @@ public class ServiceManagerDTO {
     private Long serviceId;
     private String serviceName;
     private String serviceDescription;
-    private Integer limitPeople;
+
     private List<ParticipantTypeDTO> participantsType; // Danh sách tên đối tượng (Cha, Mẹ, ...)
     private Double servicePrice;
     private String imageUrl;

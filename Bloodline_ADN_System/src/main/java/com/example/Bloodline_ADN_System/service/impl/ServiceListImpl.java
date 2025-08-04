@@ -58,7 +58,7 @@ public class ServiceListImpl implements ServiceList {
         service.setServiceName(dto.getServiceName());
         service.setServicePrice(dto.getServicePrice());
         service.setImageUrl(dto.getImageUrl());
-        service.setLimitPeople(dto.getLimitPeople());
+
 
         // Lấy danh sách participant type từ DB
         List<ParticipantType> participantTypes = dto.getParticipantsType().stream()
@@ -84,7 +84,7 @@ public class ServiceListImpl implements ServiceList {
         if (isInUse) {
             // Nếu đang sử dụng -> chặn chỉnh sửa các trường nhạy cảm
             if (!updateDTO.getServiceName().equals(service.getServiceName()) ||
-                    !updateDTO.getLimitPeople().equals(service.getLimitPeople()) ||
+
                     !updateDTO.getServicePrice().equals(service.getServicePrice()) ||
                     !updateDTO.getParticipantsType().stream().map(ParticipantTypeDTO::getId).collect(Collectors.toSet())
                             .equals(service.getParticipantType().stream().map(ParticipantType::getParticipantId).collect(Collectors.toSet()))) {
@@ -102,7 +102,7 @@ public class ServiceListImpl implements ServiceList {
                 throw new RuntimeException("Tên dịch vụ đã tồn tại");
             }
 
-            service.setLimitPeople(updateDTO.getLimitPeople());
+
             service.setImageUrl(updateDTO.getImageUrl());
             service.setServiceName(updateDTO.getServiceName());
             service.setServiceDescription(updateDTO.getServiceDescription());
@@ -158,7 +158,7 @@ public class ServiceListImpl implements ServiceList {
                 service.getServiceId(),
                 service.getServiceName(),
                 service.getServiceDescription(),
-                service.getLimitPeople(),
+               
                 service.getParticipantType().stream()
                         .map(pt -> new ParticipantTypeDTO(pt.getParticipantId(), pt.getParticipantName()))
                         .collect(Collectors.toList()),
