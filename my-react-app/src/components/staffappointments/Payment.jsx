@@ -16,7 +16,6 @@ function PaymentPage() {
     const [appointmentInfo, setAppointmentInfo] = useState(null);
     const [serviceInfo, setServiceInfo] = useState(null);
 
-    const [paymentMethod, setPaymentMethod] = useState('');
     const [amount, setAmount] = useState('');
 
     const [loading, setLoading] = useState(false);
@@ -24,6 +23,8 @@ function PaymentPage() {
 
     const [error, setError] = useState('');
     const [successMsg, setSuccessMsg] = useState('');
+    const [paymentMethod, setPaymentMethod] = useState('CASH'); // 'CASH' là mặc định
+
 
     useEffect(() => {
         async function fetchData() {
@@ -102,7 +103,6 @@ function PaymentPage() {
             {appointmentInfo && (
                 <div style={{ marginBottom: 24 }}>
                     <p><strong>Dịch vụ:</strong> {serviceInfo?.serviceName || 'Chưa có dữ liệu'}</p>
-                    <p><strong>Giá tiền:</strong> {serviceInfo?.servicePrice ? Number(serviceInfo.servicePrice).toLocaleString() + ' VNĐ' : 'Chưa có dữ liệu'}</p>
                     <p><strong>Ngày hẹn:</strong> {appointmentInfo.appointmentDate || 'Chưa có dữ liệu'}</p>
                     <p><strong>Giờ hẹn:</strong> {appointmentInfo.appointmentTime || 'Chưa có dữ liệu'}</p>
 
@@ -110,23 +110,22 @@ function PaymentPage() {
             )}
 
             <form onSubmit={handleSubmit}>
+                <label htmlFor="paymentMethod" style={{ fontWeight: 'bold', marginBottom: 4, display: 'block' }}>
+                    Phương thức thanh toán
+                </label>
                 <select
                     value={paymentMethod}
                     onChange={e => setPaymentMethod(e.target.value)}
                     required
                     style={{ width: '100%', padding: 8, marginTop: 4 }}
                 >
-                    <option value="">-- Chọn phương thức --</option>
-                    {paymentOptions.map(opt => (
-                        <option key={opt.value} value={opt.value}>
-                            {opt.label}
-                        </option>
-                    ))}
+                    {/* Chỉ có 1 lựa chọn thanh toán là Tiền mặt */}
+                    <option value="CASH">Tiền mặt</option>
                 </select>
 
 
                 <div style={{ marginBottom: 12 }}>
-                    <label>Số tiền (VNĐ)</label>
+                    <label style={{ fontWeight: 'bold', marginBottom: 4, display: 'block' }}>Số tiền (VNĐ)</label>
                     <input
                         type="number"
                         value={amount}

@@ -2,6 +2,7 @@ package com.example.Bloodline_ADN_System.Entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,11 +45,14 @@ public class Service {
     private String imageUrl;
 
     @OneToMany(mappedBy = "service", cascade = CascadeType.ALL , fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<CaseFile> caseFiles = new ArrayList<>();
 
     @OneToMany(mappedBy = "service", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Feedback> feedbacks = new ArrayList<>();
 
     @OneToMany(mappedBy = "service", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Appointment> appointments = new ArrayList<>();
 }

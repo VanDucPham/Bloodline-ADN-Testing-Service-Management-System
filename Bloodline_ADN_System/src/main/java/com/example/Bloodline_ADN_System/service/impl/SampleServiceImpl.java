@@ -60,7 +60,7 @@ public class SampleServiceImpl implements SampleService {
             Sample sample = new Sample();
             sample.setParticipant(participant);
             sample.setSampleType(dto.getSampleType());
-            sample.setCollectionDateTime(LocalDateTime.now());
+            sample.setCollectionDateTime(dto.getCollectionDateTime());
             sample.setStatus(Sample.SampleStatus.COLLECTED);
             sample.setResult(dto.getResult());
             sample.setNotes(dto.getNotes());
@@ -77,6 +77,7 @@ public class SampleServiceImpl implements SampleService {
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy mẫu"));
         if (dto.getQuality() != null) {
             sample.setQuality(dto.getQuality());
+            sample.setCollectionDateTime(LocalDateTime.now());
             sample.setStatus(Sample.SampleStatus.ANALYZED);
 
         }
@@ -171,7 +172,6 @@ public class SampleServiceImpl implements SampleService {
             dto.setParticipantCitizenId(p.getCitizenId());
 
             dto.setParticipantName(p.getName());
-            dto.setGender(p.getGender().name());
         }
 
         return dto;
