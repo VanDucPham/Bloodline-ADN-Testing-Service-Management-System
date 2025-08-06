@@ -85,6 +85,10 @@ class UserService extends BaseApiService {
     async updateAppointmentStatusAndCollectionStatus(appointmentId, status, collectionStatus) {
         return this.put(`/customer/apointment/update/${appointmentId}?status=${status}&collectionStatus=${collectionStatus}`);
     }
+
+    async exportResult(appointmentId){
+        return this.get(`/customer/export-pdf/${appointmentId}`, { responseType: 'blob' });
+    }
 }
 
 export default UserService;

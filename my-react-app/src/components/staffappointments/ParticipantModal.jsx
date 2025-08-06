@@ -178,8 +178,8 @@ function ParticipantModal({
       width: 100,
       render: (_, record) => (
         <Button onClick={() => onShowSample(record.participantId)}
-          disabled={!allowShowSample}
-          title={!allowShowSample ? 'Chỉ xem sample khi lịch đang thực hiện và hoàn thành thu kit' : ''}>
+          disabled={!allowAddParticipant}
+          title={!allowAddParticipant ? 'Chỉ xem sample khi lịch đang thực hiện' : ''}>
           Xem sample
         </Button>
       ),
@@ -457,8 +457,10 @@ function ParticipantModal({
                   </Form.Item>
                 </Form>
               ) : (
-                <Button type="primary" style={{ marginTop: 16 }} onClick={() => onEditSample(selectedSample.data)}>
-                  Sửa sample
+                <Button type="primary" style={{ marginTop: 16 }} onClick={() => onEditSample(selectedSample.data)}
+                  disabled={!allowShowSample}
+                  title={!allowShowSample ? 'Chỉ cập nhật sample khi đã thu lại kit' : ''}>
+                  Cập nhật sample
                 </Button>
               )}
             </>

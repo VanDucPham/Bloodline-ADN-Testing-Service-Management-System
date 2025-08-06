@@ -396,14 +396,17 @@ function StaffAppointments() {
   };
 
 
-  const onShowCreateSampleForm = () => setShowCreateSample(true);
+  const onShowCreateSampleForm = () => {
+    setCreateSampleSuccess('');
+    setCreateSampleError('');
+    setShowCreateSample(true);
+  };
   const onCancelCreateSample = () => setShowCreateSample(false);
   const onEditSample = (sample) => setEditingSample(sample);
   const onCancelEditSample = () => setEditingSample(null);
 
   const handleExportResult = async (appointmentId) => {
     try {
-      console.log(`Bắt đầu gọi API xuất file PDF cho appointmentId: ${appointmentId}`);
       const response = await apiService.staff.exportAppointmentResult(appointmentId);
       if (!response) {
         alert('Không nhận được file từ máy chủ!');
@@ -645,14 +648,14 @@ function StaffAppointments() {
         allowAddParticipant={
           (() => {
             const status = appointments.find(a => a.appointmentId === selectedParticipants?.appointmentId)?.appointmentStatus;
-            return status === 'IN_PROGRESS';
+            return status === 'IN_PROGRESS' || status === 'COMPLETED';
           })()
         }
         allowShowSample={
           (() => {
             const appointment = appointments.find(a => a.appointmentId === selectedParticipants?.appointmentId);
             return (
-              (appointment?.appointmentStatus === 'IN_PROGRESS' || appointment?.appointmentStatus === 'COMPLETED') &&
+              (appointment?.appointmentStatus === 'IN_PROGRESS') &&
               appointment?.collectionStatus === 'COLLECTING'
             );
           })()
