@@ -81,7 +81,7 @@ function AppointmentBooking() {
       citizenId: '',
       address: '',
       birthDate: '',
-      participantType: '',
+      relationship: '',
     }]);
     setSamples([]);
     
@@ -731,26 +731,7 @@ const validateSample = (sample) => {
             >
               <Input placeholder="Nhập số nhà, đường, xã/phường..." />
             </Form.Item>
-            <Form.Item
-              name="city"
-              label="Tỉnh/Thành phố"
-              rules={[{ required: true, message: 'Vui lòng chọn tỉnh/thành phố' }]}
-              style={{ flex: 1, minWidth: 180, marginBottom: 0 }}
-            >
-              <Select
-                showSearch
-                placeholder="Chọn tỉnh/thành phố"
-                loading={loadingAreas}
-                onChange={handleCityChange}
-                filterOption={(input, option) =>
-                  (option?.children ?? '').toLowerCase().includes(input.toLowerCase())
-                }
-              >
-                {cityOptions.map(city => (
-                  <Select.Option key={city} value={city}>{city}</Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
+            
             <Form.Item
               name="district"
               label="Quận/Huyện"
@@ -768,6 +749,26 @@ const validateSample = (sample) => {
               >
                 {districtOptions.map(district => (
                   <Select.Option key={district} value={district}>{district}</Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Form.Item
+              name="city"
+              label="Tỉnh/Thành phố"
+              rules={[{ required: true, message: 'Vui lòng chọn tỉnh/thành phố' }]}
+              style={{ flex: 1, minWidth: 180, marginBottom: 0 }}
+            >
+              <Select
+                showSearch
+                placeholder="Chọn tỉnh/thành phố"
+                loading={loadingAreas}
+                onChange={handleCityChange}
+                filterOption={(input, option) =>
+                  (option?.children ?? '').toLowerCase().includes(input.toLowerCase())
+                }
+              >
+                {cityOptions.map(city => (
+                  <Select.Option key={city} value={city}>{city}</Select.Option>
                 ))}
               </Select>
             </Form.Item>
@@ -804,7 +805,7 @@ const validateSample = (sample) => {
                   className="styled-select"
                   style={{ marginTop: '5px', width: '100%' }}
                 >
-                  <option value="BLOOD">Máu</option>
+                 
                   <option value="SALIVA">Nước bọt</option>
                   <option value="HAIR">Tóc</option>
                   <option value="NAIL">Móng tay</option>

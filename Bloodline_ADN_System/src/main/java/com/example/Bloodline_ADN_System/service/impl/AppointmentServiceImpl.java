@@ -220,7 +220,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         List<Participant> participants = request.getParticipants().stream()
                 .map(dto1 -> dto1.toEntity(savedAppointment))
                 .collect(Collectors.toList());
-
+        System.out.println(request.getParticipants().stream());
         List<Participant> savedParticipants = participantService.saveAll(participants);
 
         // ✅ Tạo lại map từ danh sách đã lưu, có ID đầy đủ

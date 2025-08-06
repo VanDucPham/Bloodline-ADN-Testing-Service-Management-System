@@ -16,7 +16,7 @@ public class ParticipantDTO {
     private Long participantId;
     private Long appointmentId;
     private String name;
-    private String relationship;
+    private String participantType;
     private String citizenId;
     private String address;
     private LocalDate birthDate;
@@ -30,7 +30,7 @@ public class ParticipantDTO {
         p.setParticipantId(this.participantId);
         p.setAppointment(appointment);
         p.setName(this.name);
-        p.setRelationship(this.relationship);
+        p.setRelationship(this.participantType);
         p.setCitizenId(this.citizenId);
         p.setAddress(this.address);
         p.setBirthDate(this.birthDate);

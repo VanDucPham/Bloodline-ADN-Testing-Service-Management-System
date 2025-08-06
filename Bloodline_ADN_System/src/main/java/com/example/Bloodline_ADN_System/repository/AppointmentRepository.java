@@ -58,7 +58,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     @Query("SELECT a.caseFile.caseId FROM Appointment a WHERE a.appointmentId = :appointmentId")
     Long findCaseIdByAppointmentId(@Param("appointmentId") Long appointmentId);
 
-
+//
 //    @Query("SELECT a FROM Appointment a " +
 //            "LEFT JOIN FETCH a.caseFile " +
 //            "LEFT JOIN FETCH a.user " +

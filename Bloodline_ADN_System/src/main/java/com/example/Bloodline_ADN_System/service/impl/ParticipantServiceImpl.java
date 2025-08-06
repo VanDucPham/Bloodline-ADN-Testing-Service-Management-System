@@ -42,7 +42,7 @@ public class ParticipantServiceImpl implements ParticipantService {
                     try {
                         Participant participant = new Participant();
                         participant.setName(dto.getName());
-                        participant.setRelationship(dto.getRelationship());
+                        participant.setRelationship(dto.getParticipantType());
                         participant.setCitizenId(dto.getCitizenId());
                         participant.setAddress(dto.getAddress());
                         participant.setBirthDate(dto.getBirthDate());
@@ -128,7 +128,7 @@ public class ParticipantServiceImpl implements ParticipantService {
     private ParticipantDTO toDTO(Participant participant) {
         ParticipantDTO dto = new ParticipantDTO();
         dto.setName(participant.getName());
-        dto.setRelationship(participant.getRelationship());
+        dto.setParticipantType(participant.getRelationship());
         dto.setCitizenId(participant.getCitizenId());
         dto.setAddress(participant.getAddress());
         dto.setBirthDate(participant.getBirthDate());

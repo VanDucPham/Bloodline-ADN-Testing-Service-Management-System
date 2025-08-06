@@ -60,7 +60,7 @@ function PaymentResult() {
           localStorage.removeItem("payment");
 
           // Điều hướng sau 3s
-          setTimeout(() => navigate("/tracking_user"), 3000);
+          setTimeout(() => navigate("/CustomerApointmentList"), 3000);
         } catch (err) {
           console.error("Lỗi khi gọi API:", err);
           setStatus("failed");
