@@ -240,27 +240,27 @@ function AppointmentBooking() {
   // Tự động điền loại mẫu dựa trên participantType
   const getDefaultSampleType = (participantType) => {
     const sampleTypeMap = {
-      'CHA': 'BLOOD',
-      'ME': 'BLOOD', 
-      'CON': 'BLOOD',
-      'ANH_EM': 'BLOOD',
-      'CHI_EM': 'BLOOD',
-      'ONG': 'BLOOD',
-      'BA': 'BLOOD',
-      'CHU': 'BLOOD',
-      'CO': 'BLOOD',
-      'CAU': 'BLOOD',
-      'MO': 'BLOOD',
-      'DI': 'BLOOD',
-      'BAC': 'BLOOD',
-      'CHAU': 'BLOOD',
-      'Father': 'BLOOD',
-      'Child': 'BLOOD',
-      'Mother': 'BLOOD',
-      'Son': 'BLOOD',
-      'Daughter': 'BLOOD'
+      'CHA': 'SALIVA',
+      'ME': 'SALIVA', 
+      'CON': 'SALIVA',
+      'ANH_EM': 'SALIVA',
+      'CHI_EM': 'SALIVA',
+      'ONG': 'SALIVA',
+      'BA': 'SALIVA',
+      'CHU': 'SALIVA',
+      'CO': 'SALIVA',
+      'CAU': 'SALIVA',
+      'MO': 'SALIVA',
+      'DI': 'SALIVA',
+      'BAC': 'SALIVA',
+      'CHAU': 'SALIVA',
+      'Father': 'SALIVA',
+      'Child': 'SALIVA',
+      'Mother': 'SALIVA',
+      'Son': 'SALIVA',
+      'Daughter': 'SALIVA'
     };
-    return sampleTypeMap[participantType] || 'BLOOD';
+    return sampleTypeMap[participantType] || 'SALIVA';
   };
 
   // Xử lý thay đổi loại mẫu
@@ -410,12 +410,17 @@ function AppointmentBooking() {
         setValidateMessage("Vui lòng chọn hình thức lấy mẫu.");
         return;
       }
-      if (!appointment.appointmentDate || !appointment.appointmentTime) {
+      if(appointment.deliveryMethod !==('HOME_COLLECTION')){
+           if (!appointment.appointmentDate || !appointment.appointmentTime) {
         setValidateMessage("Vui lòng chọn ngày giờ hẹn.");
         return;
       }
+
+      }
+      
+     
     }
-    if (step === 2 && appointment.deliveryMethod) {
+    if (step === 2 && appointment.deliveryMethod !==('HOME_COLLECTION')) {
       const available = await checkAvailability();
       if (!available) {
         setValidateMessage('Khung giờ này đã đầy, vui lòng chọn thời gian khác.');
@@ -650,7 +655,7 @@ const validateSample = (sample) => {
                   Nhân viên đến lấy tận nhà
                 </option>
               </select>
-              {appointment.deliveryMethod && (
+              {appointment.deliveryMethod  !== 'HOME_COLLECTION'&& (
                 <><label>Chọn ngày hẹn:</label>
                 <input type="date" value={appointment.appointmentDate} min={minDate} onChange={handleDateChange} className="styled-input" />
                 <div className="grid grid-cols-2 gap-3">

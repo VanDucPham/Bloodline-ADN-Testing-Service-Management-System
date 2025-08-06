@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import apiService from "../../../../service/api"; // Cập nhật đúng path của bạn
-
-import "./PaymentResult.css"; // File CSS riêng nếu có
+import apiService from "../../../../service/api";
+import "./PaymentResult.css";
 
 function PaymentResult() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [status, setStatus] = useState("processing"); // 'processing' | 'success' | 'failed'
+  const [status, setStatus] = useState("processing");
   const [message, setMessage] = useState("Đang xử lý kết quả thanh toán...");
+  const [notice, setNotice] = useState(""); // Thông báo động
 
   useEffect(() => {
     const query = new URLSearchParams(location.search);
@@ -18,49 +18,53 @@ function PaymentResult() {
     const createAppointment = async () => {
       if (responseCode === "00") {
         try {
-          // Lấy dữ liệu từ localStorage
           const appointment = JSON.parse(localStorage.getItem("appointment"));
           const participants = JSON.parse(localStorage.getItem("participants"));
           const samples = JSON.parse(localStorage.getItem("sample"));
           const caseFile = JSON.parse(localStorage.getItem("caseFile"));
           const payment = JSON.parse(localStorage.getItem("payment"));
 
-          // === Debug log ===
-          console.log("=== DEBUG LOG ===");
-          console.log("appointment:", appointment);
-          console.log("participants:", participants);
-          console.log("samples:", samples);
-          console.log("caseFile:", caseFile);
-          console.log("payment:", payment);
-
-          // Kiểm tra dữ liệu bắt buộc
           if (!appointment || !participants || !samples || !caseFile || !payment) {
-            console.error("❌ Thiếu dữ liệu cần thiết để tạo lịch hẹn!");
             setStatus("failed");
             setMessage("❌ Thiếu thông tin cần thiết. Vui lòng đặt lịch lại.");
             setTimeout(() => navigate("/booking"), 3000);
             return;
           }
 
-          // Tạo payload
-          const payload = { appointment, participants, samples, caseFile, payment };
-          console.log("Payload gửi API:", payload);
+          // Thiết lập thông báo theo hình thức lấy mẫu
+          let customNotice = "";
+          switch (appointment.deliveryMethod) {
+            case "HOME_COLLECTION":
+              customNotice =
+                "Kit sẽ được gửi đến địa chỉ của bạn trong thời gian sớm nhất. Vui lòng chú ý điện thoại để nhận thông báo giao hàng.";
+              break;
+            case "SELF_DROP_OFF":
+              customNotice =
+                "Bạn đã đặt thành công dịch vụ. Vui lòng mang đầy đủ giấy tờ và người thân đến cơ sở vào đúng giờ hẹn. Nếu đến trễ, chúng tôi sẽ không chịu trách nhiệm về việc trễ lịch.";
+              break;
+            case "HOME_DELIVERY":
+              customNotice =
+                "Nhân viên của chúng tôi sẽ đến địa chỉ của bạn để lấy mẫu trong thời gian sớm nhất. Vui lòng chú ý điện thoại để nhận thông báo lịch hẹn.";
+              break;
+            default:
+              customNotice = "Cảm ơn bạn đã đặt dịch vụ của chúng tôi.";
+          }
+          setNotice(customNotice);
 
           // Gọi API tạo lịch hẹn
+          const payload = { appointment, participants, samples, caseFile, payment };
           await apiService.user.create_app(payload);
 
-          // Nếu thành công
           setStatus("success");
           setMessage("🎉 Thanh toán thành công và lịch hẹn đã được tạo!");
-          // Xoá dữ liệu tạm
           localStorage.removeItem("appointment");
           localStorage.removeItem("participants");
           localStorage.removeItem("sample");
           localStorage.removeItem("caseFile");
           localStorage.removeItem("payment");
 
-          // Điều hướng sau 3s
-          setTimeout(() => navigate("/CustomerApointmentList"), 3000);
+          // Chờ người dùng đọc thông báo rồi tự điều hướng
+          setTimeout(() => navigate("/CustomerApointmentList"), 8000);
         } catch (err) {
           console.error("Lỗi khi gọi API:", err);
           setStatus("failed");
@@ -83,7 +87,17 @@ function PaymentResult() {
         {status === "processing" && <div className="loader" />}
         <h2>Kết quả thanh toán</h2>
         <p>{message}</p>
-        <p className="redirect-note">Bạn sẽ được chuyển trang trong giây lát...</p>
+        {status === "success" && notice && (
+          <div className="notice-box">
+            <h3>Thông báo quan trọng</h3>
+            <p>{notice}</p>
+          </div>
+        )}
+        {status !== "processing" && (
+          <p className="redirect-note">
+            Bạn sẽ được chuyển sang trang quản lý lịch hẹn trong giây lát...
+          </p>
+        )}
       </div>
     </div>
   );
