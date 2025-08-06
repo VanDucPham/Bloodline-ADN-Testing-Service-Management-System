@@ -265,6 +265,37 @@ const AppointmentList = () => {
     }
   };
 
+  // Hàm xuất kết quả PDF
+  const handleExportResult = async (appointmentId) => {
+      try {
+        const response = await apiService.user.exportResult(appointmentId);
+        if (!response) {
+          alert('Không nhận được file từ máy chủ!');
+          return;
+        }
+  
+        const disposition = response.headers && response.headers['content-disposition'];
+        const filenameMatch = disposition && disposition.match(/filename="?(.+)"?/);
+        const filename = filenameMatch ? filenameMatch[1] : `result_${appointmentId}.pdf`;
+  
+        if (!(response instanceof Blob)) {
+          alert('Dữ liệu trả về không phải file hợp lệ!');
+          return;
+        }
+  
+        const url = window.URL.createObjectURL(response);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', filename);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch (err) {
+        alert('Xuất kết quả thất bại!');
+        console.error('Lỗi khi xuất file PDF:', err);
+      }
+    };
+
   return (
     <div className={`appointment-layout`}>
       <div className={`appointment-container ${isDarkMode ? "dark" : ""}`}> 
@@ -531,6 +562,15 @@ const AppointmentList = () => {
                         <td>{selectedAppointmentResult.status || '-'}</td>
                       </tr>
                     </tbody>
+                    <div style={{ textAlign: 'center', marginTop: 16 }}>
+                      <button
+                        className="card-btn export"
+                        style={{ backgroundColor: '#1890ff', color: 'white', border: 'none', padding: '8px 16px', borderRadius: 4, cursor: 'pointer', fontSize: 14 }}
+                        onClick={() => handleExportResult(selectedAppointment.appointmentId)}
+                      >
+                        <FontAwesomeIcon icon={faCheckCircle} style={{ marginRight: 6 }} /> Xuất file PDF
+                      </button>
+                    </div>
                   </table>
                 ) : (
                   <p>Chưa có dữ liệu kết quả.</p>

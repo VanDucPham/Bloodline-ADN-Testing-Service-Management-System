@@ -103,7 +103,7 @@ function ParticipantModal({
 
   // Thêm dòng participant mới (chỉ khi không có participantsType từ service)
   const addNewParticipantRow = () => {
-if (!service || !service.participantsType || service.participantsType.length === 0) {
+    if (!service || !service.participantsType || service.participantsType.length === 0) {
       setNewParticipants((prev) => [
         ...prev,
         { name: '', relationship: '', citizenId: '', address: '', birthDate: '' },
@@ -178,8 +178,8 @@ if (!service || !service.participantsType || service.participantsType.length ===
       width: 100,
       render: (_, record) => (
         <Button onClick={() => onShowSample(record.participantId)}
-          disabled={!allowShowSample}
-          title={!allowShowSample ? 'Chỉ xem sample khi lịch đang thực hiện và hoàn thành thu kit' : ''}>
+          disabled={!allowAddParticipant}
+          title={!allowAddParticipant ? 'Chỉ xem sample khi lịch đang thực hiện' : ''}>
           Xem sample
         </Button>
       ),
@@ -187,7 +187,7 @@ if (!service || !service.participantsType || service.participantsType.length ===
   ];
 
   // Xử lý submit form tạo sample
-const onFinishCreateSample = (values) => {
+  const onFinishCreateSample = (values) => {
     onCreateSample(values);
   };
 
@@ -265,7 +265,7 @@ const onFinishCreateSample = (values) => {
                 />
                 <input
                   name="relationship"
-placeholder="Quan hệ"
+                  placeholder="Quan hệ"
                   value={p.relationship}
                   onChange={(e) => handleNewParticipantChange(idx, e)}
                   required
@@ -341,7 +341,7 @@ placeholder="Quan hệ"
           columns={columns}
           rowKey="participantId"
           pagination={false}
-size="middle"
+          size="middle"
           bordered
         />
       ) : (
@@ -409,7 +409,7 @@ size="middle"
                   { title: 'Loại', dataIndex: 'sampleType', key: 'sampleType' },
                   {
                     title: 'Thời gian',
-dataIndex: 'collectionDateTime',
+                    dataIndex: 'collectionDateTime',
                     key: 'collectionDateTime',
                     render: (value) => {
                       if (!value) return '';
@@ -457,8 +457,10 @@ dataIndex: 'collectionDateTime',
                   </Form.Item>
                 </Form>
               ) : (
-                <Button type="primary" style={{ marginTop: 16 }} onClick={() => onEditSample(selectedSample.data)}>
-                  Sửa sample
+                <Button type="primary" style={{ marginTop: 16 }} onClick={() => onEditSample(selectedSample.data)}
+                  disabled={!allowShowSample}
+                  title={!allowShowSample ? 'Chỉ cập nhật sample khi đã thu lại kit' : ''}>
+                  Cập nhật sample
                 </Button>
               )}
             </>

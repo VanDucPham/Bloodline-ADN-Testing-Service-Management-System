@@ -10,6 +10,7 @@ import com.example.Bloodline_ADN_System.dto.noneWhere.UserUpdateDTO;
 import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentDTO;
 import com.example.Bloodline_ADN_System.service.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -82,6 +83,11 @@ public class CustomerController {
     public ResponseEntity<AppointmentDTO> updateAppointment(@PathVariable Long id, @RequestParam(value = "status", required = false) Appointment.AppointmentStatus status,
                                                             @RequestParam(value = "collectionStatus", required = false) Appointment.CollectionStatus collectionStatus) {
         return ResponseEntity.ok(appointmentService.updateAppointmentProgress(id, status, collectionStatus));
+    }
+
+    @GetMapping("/export-pdf/{appointmentId}")
+    public ResponseEntity<ByteArrayResource> exportPdf(@PathVariable Long appointmentId) {
+        return resultService.exportResultPdf(appointmentId);
     }
 
 }
