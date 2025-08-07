@@ -3,6 +3,7 @@ package com.example.Bloodline_ADN_System.service.impl;
 import com.example.Bloodline_ADN_System.Entity.Appointment;
 import com.example.Bloodline_ADN_System.Entity.Participant;
 import com.example.Bloodline_ADN_System.Entity.Sample;
+import com.example.Bloodline_ADN_System.dto.managerCaseFile.ParticpantStaffDto;
 import com.example.Bloodline_ADN_System.dto.noneWhere.ParticipantResponeDTO;
 import com.example.Bloodline_ADN_System.dto.TrackingAppoint.UpdateParticipant;
 import com.example.Bloodline_ADN_System.dto.TrackingAppoint.UpdateSample;
@@ -59,6 +60,33 @@ public class ParticipantServiceImpl implements ParticipantService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<ParticpantStaffDto> addParticipantStaff(List<ParticpantStaffDto> participantDTOList) {
+        return participantDTOList.stream()
+                .map(dto -> {
+                    Appointment appointment = appointmentRepository.findById(dto.getAppointmentId())
+                            .orElseThrow(() -> new RuntimeException("Không tìm thấy appointment"));
+                    try {
+                        Participant participant = new Participant();
+                        participant.setName(dto.getName());
+                        participant.setRelationship(dto.getRelationship());
+                        participant.setCitizenId(dto.getCitizenId());
+                        participant.setAddress(dto.getAddress());
+                        participant.setBirthDate(dto.getBirthDate());
+                        participant.setAppointment(appointment);
+
+                        Participant saved = participantRepository.save(participant);
+                        return toDTO2(saved);
+                    } catch (RuntimeException e) {
+                        e.printStackTrace();
+                        return null; // or handle as needed
+                    }
+                })
+                .filter(dto -> dto != null) // remove failed items
+                .collect(Collectors.toList());
+    }
+    
+
     //Lấy danh sách participant từ appointmentId
     @Transactional(readOnly = true)
     public List<ParticipantResponeDTO> getParticipantByAppointmentId(Long appointmentId) {
@@ -79,6 +107,8 @@ public class ParticipantServiceImpl implements ParticipantService {
                 })
                 .collect(Collectors.toList());
     }
+
+
 
     @Override
     public List<Participant> saveAll(List<Participant> participants) {
@@ -130,6 +160,18 @@ public class ParticipantServiceImpl implements ParticipantService {
         dto.setName(participant.getName());
         dto.setParticipantType(participant.getRelationship());
         dto.setCitizenId(participant.getCitizenId());
+        dto.setAddress(participant.getAddress());
+        dto.setBirthDate(participant.getBirthDate());
+        dto.setAppointmentId(participant.getAppointment().getAppointmentId());
+        return dto;
+    }
+
+
+    private ParticpantStaffDto toDTO2(Participant participant) {
+        ParticpantStaffDto dto = new ParticpantStaffDto();
+        dto.setName(participant.getName());
+dto.setRelationship(participant.getRelationship());
+dto.setCitizenId(participant.getCitizenId());
         dto.setAddress(participant.getAddress());
         dto.setBirthDate(participant.getBirthDate());
         dto.setAppointmentId(participant.getAppointment().getAppointmentId());
