@@ -410,17 +410,17 @@ function AppointmentBooking() {
         setValidateMessage("Vui lòng chọn hình thức lấy mẫu.");
         return;
       }
-      if(appointment.deliveryMethod !==('HOME_COLLECTION')){
+      if(appointment.deliveryMethod ===('SELF_DROP_OFF')){
            if (!appointment.appointmentDate || !appointment.appointmentTime) {
         setValidateMessage("Vui lòng chọn ngày giờ hẹn.");
         return;
       }
 
       }
-      
+    
      
     }
-    if (step === 2 && appointment.deliveryMethod !==('HOME_COLLECTION')) {
+    if (step === 2 && appointment.deliveryMethod ===('SELF_DROP_OFF' )) {
       const available = await checkAvailability();
       if (!available) {
         setValidateMessage('Khung giờ này đã đầy, vui lòng chọn thời gian khác.');
@@ -527,18 +527,6 @@ if (step === 4) {
     return errors;
   };
 
-  // Validate realtime cho sample
-  // const validateSample = (sample) => {
-  //   const errors = {};
-  //   if(appointment.deliveryMethod != 'SELF_DROP_OFF'){
-  //     if(!districtOptions){
-  //           errors
-  //     }
-  //   }
-  //   if (!sample.participantCitizenId) errors.participantCitizenId = 'Chưa có CCCD';
-  //   if (!sample.sampleType) errors.sampleType = 'Chưa có loại mẫu';
-  //   return errors;
-  // };
 const validateSample = (sample) => {
   const errors = {};
 
@@ -655,7 +643,7 @@ const validateSample = (sample) => {
                   Nhân viên đến lấy tận nhà
                 </option>
               </select>
-              {appointment.deliveryMethod  !== 'HOME_COLLECTION'&& (
+              {appointment.deliveryMethod  && (
                 <><label>Chọn ngày hẹn:</label>
                 <input type="date" value={appointment.appointmentDate} min={minDate} onChange={handleDateChange} className="styled-input" />
                 <div className="grid grid-cols-2 gap-3">
