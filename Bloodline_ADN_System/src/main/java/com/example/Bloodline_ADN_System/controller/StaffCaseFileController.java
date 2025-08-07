@@ -4,10 +4,7 @@ import com.example.Bloodline_ADN_System.Entity.Appointment;
 import com.example.Bloodline_ADN_System.dto.ManagerService.ServiceManagerDTO;
 import com.example.Bloodline_ADN_System.dto.PaymentDTO;
 import com.example.Bloodline_ADN_System.dto.ResultDTO;
-import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentDTO;
-import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentRequest;
-import com.example.Bloodline_ADN_System.dto.managerCaseFile.AppointmentResponse;
-import com.example.Bloodline_ADN_System.dto.managerCaseFile.ParticipantDTO;
+import com.example.Bloodline_ADN_System.dto.managerCaseFile.*;
 import com.example.Bloodline_ADN_System.dto.noneWhere.*;
 import com.example.Bloodline_ADN_System.payment.PaymentRequest;
 import com.example.Bloodline_ADN_System.service.*;
@@ -114,8 +111,8 @@ public class StaffCaseFileController {
     }
 
     @PostMapping("/participant/create")
-    public ResponseEntity<List<ParticipantDTO>> addParticipants(@RequestBody List<ParticipantDTO> participantDTOs) {
-        List<ParticipantDTO> savedParticipants = participantService.addParticipant(participantDTOs);
+    public ResponseEntity<List<ParticpantStaffDto>> addParticipants(@RequestBody List<ParticpantStaffDto> participantDTOs) {
+        List<ParticpantStaffDto> savedParticipants = participantService.addParticipantStaff(participantDTOs);
         return ResponseEntity.ok(savedParticipants);
     }
 
